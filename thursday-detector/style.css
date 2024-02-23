@@ -1,0 +1,63 @@
+/* style.css */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Comic Sans MS', cursive, sans-serif; /* Keeping it fun and playful */
+    background-color: #F0EAD6; /* A light, inviting color */
+    color: #333; /* For good readability */
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+h1 {
+    color: #DAA520; /* Gold color for a bit of excitement */
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #48D1CC; /* A cheerful, bright teal */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #3CAEA3; /* A slightly darker shade for the hover effect */
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #2F4F4F; /* Dark Slate Gray for contrast */
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #E0FFFF; /* Light Cyan background to make it pop */
+}
+
+.note {
+    margin-top: 20px;
+    color: #8B4513; /* Saddle Brown, keeping it warm and friendly */
+    font-style: italic;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Add a simple animation for when the result appears */
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+#result {
+    animation: slideIn 0.5s ease-out forwards;
+}
