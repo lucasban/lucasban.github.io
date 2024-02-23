@@ -1,0 +1,60 @@
+body {
+    font-family: 'Courier New', Courier, monospace; /* Retro font */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4d2d0; /* Vintage pink background */
+}
+
+#content {
+    text-align: center;
+    width: 80%;
+    max-width: 600px;
+    background-color: #fdfd96; /* Retro yellow for content background */
+    border: 2px dashed #8b4513; /* Dark brown border */
+    padding: 20px;
+    box-shadow: 5px 5px #333; /* Retro shadow effect */
+}
+
+#message {
+    color: #2f4f4f; /* Dark slate gray for a vintage feel */
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+#premium-ad {
+    background-color: #99c2c2; /* Soft retro teal */
+    border-radius: 0; /* Retro aesthetic often lacked rounded corners */
+    padding: 15px;
+    border-top: 3px solid #333; /* Dark border top for separation */
+}
+
+#premium-ad p {
+    margin: 0 0 10px 0;
+    color: #2f4f4f; /* Matching the message color */
+    font-weight: bold;
+}
+
+#subscribe-button {
+    background-color: #ff4500; /* Bright, bold retro orange */
+    color: #ffffff;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace; /* Retro font choice */
+    font-size: 20px;
+    text-transform: uppercase;
+    border: none;
+    outline: none;
+    box-shadow: 3px 3px 0 #333; /* Adds a '3D' effect */
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#subscribe-button:hover, #subscribe-button:focus {
+    background-color: #cd3700; /* Darker shade for hover state */
+    box-shadow: 6px 6px 0 #333; /* Enhanced '3D' effect on hover/focus */
+    position: relative;
+    top: -3px; /* Moves the button up to simulate a 'pressed' effect */
+    left: -3px;
+}
