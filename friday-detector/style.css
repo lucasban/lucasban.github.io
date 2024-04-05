@@ -37,7 +37,7 @@ body {
     font-weight: bold;
 }
 
-#subscribe-button {
+#subscribe-button, #toggle-lang {
     background-color: #ff4500; /* Bright, bold retro orange */
     color: #ffffff;
     padding: 10px 20px;
@@ -51,7 +51,7 @@ body {
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-#subscribe-button:hover, #subscribe-button:focus {
+#subscribe-button:hover, #subscribe-button:focus, #toggle-lang:hover, #toggle-lang:focus {
     background-color: #cd3700; /* Darker shade for hover state */
     box-shadow: 6px 6px 0 #333; /* Enhanced '3D' effect on hover/focus */
     position: relative;
