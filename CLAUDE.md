@@ -10,8 +10,7 @@ Personal website hosted at https://lucasban.github.io
 ├── style.css               # Solarized sepia design system
 ├── photos/
 │   ├── index.html          # Photo gallery
-│   ├── gallery.js          # Lightbox functionality
-│   └── images/             # thumbnails/ and full/ directories
+│   └── gallery.js          # Bluesky API + lightbox
 ├── demos/
 │   ├── index.html          # Demo hub
 │   ├── canvas/
@@ -26,8 +25,9 @@ Personal website hosted at https://lucasban.github.io
 
 ## Design System
 
-**Style**: Warm sepia, Solarized Light inspired
+**Style**: Warm sepia, Solarized Light/Dark
 - **Colors**: Sepia bg (#fdf6e3), muted text (#657b83), blue links (#268bd2)
+- **Dark mode**: Automatic via `prefers-color-scheme`, uses Solarized Dark (#002b36)
 - **Typography**: Helvetica throughout, Courier for code
 - **Layout**: Max 750px container, rounded corners, warm color palette
 
@@ -58,10 +58,11 @@ Each detector is a standalone mini-app with a unique theme:
 
 ## Photo Gallery
 
+- Fetches photos from Bluesky (@lucasban.com) via AT Protocol API
 - CSS Grid layout with vanilla JS lightbox
 - Keyboard navigation (arrows, escape)
 - Lazy loading images
-- Add photos to `photos/images/thumbnails/` and `photos/images/full/`
+- No authentication required (public API)
 
 ## Conventions
 

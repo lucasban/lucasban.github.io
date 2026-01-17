@@ -1,5 +1,8 @@
-// Photo Gallery with Lightbox
+// Photo Gallery - Fetches from Bluesky
 (function() {
+    const BLUESKY_HANDLE = 'lucasban.com';
+    const API_URL = `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${BLUESKY_HANDLE}&limit=100`;
+
     const gallery = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -7,20 +10,88 @@
     const prevBtn = document.getElementById('lightbox-prev');
     const nextBtn = document.getElementById('lightbox-next');
     const emptyMessage = document.getElementById('empty-message');
+    const loadingMessage = document.getElementById('loading-message');
 
     let images = [];
     let currentIndex = 0;
 
-    // Initialize gallery
-    function init() {
-        images = Array.from(gallery.querySelectorAll('img'));
+    // Fetch photos from Bluesky
+    async function fetchBlueskyPhotos() {
+        try {
+            if (loadingMessage) loadingMessage.style.display = 'block';
+            if (emptyMessage) emptyMessage.style.display = 'none';
 
-        if (images.length === 0) {
-            emptyMessage.style.display = 'block';
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error('Failed to fetch');
+
+            const data = await response.json();
+            const photos = [];
+
+            // Extract images from posts
+            for (const item of data.feed) {
+                const post = item.post;
+
+                // Skip reposts
+                if (item.reason) continue;
+
+                // Check for image embeds
+                if (post.embed && post.embed.$type === 'app.bsky.embed.images#view') {
+                    for (const image of post.embed.images) {
+                        photos.push({
+                            thumb: image.thumb,
+                            full: image.fullsize,
+                            alt: image.alt || 'Photo from Bluesky',
+                            postUri: post.uri
+                        });
+                    }
+                }
+
+                // Check for images in recordWithMedia embeds
+                if (post.embed && post.embed.$type === 'app.bsky.embed.recordWithMedia#view') {
+                    if (post.embed.media && post.embed.media.$type === 'app.bsky.embed.images#view') {
+                        for (const image of post.embed.media.images) {
+                            photos.push({
+                                thumb: image.thumb,
+                                full: image.fullsize,
+                                alt: image.alt || 'Photo from Bluesky',
+                                postUri: post.uri
+                            });
+                        }
+                    }
+                }
+            }
+
+            return photos;
+        } catch (error) {
+            console.error('Error fetching Bluesky photos:', error);
+            return [];
+        }
+    }
+
+    // Render photos to gallery
+    function renderGallery(photos) {
+        if (loadingMessage) loadingMessage.style.display = 'none';
+
+        if (photos.length === 0) {
+            if (emptyMessage) emptyMessage.style.display = 'block';
             return;
         }
 
-        emptyMessage.style.display = 'none';
+        gallery.innerHTML = photos.map(photo => `
+            <img src="${photo.thumb}"
+                 data-full="${photo.full}"
+                 alt="${photo.alt}"
+                 loading="lazy">
+        `).join('');
+
+        initLightbox();
+    }
+
+    // Initialize lightbox functionality
+    function initLightbox() {
+        images = Array.from(gallery.querySelectorAll('img'));
+
+        if (images.length === 0) return;
 
         // Add click handlers to images
         images.forEach((img, index) => {
@@ -96,7 +167,12 @@
         }
     }
 
-    // Run on DOM ready
+    // Initialize
+    async function init() {
+        const photos = await fetchBlueskyPhotos();
+        renderGallery(photos);
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
