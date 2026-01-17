@@ -14,7 +14,7 @@ Personal website hosted at https://lucasban.github.io
 ├── demos/
 │   ├── index.html          # Demo hub
 │   ├── canvas/
-│   │   ├── flow-field/     # Perlin noise particle system
+│   │   ├── gravity/        # Orbital gravity simulator
 │   │   └── game-of-life/   # Conway's cellular automaton
 │   ├── api/
 │   │   └── weather-haiku/  # Weather to poetry (Open-Meteo API)
@@ -46,7 +46,7 @@ Each detector is a standalone mini-app with a unique theme:
 ## Demos
 
 ### Canvas
-- **Flow Field**: Perlin noise particles with click-to-add attractors
+- **Gravity**: Click-and-drag to launch bodies, watch them orbit and attract
 - **Game of Life**: Cellular automaton with presets (glider, pulsar, gosper gun)
 
 ### API (no auth required)

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity - Demos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <style>
+        .demo-canvas {
+            cursor: crosshair;
+            background: var(--bg-primary);
+        }
+        .demo-controls {
+            display: flex;
+            gap: 1em;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .demo-controls .btn {
+            margin: 0;
+        }
+        .mass-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .mass-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--link-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <a href="/photos/">Photos</a>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Gravity</p>
+
+        <header>
+            <h1>Gravity</h1>
+            <p class="subtitle">Click and drag to launch orbiting bodies</p>
+        </header>
+
+        <div class="demo-container">
+            <canvas id="canvas" class="demo-canvas" width="700" height="500"></canvas>
+
+            <div class="demo-controls">
+                <button class="btn" id="clear-btn">Clear</button>
+                <button class="btn" id="preset-btn">Add Sun</button>
+                <label class="mass-indicator">
+                    <span>Mass:</span>
+                    <input type="range" id="mass-slider" min="1" max="5" value="2">
+                    <span class="mass-dot" id="mass-preview"></span>
+                </label>
+                <label>
+                    <input type="checkbox" id="trails-toggle" checked>
+                    Trails
+                </label>
+            </div>
+        </div>
+
+        <section>
+            <h2>How to Play</h2>
+            <ul>
+                <li><strong>Click and drag</strong> to create a body - drag direction sets velocity</li>
+                <li><strong>Adjust mass</strong> with the slider before launching</li>
+                <li><strong>Add a Sun</strong> to create a central attractor</li>
+                <li>Bodies attract each other based on mass and distance</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="gravity.js"></script>
+</body>
+</html>
