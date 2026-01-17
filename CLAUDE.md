@@ -19,7 +19,8 @@ Personal website hosted at https://lucasban.github.io
 │   ├── api/
 │   │   └── weather-haiku/  # Weather to poetry (Open-Meteo API)
 │   ├── palette/            # Color palette generator
-│   └── typing-test/        # Typing speed test
+│   ├── typing-test/        # Typing speed test
+│   └── cost-per-wear/      # Wardrobe value calculator
 └── *-detector/             # Day detector mini-apps (7 dirs)
 ```
 
@@ -55,6 +56,9 @@ Each detector is a standalone mini-app with a unique theme:
 ### Fun
 - **Typing Test**: 60-second typing speed and accuracy test
 - **Color Palette**: Generate harmonious color schemes
+
+### Tools
+- **Cost Per Wear**: Calculate wardrobe value with wear frequency/season estimator
 
 ## Photo Gallery
 
