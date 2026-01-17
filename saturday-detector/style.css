@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+body {
+    font-family: 'Fredoka One', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+}
+
+#confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(100vh) rotate(720deg);
+    }
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    z-index: 1;
+}
+
+h1 {
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+#answer {
+    font-size: 2.5rem;
+    color: #ffd700;
+    margin: 30px 0;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+
+#party-meter {
+    margin-top: 30px;
+}
+
+#meter-label {
+    color: #fff;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+#meter-bar {
+    width: 300px;
+    height: 30px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+#meter-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
+    background-size: 300% 100%;
+    border-radius: 15px;
+    transition: width 1s ease-out;
+    animation: rainbow 2s linear infinite;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Saturday mode */
+body.saturday-mode {
+    animation: disco 0.5s infinite;
+}
+
+@keyframes disco {
+    0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    25% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    50% { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    75% { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+}
+
+/* Weekday sadness */
+body.weekday-mode {
+    background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+}
+
+body.weekday-mode #answer {
+    color: #b2bec3;
+}
+
+body.weekday-mode #meter-fill {
+    animation: none;
+    background: #636e72;
+}

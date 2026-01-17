@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+
+body {
+    font-family: 'Playfair Display', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+    transition: all 2s ease;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+    max-width: 500px;
+}
+
+h1 {
+    font-size: 3rem;
+    color: #5d4e37;
+    margin-bottom: 20px;
+}
+
+#answer {
+    font-size: 2.5rem;
+    color: #8b7355;
+    margin: 20px 0;
+}
+
+#vibe {
+    font-size: 1.3rem;
+    color: #a08060;
+    font-style: italic;
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+#clock-container {
+    margin-top: 30px;
+}
+
+#countdown {
+    font-size: 1.1rem;
+    color: #666;
+    padding: 15px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 10px;
+    display: inline-block;
+}
+
+#shadow {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: #ff6b6b;
+    font-size: 1.5rem;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+}
+
+#shadow.visible {
+    opacity: 1;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Sunday morning bliss */
+body.sunday-morning {
+    background: linear-gradient(180deg, #a8edea 0%, #fed6e3 100%);
+}
+
+/* Sunday afternoon calm */
+body.sunday-afternoon {
+    background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+/* Sunday evening dread */
+body.sunday-evening {
+    background: linear-gradient(180deg, #2c3e50 0%, #4a5568 100%);
+}
+
+body.sunday-evening h1,
+body.sunday-evening #answer {
+    color: #cbd5e0;
+}
+
+body.sunday-evening #vibe {
+    color: #a0aec0;
+}
+
+body.sunday-evening #countdown {
+    background: rgba(0,0,0,0.3);
+    color: #e2e8f0;
+}
+
+/* Not Sunday - either relief or anticipation */
+body.not-sunday {
+    background: linear-gradient(180deg, #e0e5ec 0%, #d9e2ec 100%);
+}

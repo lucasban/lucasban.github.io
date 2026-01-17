@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+body {
+    font-family: 'VT323', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #1a1a2e;
+    color: #eee;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+    z-index: 1;
+}
+
+h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px #16213e;
+}
+
+#answer {
+    font-size: 2.5rem;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+#existential-dread {
+    margin-top: 30px;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Monday mode - chaos */
+body.monday-mode {
+    animation: backgroundGlitch 0.5s infinite;
+}
+
+body.monday-mode h1 {
+    animation: textGlitch 0.3s infinite;
+}
+
+body.monday-mode #answer {
+    animation: shake 0.5s infinite;
+    color: #ff6b6b;
+}
+
+@keyframes backgroundGlitch {
+    0% { background-color: #1a1a2e; }
+    25% { background-color: #2d132c; }
+    50% { background-color: #1a1a2e; }
+    75% { background-color: #0f3460; }
+    100% { background-color: #1a1a2e; }
+}
+
+@keyframes textGlitch {
+    0% { transform: translate(0); text-shadow: 2px 2px #ff0000, -2px -2px #00ff00; }
+    25% { transform: translate(-2px, 2px); text-shadow: -2px 2px #ff0000, 2px -2px #00ff00; }
+    50% { transform: translate(2px, -2px); text-shadow: 2px -2px #ff0000, -2px 2px #00ff00; }
+    75% { transform: translate(-2px, -2px); text-shadow: -2px -2px #ff0000, 2px 2px #00ff00; }
+    100% { transform: translate(0); text-shadow: 2px 2px #ff0000, -2px -2px #00ff00; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Not Monday - peaceful */
+body.peaceful-mode {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+body.peaceful-mode #answer {
+    color: #a8e6cf;
+}
