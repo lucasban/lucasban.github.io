@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Test - Demos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../../style.css">
+    <style>
+        .typing-area {
+            background: #fdf6e3;
+            border: 2px solid #93a1a1;
+            border-radius: 5px;
+            padding: 1.5em;
+            margin: 1.5em 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        .typing-area .word {
+            display: inline;
+        }
+        .typing-area .word.current {
+            background: #eee8d5;
+            border-bottom: 2px solid #268bd2;
+        }
+        .typing-area .word.correct {
+            color: #859900;
+        }
+        .typing-area .word.incorrect {
+            color: #dc322f;
+            text-decoration: underline;
+        }
+        .typing-input {
+            width: 100%;
+            padding: 0.75em;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #93a1a1;
+            border-radius: 5px;
+            background: #fdf6e3;
+            color: #657b83;
+            margin-top: 1em;
+        }
+        .typing-input:focus {
+            outline: none;
+            border-color: #268bd2;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1em;
+            margin: 1.5em 0;
+        }
+        .stat-box {
+            background: #fdf6e3;
+            border: 1px solid #93a1a1;
+            border-radius: 5px;
+            padding: 1em;
+            text-align: center;
+        }
+        .stat-box .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #586e75;
+        }
+        .stat-box .label {
+            font-size: 0.85rem;
+            color: #93a1a1;
+            margin-top: 0.25em;
+        }
+        .controls {
+            margin: 1em 0;
+        }
+        .message {
+            text-align: center;
+            padding: 1em;
+            margin: 1em 0;
+            border-radius: 5px;
+        }
+        .message.ready {
+            background: #eee8d5;
+            color: #657b83;
+        }
+        .message.complete {
+            background: #859900;
+            color: #fdf6e3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <a href="/photos/">Photos</a>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; Typing Test</p>
+
+        <header>
+            <h1>Typing Test</h1>
+            <p class="subtitle">Test your typing speed and accuracy</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="value" id="wpm">0</div>
+                <div class="label">WPM</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="accuracy">100%</div>
+                <div class="label">Accuracy</div>
+            </div>
+            <div class="stat-box">
+                <div class="value" id="time">60</div>
+                <div class="label">Seconds</div>
+            </div>
+        </div>
+
+        <div id="message" class="message ready">Click the text box and start typing to begin</div>
+
+        <div class="typing-area" id="text-display"></div>
+
+        <input type="text" class="typing-input" id="typing-input" placeholder="Start typing here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+        <div class="controls">
+            <button class="btn" id="restart-btn">New Test</button>
+        </div>
+
+        <section>
+            <h2>About</h2>
+            <p>Type the words shown above as quickly and accurately as you can. The timer starts when you begin typing. Your WPM (words per minute) and accuracy are calculated in real-time.</p>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="typing-test.js"></script>
+</body>
+</html>

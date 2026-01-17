@@ -7,7 +7,7 @@ Personal website hosted at https://lucasban.github.io
 ```
 /
 ├── index.html              # Landing page (bio + links)
-├── style.css               # Retro-clean design system
+├── style.css               # Solarized sepia design system
 ├── photos/
 │   ├── index.html          # Photo gallery
 │   ├── gallery.js          # Lightbox functionality
@@ -20,16 +20,16 @@ Personal website hosted at https://lucasban.github.io
 │   ├── api/
 │   │   ├── iss-tracker/    # ISS position + astronauts (Open Notify API)
 │   │   └── weather-haiku/  # Weather to poetry (Open-Meteo API)
-│   └── madison/            # City of Madison data viz (Leaflet.js)
+│   └── typing-test/        # Typing speed test
 └── *-detector/             # Day detector mini-apps (7 dirs)
 ```
 
 ## Design System
 
-**Style**: Retro-clean, IETF/HN inspired
-- **Colors**: Off-white bg (#fffff8), near-black text, classic blue links, visited purple
-- **Typography**: Georgia for body, Helvetica for headings, Courier for code
-- **Layout**: Max 750px container, generous line-height, simple 1px borders
+**Style**: Warm sepia, Solarized Light inspired
+- **Colors**: Sepia bg (#fdf6e3), muted text (#657b83), blue links (#268bd2)
+- **Typography**: Helvetica throughout, Courier for code
+- **Layout**: Max 750px container, rounded corners, warm color palette
 
 ## Day Detectors
 
@@ -53,8 +53,8 @@ Each detector is a standalone mini-app with a unique theme:
 - **ISS Tracker**: Real-time ISS position + astronauts in space
 - **Weather Haiku**: Generates poetry from current weather conditions
 
-### Data Visualization
-- **Madison Explorer**: Interactive map with bike paths, bus stops, parks
+### Fun
+- **Typing Test**: 60-second typing speed and accuracy test
 
 ## Photo Gallery
 
@@ -67,7 +67,6 @@ Each detector is a standalone mini-app with a unique theme:
 
 - No build process - plain HTML/CSS/JS
 - All pages include inline HTML navigation
-- External libraries via CDN only (Leaflet.js)
 - Day detection uses `new Date().getDay()` (0=Sunday, 6=Saturday)
 
 ## Deployment
