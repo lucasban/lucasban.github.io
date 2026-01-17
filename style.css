@@ -133,6 +133,11 @@ a:active {
     color: var(--link-active);
 }
 
+a:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
 /* === Navigation === */
 nav {
     font-family: 'Helvetica', 'Arial', sans-serif;
@@ -223,6 +228,11 @@ footer {
     background: var(--btn-active);
 }
 
+.btn:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
 /* === Card Grid === */
 .card-grid {
     display: grid;
@@ -269,6 +279,11 @@ footer {
 
 .gallery-grid img:hover {
     opacity: 0.85;
+}
+
+.gallery-grid img:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
 }
 
 /* === Lightbox === */
@@ -319,6 +334,12 @@ footer {
 
 .lightbox-prev { left: 10px; }
 .lightbox-next { right: 10px; }
+
+.lightbox-close:focus-visible,
+.lightbox-nav:focus-visible {
+    outline: 2px solid var(--lightbox-border);
+    outline-offset: 2px;
+}
 
 /* === Demo Canvas Container === */
 .demo-container {

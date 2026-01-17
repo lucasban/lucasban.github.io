@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photos - Lucas Bannister</title>
+    <meta name="description" content="Photo gallery from Bluesky.">
+    <meta property="og:title" content="Photos - Lucas Bannister">
+    <meta property="og:description" content="Photo gallery from Bluesky.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
@@ -33,11 +38,11 @@
     </div>
 
     <!-- Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <span class="lightbox-close" id="lightbox-close">&times;</span>
-        <span class="lightbox-nav lightbox-prev" id="lightbox-prev">&lsaquo;</span>
+    <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Image viewer">
+        <span class="lightbox-close" id="lightbox-close" tabindex="0" role="button" aria-label="Close">&times;</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev" tabindex="0" role="button" aria-label="Previous image">&lsaquo;</span>
         <img src="" alt="" id="lightbox-img">
-        <span class="lightbox-nav lightbox-next" id="lightbox-next">&rsaquo;</span>
+        <span class="lightbox-nav lightbox-next" id="lightbox-next" tabindex="0" role="button" aria-label="Next image">&rsaquo;</span>
     </div>
 
     <script src="gallery.js"></script>

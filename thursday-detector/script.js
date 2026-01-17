@@ -8,7 +8,7 @@ document.getElementById('checkButton').addEventListener('click', () => {
     if (isThursday) {
         resultDiv.innerHTML = "Yes, it's Thursday! Friday's almost here! 🥳";
     } else {
-        const daysUntilThursday = (11 - today.getDay()) % 7;
+        const daysUntilThursday = (4 - today.getDay() + 7) % 7;
         resultDiv.innerHTML = daysUntilThursday === 0 ? "It's not Thursday, but that means it's Friday! 🎉" : `Nope, but only ${daysUntilThursday} day(s) until Thursday!`;
     }
 });

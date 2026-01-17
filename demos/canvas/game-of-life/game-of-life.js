@@ -20,8 +20,8 @@
 
     // Grid settings
     const cellSize = 10;
-    const cols = Math.floor(canvas.width / cellSize);
-    const rows = Math.floor(canvas.height / cellSize);
+    let cols = Math.floor(canvas.width / cellSize);
+    let rows = Math.floor(canvas.height / cellSize);
 
     // State
     let grid = createGrid();
@@ -30,8 +30,8 @@
     let fps = 10;
     let lastFrame = 0;
 
-    function createGrid() {
-        return Array(rows).fill(null).map(() => Array(cols).fill(0));
+    function createGrid(r = rows, c = cols) {
+        return Array(r).fill(null).map(() => Array(c).fill(0));
     }
 
     function countNeighbors(grid, x, y) {
@@ -172,8 +172,10 @@
     // Event listeners
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
-        const x = Math.floor((e.clientX - rect.left) / cellSize);
-        const y = Math.floor((e.clientY - rect.top) / cellSize);
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = Math.floor(((e.clientX - rect.left) * scaleX) / cellSize);
+        const y = Math.floor(((e.clientY - rect.top) * scaleY) / cellSize);
         toggleCell(x, y);
     });
 
@@ -246,6 +248,40 @@
         draw();
     });
 
+    // Responsive canvas sizing
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        const maxWidth = container.clientWidth;
+        const aspectRatio = 700 / 500;
+        const newWidth = Math.min(700, maxWidth);
+        const newHeight = newWidth / aspectRatio;
+
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        // Recalculate grid dimensions
+        const newCols = Math.floor(canvas.width / cellSize);
+        const newRows = Math.floor(canvas.height / cellSize);
+
+        // Resize grid if dimensions changed
+        if (newCols !== cols || newRows !== rows) {
+            const newGrid = Array(newRows).fill(null).map(() => Array(newCols).fill(0));
+            // Copy over existing cells
+            for (let y = 0; y < Math.min(rows, newRows); y++) {
+                for (let x = 0; x < Math.min(cols, newCols); x++) {
+                    newGrid[y][x] = grid[y][x];
+                }
+            }
+            grid = newGrid;
+            cols = newCols;
+            rows = newRows;
+        }
+
+        draw();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
     // Initialize
-    draw();
+    resizeCanvas();
 })();

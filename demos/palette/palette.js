@@ -6,8 +6,26 @@
     const historyEl = document.getElementById('history');
     const historySection = document.getElementById('history-section');
 
-    let history = [];
+    const STORAGE_KEY = 'paletteHistory';
+    let history = loadHistory();
     const MAX_HISTORY = 5;
+
+    function loadHistory() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            return saved ? JSON.parse(saved) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function saveHistory() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+        } catch {
+            // Ignore storage errors
+        }
+    }
 
     // Convert HSL to RGB to Hex
     function hslToHex(h, s, l) {
@@ -175,6 +193,7 @@
 
         renderPalette(colors);
         renderHistory();
+        saveHistory();
     }
 
     // Event listeners
@@ -188,5 +207,11 @@
     });
 
     // Initialize
-    generate();
+    if (history.length > 0) {
+        // Restore last palette from history
+        renderPalette(history[0]);
+        renderHistory();
+    } else {
+        generate();
+    }
 })();

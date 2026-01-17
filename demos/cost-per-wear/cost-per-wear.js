@@ -25,7 +25,16 @@
     const tabContents = document.querySelectorAll('.tab-content');
 
     const STORAGE_KEY = 'cpw-items';
+    const toast = document.getElementById('toast');
     let currentTab = 'actual';
+
+    function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
 
     // Tab switching
     tabs.forEach(tab => {
@@ -231,6 +240,7 @@
         });
         saveItems(items);
         renderItems();
+        showToast(`"${name}" saved!`);
 
         // Clear form
         itemNameInput.value = '';

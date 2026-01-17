@@ -14,6 +14,7 @@
 
     let images = [];
     let currentIndex = 0;
+    let lastFocusedElement = null;
 
     // Fetch photos from Bluesky
     async function fetchBlueskyPhotos() {
@@ -81,7 +82,9 @@
             <img src="${photo.thumb}"
                  data-full="${photo.full}"
                  alt="${photo.alt}"
-                 loading="lazy">
+                 loading="lazy"
+                 tabindex="0"
+                 role="button">
         `).join('');
 
         initLightbox();
@@ -93,15 +96,31 @@
 
         if (images.length === 0) return;
 
-        // Add click handlers to images
+        // Add click and keyboard handlers to images
         images.forEach((img, index) => {
             img.addEventListener('click', () => openLightbox(index));
+            img.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openLightbox(index);
+                }
+            });
         });
 
         // Lightbox controls
         closeBtn.addEventListener('click', closeLightbox);
         prevBtn.addEventListener('click', showPrev);
         nextBtn.addEventListener('click', showNext);
+
+        // Keyboard support for lightbox buttons
+        [closeBtn, prevBtn, nextBtn].forEach(btn => {
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
+        });
 
         // Click outside to close
         lightbox.addEventListener('click', (e) => {
@@ -115,15 +134,24 @@
     }
 
     function openLightbox(index) {
+        lastFocusedElement = document.activeElement;
         currentIndex = index;
         updateLightboxImage();
         lightbox.classList.add('active');
+        lightbox.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        // Focus the close button when lightbox opens
+        closeBtn.focus();
     }
 
     function closeLightbox() {
         lightbox.classList.remove('active');
+        lightbox.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        // Restore focus to the element that opened the lightbox
+        if (lastFocusedElement) {
+            lastFocusedElement.focus();
+        }
     }
 
     function updateLightboxImage() {
@@ -164,6 +192,26 @@
             case 'ArrowRight':
                 showNext();
                 break;
+            case 'Tab':
+                // Trap focus within lightbox
+                trapFocus(e);
+                break;
+        }
+    }
+
+    function trapFocus(e) {
+        const focusableElements = [closeBtn, prevBtn, nextBtn].filter(
+            el => el.style.visibility !== 'hidden'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
         }
     }
 

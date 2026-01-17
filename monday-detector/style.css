@@ -31,7 +31,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
     background-color: var(--bg-primary);
     color: var(--text-primary);
@@ -108,4 +108,26 @@ body.peaceful-mode {
 
 body.peaceful-mode #answer {
     color: var(--answer-color);
+}
+
+.home-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    transition: opacity 0.3s;
+}
+
+.home-link:hover {
+    opacity: 0.8;
+}
+
+.home-link:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: 2px;
 }

@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var message = document.getElementById('message');
 
     // Simulate uncertainty for non-premium users
-    var isFridayForSure = Math.random() < 0.5; // 50% chance to be sure it's Friday
+    var isFridayForSure = (dayOfWeek === 5) || (Math.random() < 0.5);
 
     if (dayOfWeek === 5 && isFridayForSure) {
         message.textContent = "Yes, it's Friday (but confirm with Agatha).";

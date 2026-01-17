@@ -23,7 +23,7 @@
 }
 
 body, html {
-    height: 100%;
+    min-height: 100%;
     margin: 0;
     font-family: 'Comic Sans MS', cursive, sans-serif;
     background-color: var(--bg-primary);
@@ -84,4 +84,26 @@ button:hover {
 
 #result {
     animation: slideIn 0.5s ease-out forwards;
+}
+
+.home-link {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    color: var(--note-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    background: var(--result-bg);
+    border-radius: 5px;
+    transition: opacity 0.3s;
+}
+
+.home-link:hover {
+    opacity: 0.8;
+}
+
+.home-link:focus-visible {
+    outline: 2px solid var(--heading-color);
+    outline-offset: 2px;
 }

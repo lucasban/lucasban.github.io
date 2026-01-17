@@ -298,9 +298,26 @@
         colors = getColors();
     });
 
+    // Responsive canvas sizing
+    function resizeCanvas() {
+        const container = canvas.parentElement;
+        const maxWidth = container.clientWidth;
+        const aspectRatio = 700 / 500;
+        const newWidth = Math.min(700, maxWidth);
+        const newHeight = newWidth / aspectRatio;
+
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        // Redraw background
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
     // Initialize
+    resizeCanvas();
     updateMassPreview();
-    ctx.fillStyle = colors.bg;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
     animate();
 })();
