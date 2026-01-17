@@ -18,7 +18,6 @@
         const dark = isDarkMode();
         return {
             bg: dark ? '#002b36' : '#fdf6e3',
-            bgFade: dark ? 'rgba(0, 43, 54, 0.15)' : 'rgba(253, 246, 227, 0.15)',
             text: dark ? '#839496' : '#657b83',
             bodies: [
                 '#dc322f', // red
@@ -52,8 +51,8 @@
             this.vx = vx;
             this.vy = vy;
             this.mass = mass;
-            // Sun gets smaller visual radius relative to mass
-            this.radius = isSun ? Math.sqrt(mass) * 1.5 : Math.sqrt(mass) * 4;
+            // Sun gets smaller visual radius relative to mass, planets are small too
+            this.radius = isSun ? Math.sqrt(mass) * 1.5 : Math.sqrt(mass) * 2;
             this.color = color;
             this.isSun = isSun;
             this.trail = [];
@@ -94,17 +93,18 @@
         }
 
         draw() {
-            // Draw trail
+            // Draw trail with gradient fade
             if (showTrails && this.trail.length > 1) {
-                ctx.beginPath();
-                ctx.moveTo(this.trail[0].x, this.trail[0].y);
                 for (let i = 1; i < this.trail.length; i++) {
+                    const alpha = (i / this.trail.length) * 0.4;
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
                     ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    ctx.strokeStyle = this.color;
+                    ctx.globalAlpha = alpha;
+                    ctx.lineWidth = this.radius * 0.5;
+                    ctx.stroke();
                 }
-                ctx.strokeStyle = this.color;
-                ctx.globalAlpha = 0.3;
-                ctx.lineWidth = this.radius * 0.5;
-                ctx.stroke();
                 ctx.globalAlpha = 1;
             }
 
@@ -152,7 +152,7 @@
 
     function updateMassPreview() {
         const mass = getCurrentMass();
-        const size = Math.sqrt(mass) * 4 * 2;
+        const size = Math.sqrt(mass) * 2 * 2;
         massPreview.style.width = size + 'px';
         massPreview.style.height = size + 'px';
     }
@@ -178,14 +178,9 @@
     }
 
     function animate() {
-        // Fade effect for trails
-        if (showTrails) {
-            ctx.fillStyle = colors.bgFade;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        } else {
-            ctx.fillStyle = colors.bg;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
+        // Clear canvas each frame
+        ctx.fillStyle = colors.bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Update and draw bodies
         for (const body of bodies) {
@@ -213,7 +208,7 @@
 
             // Preview body
             const mass = getCurrentMass();
-            const radius = Math.sqrt(mass) * 4;
+            const radius = Math.sqrt(mass) * 2;
             ctx.beginPath();
             ctx.arc(dragStart.x, dragStart.y, radius, 0, Math.PI * 2);
             ctx.fillStyle = colors.bodies[colorIndex % colors.bodies.length];
