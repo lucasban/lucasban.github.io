@@ -18,8 +18,8 @@ Personal website hosted at https://lucasban.github.io
 │   │   ├── flow-field/     # Perlin noise particle system
 │   │   └── game-of-life/   # Conway's cellular automaton
 │   ├── api/
-│   │   ├── iss-tracker/    # ISS position + astronauts (Open Notify API)
 │   │   └── weather-haiku/  # Weather to poetry (Open-Meteo API)
+│   ├── palette/            # Color palette generator
 │   └── typing-test/        # Typing speed test
 └── *-detector/             # Day detector mini-apps (7 dirs)
 ```
@@ -50,11 +50,11 @@ Each detector is a standalone mini-app with a unique theme:
 - **Game of Life**: Cellular automaton with presets (glider, pulsar, gosper gun)
 
 ### API (no auth required)
-- **ISS Tracker**: Real-time ISS position + astronauts in space
 - **Weather Haiku**: Generates poetry from current weather conditions
 
 ### Fun
 - **Typing Test**: 60-second typing speed and accuracy test
+- **Color Palette**: Generate harmonious color schemes
 
 ## Photo Gallery
 

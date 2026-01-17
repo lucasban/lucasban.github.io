@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette - Demos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../../style.css">
+    <style>
+        .palette {
+            display: flex;
+            gap: 0;
+            margin: 1.5em 0;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #93a1a1;
+        }
+        .color-swatch {
+            flex: 1;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1em;
+            cursor: pointer;
+            transition: transform 0.1s;
+            position: relative;
+        }
+        .color-swatch:hover {
+            transform: scaleY(1.05);
+            transform-origin: bottom;
+        }
+        .color-swatch .hex {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 0.3em 0.5em;
+            background: rgba(255,255,255,0.9);
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .color-swatch .copied {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 0.5em 1em;
+            border-radius: 3px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .color-swatch .copied.show {
+            opacity: 1;
+        }
+        .controls {
+            margin: 1.5em 0;
+            display: flex;
+            gap: 1em;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .harmony-select {
+            padding: 0.5em;
+            font-size: 1rem;
+            border: 2px solid #93a1a1;
+            border-radius: 3px;
+            background: #fdf6e3;
+            color: #657b83;
+        }
+        .history {
+            margin-top: 2em;
+        }
+        .history h3 {
+            margin-bottom: 0.5em;
+        }
+        .history-palettes {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+        .history-row {
+            display: flex;
+            height: 40px;
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid #93a1a1;
+        }
+        .history-row:hover {
+            opacity: 0.8;
+        }
+        .history-row .mini-swatch {
+            flex: 1;
+        }
+        @media (max-width: 600px) {
+            .color-swatch {
+                height: 150px;
+            }
+            .color-swatch .hex {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <a href="/photos/">Photos</a>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; Color Palette</p>
+
+        <header>
+            <h1>Color Palette</h1>
+            <p class="subtitle">Generate harmonious color schemes</p>
+        </header>
+
+        <div class="controls">
+            <button class="btn" id="generate-btn">Generate New</button>
+            <select class="harmony-select" id="harmony-select">
+                <option value="random">Random</option>
+                <option value="analogous">Analogous</option>
+                <option value="complementary">Complementary</option>
+                <option value="triadic">Triadic</option>
+                <option value="monochromatic">Monochromatic</option>
+                <option value="warm">Warm</option>
+                <option value="cool">Cool</option>
+                <option value="pastel">Pastel</option>
+            </select>
+        </div>
+
+        <div class="palette" id="palette"></div>
+
+        <p>Click any color to copy its hex code.</p>
+
+        <div class="history" id="history-section" style="display: none;">
+            <h3>Recent Palettes</h3>
+            <div class="history-palettes" id="history"></div>
+        </div>
+
+        <section>
+            <h2>About</h2>
+            <p>Press spacebar or click the button to generate a new palette. Different harmony modes create colors that work well together based on color theory principles.</p>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="palette.js"></script>
+</body>
+</html>
