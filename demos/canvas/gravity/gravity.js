@@ -52,7 +52,8 @@
             this.vx = vx;
             this.vy = vy;
             this.mass = mass;
-            this.radius = Math.sqrt(mass) * 4;
+            // Sun gets smaller visual radius relative to mass
+            this.radius = isSun ? Math.sqrt(mass) * 1.5 : Math.sqrt(mass) * 4;
             this.color = color;
             this.isSun = isSun;
             this.trail = [];
@@ -165,8 +166,8 @@
     function addSun() {
         // Remove existing suns
         bodies = bodies.filter(b => !b.isSun);
-        // Add sun at center
-        addBody(canvas.width / 2, canvas.height / 2, 0, 0, 200, true);
+        // Add sun at center (high mass for strong gravity)
+        addBody(canvas.width / 2, canvas.height / 2, 0, 0, 800, true);
     }
 
     function clear() {
@@ -240,8 +241,8 @@
         if (dragStart) {
             const end = getMousePos(e);
             // Velocity is opposite of drag direction (like pulling back a slingshot)
-            const vx = (dragStart.x - end.x) * 0.05;
-            const vy = (dragStart.y - end.y) * 0.05;
+            const vx = (dragStart.x - end.x) * 0.02;
+            const vy = (dragStart.y - end.y) * 0.02;
             addBody(dragStart.x, dragStart.y, vx, vy, getCurrentMass());
             dragStart = null;
             dragCurrent = null;
@@ -272,8 +273,8 @@
     canvas.addEventListener('touchend', (e) => {
         e.preventDefault();
         if (dragStart && dragCurrent) {
-            const vx = (dragStart.x - dragCurrent.x) * 0.05;
-            const vy = (dragStart.y - dragCurrent.y) * 0.05;
+            const vx = (dragStart.x - dragCurrent.x) * 0.02;
+            const vy = (dragStart.y - dragCurrent.y) * 0.02;
             addBody(dragStart.x, dragStart.y, vx, vy, getCurrentMass());
             dragStart = null;
             dragCurrent = null;
