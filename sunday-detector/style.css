@@ -1,5 +1,49 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
 
+:root {
+    --morning-bg-start: #a8edea;
+    --morning-bg-end: #fed6e3;
+    --afternoon-bg-start: #ffecd2;
+    --afternoon-bg-end: #fcb69f;
+    --evening-bg-start: #2c3e50;
+    --evening-bg-end: #4a5568;
+    --not-sunday-bg-start: #e0e5ec;
+    --not-sunday-bg-end: #d9e2ec;
+    --heading-color: #5d4e37;
+    --answer-color: #8b7355;
+    --vibe-color: #a08060;
+    --countdown-bg: rgba(255, 255, 255, 0.5);
+    --countdown-text: #666;
+    --evening-heading: #cbd5e0;
+    --evening-vibe: #a0aec0;
+    --evening-countdown-bg: rgba(0, 0, 0, 0.3);
+    --evening-countdown-text: #e2e8f0;
+    --shadow-text: #ff6b6b;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --morning-bg-start: #2a5a58;
+        --morning-bg-end: #4a2a38;
+        --afternoon-bg-start: #4a3a28;
+        --afternoon-bg-end: #5a2a2a;
+        --evening-bg-start: #1a2530;
+        --evening-bg-end: #2a3540;
+        --not-sunday-bg-start: #2a2d32;
+        --not-sunday-bg-end: #22252a;
+        --heading-color: #c8b898;
+        --answer-color: #b89878;
+        --vibe-color: #c0a080;
+        --countdown-bg: rgba(0, 0, 0, 0.4);
+        --countdown-text: #aaa;
+        --evening-heading: #a8b8c8;
+        --evening-vibe: #8898a8;
+        --evening-countdown-bg: rgba(0, 0, 0, 0.5);
+        --evening-countdown-text: #c8d8e8;
+        --shadow-text: #ff5252;
+    }
+}
+
 body {
     font-family: 'Playfair Display', serif;
     display: flex;
@@ -7,7 +51,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+    background: linear-gradient(180deg, var(--afternoon-bg-start) 0%, var(--afternoon-bg-end) 100%);
     transition: all 2s ease;
     overflow: hidden;
 }
@@ -20,19 +64,19 @@ body {
 
 h1 {
     font-size: 3rem;
-    color: #5d4e37;
+    color: var(--heading-color);
     margin-bottom: 20px;
 }
 
 #answer {
     font-size: 2.5rem;
-    color: #8b7355;
+    color: var(--answer-color);
     margin: 20px 0;
 }
 
 #vibe {
     font-size: 1.3rem;
-    color: #a08060;
+    color: var(--vibe-color);
     font-style: italic;
     margin: 20px 0;
     line-height: 1.6;
@@ -44,9 +88,9 @@ h1 {
 
 #countdown {
     font-size: 1.1rem;
-    color: #666;
+    color: var(--countdown-text);
     padding: 15px;
-    background: rgba(255,255,255,0.5);
+    background: var(--countdown-bg);
     border-radius: 10px;
     display: inline-block;
 }
@@ -58,7 +102,7 @@ h1 {
     width: 100%;
     padding: 20px;
     background: linear-gradient(transparent, rgba(0,0,0,0.8));
-    color: #ff6b6b;
+    color: var(--shadow-text);
     font-size: 1.5rem;
     text-align: center;
     opacity: 0;
@@ -75,34 +119,34 @@ h1 {
 
 /* Sunday morning bliss */
 body.sunday-morning {
-    background: linear-gradient(180deg, #a8edea 0%, #fed6e3 100%);
+    background: linear-gradient(180deg, var(--morning-bg-start) 0%, var(--morning-bg-end) 100%);
 }
 
 /* Sunday afternoon calm */
 body.sunday-afternoon {
-    background: linear-gradient(180deg, #ffecd2 0%, #fcb69f 100%);
+    background: linear-gradient(180deg, var(--afternoon-bg-start) 0%, var(--afternoon-bg-end) 100%);
 }
 
 /* Sunday evening dread */
 body.sunday-evening {
-    background: linear-gradient(180deg, #2c3e50 0%, #4a5568 100%);
+    background: linear-gradient(180deg, var(--evening-bg-start) 0%, var(--evening-bg-end) 100%);
 }
 
 body.sunday-evening h1,
 body.sunday-evening #answer {
-    color: #cbd5e0;
+    color: var(--evening-heading);
 }
 
 body.sunday-evening #vibe {
-    color: #a0aec0;
+    color: var(--evening-vibe);
 }
 
 body.sunday-evening #countdown {
-    background: rgba(0,0,0,0.3);
-    color: #e2e8f0;
+    background: var(--evening-countdown-bg);
+    color: var(--evening-countdown-text);
 }
 
 /* Not Sunday - either relief or anticipation */
 body.not-sunday {
-    background: linear-gradient(180deg, #e0e5ec 0%, #d9e2ec 100%);
+    background: linear-gradient(180deg, var(--not-sunday-bg-start) 0%, var(--not-sunday-bg-end) 100%);
 }

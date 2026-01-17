@@ -1,10 +1,33 @@
-/* style.css */
+:root {
+    --bg-primary: #F0EAD6;
+    --text-primary: #333;
+    --heading-color: #DAA520;
+    --button-bg: #48D1CC;
+    --button-hover: #3CAEA3;
+    --result-bg: #E0FFFF;
+    --result-text: #2F4F4F;
+    --note-color: #8B4513;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #2a2820;
+        --text-primary: #d4d4d4;
+        --heading-color: #e8b923;
+        --button-bg: #2a9d97;
+        --button-hover: #238a85;
+        --result-bg: #1a3535;
+        --result-text: #a8c8c8;
+        --note-color: #c27a3a;
+    }
+}
+
 body, html {
     height: 100%;
     margin: 0;
-    font-family: 'Comic Sans MS', cursive, sans-serif; /* Keeping it fun and playful */
-    background-color: #F0EAD6; /* A light, inviting color */
-    color: #333; /* For good readability */
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
 }
 
 .container {
@@ -16,35 +39,36 @@ body, html {
 }
 
 h1 {
-    color: #DAA520; /* Gold color for a bit of excitement */
+    color: var(--heading-color);
 }
 
 button {
     padding: 10px 20px;
-    background-color: #48D1CC; /* A cheerful, bright teal */
+    background-color: var(--button-bg);
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
+    color: var(--text-primary);
 }
 
 button:hover {
-    background-color: #3CAEA3; /* A slightly darker shade for the hover effect */
+    background-color: var(--button-hover);
 }
 
 #result {
     margin-top: 20px;
     font-size: 20px;
-    color: #2F4F4F; /* Dark Slate Gray for contrast */
+    color: var(--result-text);
     padding: 10px;
     border-radius: 5px;
-    background-color: #E0FFFF; /* Light Cyan background to make it pop */
+    background-color: var(--result-bg);
 }
 
 .note {
     margin-top: 20px;
-    color: #8B4513; /* Saddle Brown, keeping it warm and friendly */
+    color: var(--note-color);
     font-style: italic;
 }
 

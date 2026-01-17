@@ -1,5 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 
+:root {
+    --bg-start: #7ec8e3;
+    --bg-end: #a8e6cf;
+    --party-bg-start: #98fb98;
+    --party-bg-end: #00ff7f;
+    --heading-color: #2d5016;
+    --heading-shadow: #fff;
+    --answer-color: #1a472a;
+    --subtitle-color: #3d7c47;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-start: #1a4a5a;
+        --bg-end: #2a5040;
+        --party-bg-start: #2a5a2a;
+        --party-bg-end: #006030;
+        --heading-color: #8fd870;
+        --heading-shadow: #1a1a1a;
+        --answer-color: #70c080;
+        --subtitle-color: #7db87d;
+    }
+}
+
 body {
     font-family: 'Bangers', cursive;
     display: flex;
@@ -7,7 +31,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background: linear-gradient(180deg, #7ec8e3 0%, #a8e6cf 100%);
+    background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
     overflow: hidden;
 }
 
@@ -18,8 +42,8 @@ body {
 
 h1 {
     font-size: 3rem;
-    color: #2d5016;
-    text-shadow: 3px 3px 0 #fff, -1px -1px 0 #fff;
+    color: var(--heading-color);
+    text-shadow: 3px 3px 0 var(--heading-shadow), -1px -1px 0 var(--heading-shadow);
     margin-bottom: 10px;
 }
 
@@ -38,14 +62,14 @@ h1 {
 
 #answer {
     font-size: 2.5rem;
-    color: #1a472a;
+    color: var(--answer-color);
     margin-top: 20px;
     letter-spacing: 2px;
 }
 
 #subtitle {
     font-size: 1.5rem;
-    color: #3d7c47;
+    color: var(--subtitle-color);
     margin-top: 10px;
     font-family: Arial, sans-serif;
 }
@@ -64,9 +88,9 @@ body.wednesday-mode #answer {
 }
 
 @keyframes partyBackground {
-    0% { background: linear-gradient(180deg, #7ec8e3 0%, #a8e6cf 100%); }
-    50% { background: linear-gradient(180deg, #98fb98 0%, #00ff7f 100%); }
-    100% { background: linear-gradient(180deg, #7ec8e3 0%, #a8e6cf 100%); }
+    0% { background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%); }
+    50% { background: linear-gradient(180deg, var(--party-bg-start) 0%, var(--party-bg-end) 100%); }
+    100% { background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%); }
 }
 
 @keyframes frogDance {

@@ -1,5 +1,31 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+:root {
+    --bg-primary: #1a1a2e;
+    --bg-glitch-1: #2d132c;
+    --bg-glitch-2: #0f3460;
+    --text-primary: #eee;
+    --text-shadow: #16213e;
+    --peaceful-bg-start: #667eea;
+    --peaceful-bg-end: #764ba2;
+    --answer-color: #a8e6cf;
+    --monday-answer: #ff6b6b;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #0d0d17;
+        --bg-glitch-1: #1a0a1a;
+        --bg-glitch-2: #071830;
+        --text-primary: #ccc;
+        --text-shadow: #0a0f1e;
+        --peaceful-bg-start: #4a5ce0;
+        --peaceful-bg-end: #5a3a8c;
+        --answer-color: #7ad4a8;
+        --monday-answer: #ff5252;
+    }
+}
+
 body {
     font-family: 'VT323', monospace;
     display: flex;
@@ -7,8 +33,8 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #1a1a2e;
-    color: #eee;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
     overflow: hidden;
 }
 
@@ -21,7 +47,7 @@ body {
 h1 {
     font-size: 3.5rem;
     margin-bottom: 20px;
-    text-shadow: 2px 2px #16213e;
+    text-shadow: 2px 2px var(--text-shadow);
 }
 
 #answer {
@@ -50,15 +76,15 @@ body.monday-mode h1 {
 
 body.monday-mode #answer {
     animation: shake 0.5s infinite;
-    color: #ff6b6b;
+    color: var(--monday-answer);
 }
 
 @keyframes backgroundGlitch {
-    0% { background-color: #1a1a2e; }
-    25% { background-color: #2d132c; }
-    50% { background-color: #1a1a2e; }
-    75% { background-color: #0f3460; }
-    100% { background-color: #1a1a2e; }
+    0% { background-color: var(--bg-primary); }
+    25% { background-color: var(--bg-glitch-1); }
+    50% { background-color: var(--bg-primary); }
+    75% { background-color: var(--bg-glitch-2); }
+    100% { background-color: var(--bg-primary); }
 }
 
 @keyframes textGlitch {
@@ -77,9 +103,9 @@ body.monday-mode #answer {
 
 /* Not Monday - peaceful */
 body.peaceful-mode {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--peaceful-bg-start) 0%, var(--peaceful-bg-end) 100%);
 }
 
 body.peaceful-mode #answer {
-    color: #a8e6cf;
+    color: var(--answer-color);
 }

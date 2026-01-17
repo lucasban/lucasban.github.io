@@ -1,6 +1,30 @@
+:root {
+    --bg-primary: #fdf6e3;
+    --bg-secondary: #eee8d5;
+    --text-primary: #657b83;
+    --text-heading: #586e75;
+    --border-color: #93a1a1;
+    --shadow-color: rgba(101, 123, 131, 0.15);
+    --happy-color: #859900;
+    --sad-color: #cb4b16;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: #002b36;
+        --bg-secondary: #073642;
+        --text-primary: #839496;
+        --text-heading: #93a1a1;
+        --border-color: #586e75;
+        --shadow-color: rgba(0, 0, 0, 0.3);
+        --happy-color: #859900;
+        --sad-color: #cb4b16;
+    }
+}
+
 body {
     font-family: 'Helvetica', 'Arial', sans-serif;
-    background-color: #fdf6e3;
+    background-color: var(--bg-primary);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,24 +36,24 @@ body {
 
 .container {
     text-align: center;
-    background: #eee8d5;
+    background: var(--bg-secondary);
     padding: 40px;
     border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(101, 123, 131, 0.15);
-    border: 1px solid #93a1a1;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    border: 1px solid var(--border-color);
     max-width: 400px;
 }
 
 h1 {
     font-size: 2.5rem;
-    color: #657b83;
+    color: var(--text-primary);
     margin-bottom: 10px;
 }
 
 #answer {
     font-size: 1.5rem;
     margin-top: 15px;
-    color: #586e75;
+    color: var(--text-heading);
     font-weight: 500;
 }
 
@@ -49,10 +73,10 @@ h1 {
 
 /* Happy state styling */
 .is-tuesday #answer {
-    color: #859900;
+    color: var(--happy-color);
 }
 
 /* Sad state styling */
 .not-tuesday #answer {
-    color: #cb4b16;
+    color: var(--sad-color);
 }

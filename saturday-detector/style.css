@@ -1,5 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
+:root {
+    --bg-start: #667eea;
+    --bg-end: #764ba2;
+    --container-bg: rgba(255, 255, 255, 0.15);
+    --text-primary: #fff;
+    --answer-color: #ffd700;
+    --meter-bg: rgba(255, 255, 255, 0.3);
+    --weekday-bg-start: #636e72;
+    --weekday-bg-end: #2d3436;
+    --weekday-answer: #b2bec3;
+    --weekday-meter: #636e72;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-start: #3a4a9a;
+        --bg-end: #4a2a72;
+        --container-bg: rgba(0, 0, 0, 0.25);
+        --text-primary: #e8e8e8;
+        --answer-color: #ffc800;
+        --meter-bg: rgba(255, 255, 255, 0.2);
+        --weekday-bg-start: #3a3d40;
+        --weekday-bg-end: #1a1c1e;
+        --weekday-answer: #8a9499;
+        --weekday-meter: #4a4d50;
+    }
+}
+
 body {
     font-family: 'Fredoka One', cursive;
     display: flex;
@@ -7,7 +35,7 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
     overflow: hidden;
 }
 
@@ -38,7 +66,7 @@ body {
 .container {
     text-align: center;
     padding: 40px;
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--container-bg);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     z-index: 1;
@@ -46,14 +74,14 @@ body {
 
 h1 {
     font-size: 3rem;
-    color: #fff;
+    color: var(--text-primary);
     text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
     margin-bottom: 20px;
 }
 
 #answer {
     font-size: 2.5rem;
-    color: #ffd700;
+    color: var(--answer-color);
     margin: 30px 0;
     text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
 }
@@ -63,7 +91,7 @@ h1 {
 }
 
 #meter-label {
-    color: #fff;
+    color: var(--text-primary);
     font-size: 1.2rem;
     margin-bottom: 10px;
 }
@@ -71,7 +99,7 @@ h1 {
 #meter-bar {
     width: 300px;
     height: 30px;
-    background: rgba(255,255,255,0.3);
+    background: var(--meter-bg);
     border-radius: 15px;
     overflow: hidden;
     margin: 0 auto;
@@ -97,23 +125,23 @@ body.saturday-mode {
 }
 
 @keyframes disco {
-    0% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    0% { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); }
     25% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
     50% { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
     75% { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    100% { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); }
 }
 
 /* Weekday sadness */
 body.weekday-mode {
-    background: linear-gradient(135deg, #636e72 0%, #2d3436 100%);
+    background: linear-gradient(135deg, var(--weekday-bg-start) 0%, var(--weekday-bg-end) 100%);
 }
 
 body.weekday-mode #answer {
-    color: #b2bec3;
+    color: var(--weekday-answer);
 }
 
 body.weekday-mode #meter-fill {
     animation: none;
-    background: #636e72;
+    background: var(--weekday-meter);
 }
