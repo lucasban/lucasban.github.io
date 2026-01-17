@@ -56,7 +56,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Animate party meter
+    const meterPercent = document.getElementById('meter-percent');
+    const targetPercent = partyReadiness[currentDay];
+
     setTimeout(() => {
-        meterFill.style.width = partyReadiness[currentDay] + '%';
+        meterFill.style.width = targetPercent + '%';
+        // Animate the percentage number
+        let current = 0;
+        const step = targetPercent / 30;
+        const interval = setInterval(() => {
+            current += step;
+            if (current >= targetPercent) {
+                current = targetPercent;
+                clearInterval(interval);
+            }
+            meterPercent.textContent = Math.round(current) + '%';
+        }, 20);
     }, 300);
 });
