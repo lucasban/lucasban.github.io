@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life - Demos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <a href="/photos/">Photos</a>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Game of Life</p>
+
+        <header>
+            <h1>Game of Life</h1>
+            <p class="subtitle">Conway's cellular automaton</p>
+        </header>
+
+        <div class="demo-container">
+            <canvas id="canvas" class="demo-canvas" width="700" height="500"></canvas>
+
+            <div class="demo-controls">
+                <div style="margin-bottom: 1em;">
+                    <button class="btn" id="play-btn">Play</button>
+                    <button class="btn" id="step-btn">Step</button>
+                    <button class="btn" id="clear-btn">Clear</button>
+                    <button class="btn" id="random-btn">Random</button>
+                </div>
+                <div style="margin-bottom: 1em;">
+                    <strong>Presets:</strong>
+                    <button class="btn" id="preset-glider">Glider</button>
+                    <button class="btn" id="preset-blinker">Blinker</button>
+                    <button class="btn" id="preset-pulsar">Pulsar</button>
+                    <button class="btn" id="preset-gosper">Gosper Gun</button>
+                </div>
+                <label>
+                    Speed:
+                    <input type="range" id="speed" min="1" max="30" value="10">
+                    <span id="speed-value">10</span> fps
+                </label>
+                <p style="margin-top: 1em; margin-bottom: 0;">Click cells to toggle them. Generation: <span id="generation">0</span></p>
+            </div>
+        </div>
+
+        <section>
+            <h2>Rules</h2>
+            <ol>
+                <li>Any live cell with 2 or 3 neighbors survives.</li>
+                <li>Any dead cell with exactly 3 neighbors becomes alive.</li>
+                <li>All other cells die or stay dead.</li>
+            </ol>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="game-of-life.js"></script>
+</body>
+</html>

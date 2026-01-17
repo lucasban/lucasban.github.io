@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <strong>Photos</strong>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <header>
+            <h1>Photos</h1>
+            <p class="subtitle">A collection of images. Click to enlarge.</p>
+        </header>
+
+        <div class="gallery-grid" id="gallery">
+            <!-- Photos are loaded dynamically or can be added manually -->
+            <!-- Example structure:
+            <img src="images/thumbnails/photo1.jpg"
+                 data-full="images/full/photo1.jpg"
+                 alt="Description"
+                 loading="lazy">
+            -->
+        </div>
+
+        <p id="empty-message">No photos yet. Add images to <code>images/thumbnails/</code> and <code>images/full/</code> directories.</p>
+
+        <footer>
+            <p><a href="/">&larr; Back to home</a></p>
+        </footer>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close" id="lightbox-close">&times;</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev">&lsaquo;</span>
+        <img src="" alt="" id="lightbox-img">
+        <span class="lightbox-nav lightbox-next" id="lightbox-next">&rsaquo;</span>
+    </div>
+
+    <script src="gallery.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Haiku - Demos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../../../style.css">
+    <style>
+        .haiku {
+            font-size: 1.3rem;
+            line-height: 2;
+            text-align: center;
+            padding: 2em;
+            background: #f5f5f0;
+            border: 1px solid #ccc;
+            margin: 1.5em 0;
+            font-style: italic;
+        }
+        .haiku-line {
+            display: block;
+        }
+        .weather-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 0.5em;
+        }
+        .location-form {
+            margin: 1em 0;
+        }
+        .location-form input {
+            font-family: Georgia, serif;
+            font-size: 1rem;
+            padding: 0.5em;
+            border: 1px solid #999;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <a href="/photos/">Photos</a>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; API &rarr; Weather Haiku</p>
+
+        <header>
+            <h1>Weather Haiku</h1>
+            <p class="subtitle">Poetry generated from current weather conditions</p>
+        </header>
+
+        <div class="location-form">
+            <label for="city">Enter a city: </label>
+            <input type="text" id="city" placeholder="e.g., Madison, Tokyo">
+            <button class="btn" id="search-btn">Get Haiku</button>
+            <button class="btn" id="location-btn">Use My Location</button>
+        </div>
+
+        <div id="weather-display" style="display: none;">
+            <div class="weather-icon" id="weather-icon"></div>
+            <div class="haiku" id="haiku">
+                <span class="haiku-line" id="line1"></span>
+                <span class="haiku-line" id="line2"></span>
+                <span class="haiku-line" id="line3"></span>
+            </div>
+
+            <dl class="data-box">
+                <dt>Location</dt>
+                <dd id="location-name">-</dd>
+                <dt>Temperature</dt>
+                <dd id="temperature">-</dd>
+                <dt>Condition</dt>
+                <dd id="condition">-</dd>
+                <dt>Wind</dt>
+                <dd id="wind">-</dd>
+            </dl>
+        </div>
+
+        <p id="status" class="loading" style="display: none;">Loading weather data...</p>
+        <p id="error" style="color: #a00; display: none;"></p>
+
+        <section>
+            <h2>About</h2>
+            <p>This demo fetches weather data from the <a href="https://open-meteo.com/">Open-Meteo API</a> and generates a haiku based on the current conditions. The poetry is created algorithmically from weather parameters.</p>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="weather-haiku.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flow Field - Demos - Lucas Bannister</title>
+    <link rel="stylesheet" href="../../../style.css">
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="/">Home</a>
+            <span class="separator">/</span>
+            <a href="/photos/">Photos</a>
+            <span class="separator">/</span>
+            <a href="/demos/">Demos</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Flow Field</p>
+
+        <header>
+            <h1>Flow Field</h1>
+            <p class="subtitle">Particles flowing through Perlin noise fields</p>
+        </header>
+
+        <div class="demo-container">
+            <canvas id="canvas" class="demo-canvas" width="700" height="500"></canvas>
+
+            <div class="demo-controls">
+                <label>
+                    Particle count:
+                    <input type="range" id="particle-count" min="100" max="2000" value="800">
+                    <span id="particle-count-value">800</span>
+                </label>
+                <label>
+                    Noise scale:
+                    <input type="range" id="noise-scale" min="50" max="500" value="200">
+                    <span id="noise-scale-value">200</span>
+                </label>
+                <label>
+                    Speed:
+                    <input type="range" id="speed" min="1" max="10" value="3">
+                    <span id="speed-value">3</span>
+                </label>
+                <p style="margin-top: 1em; margin-bottom: 0;">Click on the canvas to add attractors. Right-click to clear them.</p>
+                <button class="btn" id="reset-btn" style="margin-top: 0.5em;">Reset</button>
+            </div>
+        </div>
+
+        <section>
+            <h2>About</h2>
+            <p>This demo uses Perlin noise to create a flow field that guides particles across the canvas. Each particle follows the direction indicated by the noise value at its position, creating organic, flowing patterns.</p>
+            <p>Click anywhere on the canvas to add an attractor point that pulls particles toward it.</p>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="flow-field.js"></script>
+</body>
+</html>
