@@ -73,6 +73,7 @@ Each detector is a standalone mini-app with a unique theme:
 - No build process - plain HTML/CSS/JS
 - All pages include inline HTML navigation
 - Day detection uses `new Date().getDay()` (0=Sunday, 6=Saturday)
+- **Cache busting**: CSS/JS files use `?v=N` query strings. Bump the version number when making changes to ensure browsers fetch fresh files.
 
 ## Deployment
 
