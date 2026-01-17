@@ -121,15 +121,21 @@ h1 {
 
 /* Saturday mode */
 body.saturday-mode {
-    animation: disco 0.5s infinite;
+    animation: disco 8s ease-in-out infinite;
 }
 
 @keyframes disco {
-    0% { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); }
+    0%, 100% { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); }
     25% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
     50% { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
     75% { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    100% { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.saturday-mode {
+        animation: none;
+        background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    }
 }
 
 /* Weekday sadness */

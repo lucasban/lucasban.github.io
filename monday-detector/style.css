@@ -101,6 +101,17 @@ body.monday-mode #answer {
     75% { transform: translateX(5px); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    body.monday-mode,
+    body.monday-mode h1,
+    body.monday-mode #answer {
+        animation: none;
+    }
+    body.monday-mode h1 {
+        text-shadow: 2px 2px var(--text-shadow);
+    }
+}
+
 /* Not Monday - peaceful */
 body.peaceful-mode {
     background: linear-gradient(135deg, var(--peaceful-bg-start) 0%, var(--peaceful-bg-end) 100%);
