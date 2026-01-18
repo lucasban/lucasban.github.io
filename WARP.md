@@ -59,3 +59,5 @@ Personal static website hosted at https://lucasban.github.io. No build process â
 - **CSS Consolidation**: Merged root `detector-base.css` into `shared/detector-base.css` with variable fallbacks. Updated all detectors.
 - **Detector Refactoring**: Created `shared/detector-utils.js` to centralize date logic.
 - **Gallery Improvements**: Added retry logic and improved error handling.
+- **Bug Fixes**:
+    - **Digital Plant Crash**: Implemented missing `renderFireflies`, `renderSnowflakes`, and `getLeafColor` functions, and restored missing HTML elements (`plant-name`, stats, buttons).
