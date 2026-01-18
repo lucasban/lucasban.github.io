@@ -7,50 +7,48 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('theme-toggle');
+        const toggle = document.querySelector('.theme-toggle');
         if (!toggle) return;
 
-        function getEffectiveTheme() {
+        const buttons = toggle.querySelectorAll('button[data-theme]');
+        if (buttons.length === 0) return;
+
+        function getActiveTheme() {
             const saved = localStorage.getItem('theme');
-            if (saved && saved !== 'auto') return saved;
-            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            if (saved === 'light' || saved === 'dark') return saved;
+            return 'auto';
         }
 
-        function updateToggleIcon() {
-            const saved = localStorage.getItem('theme');
-            if (!saved || saved === 'auto') {
-                // Auto/system mode
-                toggle.textContent = '💻';
-                toggle.setAttribute('aria-label', 'Following system theme. Click for light mode');
-            } else if (saved === 'light') {
-                toggle.textContent = '☀️';
-                toggle.setAttribute('aria-label', 'Light mode. Click for dark mode');
-            } else {
-                toggle.textContent = '🌙';
-                toggle.setAttribute('aria-label', 'Dark mode. Click for auto mode');
-            }
+        function updateButtons() {
+            const active = getActiveTheme();
+            buttons.forEach(btn => {
+                const isActive = btn.dataset.theme === active;
+                btn.setAttribute('aria-pressed', isActive);
+            });
         }
 
-        toggle.addEventListener('click', function() {
-            const saved = localStorage.getItem('theme');
-            let next;
-            if (saved === 'light') next = 'dark';
-            else if (saved === 'dark') next = 'auto';
-            else next = 'light'; // auto or null → light
-
-            if (next === 'auto') {
+        function setTheme(theme) {
+            if (theme === 'auto') {
                 localStorage.removeItem('theme');
                 document.documentElement.removeAttribute('data-theme');
             } else {
-                localStorage.setItem('theme', next);
-                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', theme);
+                document.documentElement.setAttribute('data-theme', theme);
             }
-            updateToggleIcon();
+            updateButtons();
+        }
+
+        // Add click handlers to each button
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                setTheme(btn.dataset.theme);
+            });
         });
 
-        // Update icon when OS preference changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateToggleIcon);
+        // Update buttons when OS preference changes (for visual feedback in auto mode)
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateButtons);
 
-        updateToggleIcon();
+        // Initialize button states
+        updateButtons();
     });
 })();

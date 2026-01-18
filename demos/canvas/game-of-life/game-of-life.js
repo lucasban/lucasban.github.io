@@ -12,9 +12,8 @@
     const speedValue = document.getElementById('speed-value');
     const generationDisplay = document.getElementById('generation');
 
-    // Pattern selector
-    const patternSelect = document.getElementById('pattern-select');
-    const loadPatternBtn = document.getElementById('load-pattern-btn');
+    // Pattern buttons
+    const patternButtons = document.querySelectorAll('.pattern-grid button[data-pattern]');
 
     // Grid settings
     const cellSize = 10;
@@ -253,23 +252,26 @@
         speedValue.textContent = fps;
     });
 
-    loadPatternBtn.addEventListener('click', () => {
-        const patternName = patternSelect.value;
-        if (!patternName || !patterns[patternName]) return;
+    // Pattern button click handlers
+    patternButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const patternName = btn.dataset.pattern;
+            if (!patternName || !patterns[patternName]) return;
 
-        grid = createGrid();
-        generation = 0;
-        generationDisplay.textContent = generation;
+            grid = createGrid();
+            generation = 0;
+            generationDisplay.textContent = generation;
 
-        // Position glider and lwss in upper-left for movement room
-        if (patternName === 'glider') {
-            setPattern(patterns[patternName], -10, -10);
-        } else if (patternName === 'lwss') {
-            setPattern(patterns[patternName], -15, 0);
-        } else {
-            setPattern(patterns[patternName]);
-        }
-        draw();
+            // Position glider and lwss in upper-left for movement room
+            if (patternName === 'glider') {
+                setPattern(patterns[patternName], -10, -10);
+            } else if (patternName === 'lwss') {
+                setPattern(patterns[patternName], -15, 0);
+            } else {
+                setPattern(patterns[patternName]);
+            }
+            draw();
+        });
     });
 
     // Responsive canvas sizing

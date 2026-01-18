@@ -8,29 +8,30 @@
     <meta property="og:title" content="Conway's Game of Life">
     <meta property="og:description" content="Conway's cellular automaton with presets.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
-    <link rel="stylesheet" href="../../../style.css?v=3">
+    <link rel="stylesheet" href="../../../style.css?v=4">
     <style>
         .demo-canvas {
             max-width: 100%;
             height: auto;
         }
-        .pattern-select {
-            padding: 0.4em 0.6em;
-            font-size: 0.9rem;
-            border: 1px solid var(--border-color);
-            border-radius: 3px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            cursor: pointer;
+        .pattern-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5em;
+            margin-top: 0.5em;
         }
-        .pattern-select:focus {
-            outline: none;
-            border-color: var(--link-color);
+        .btn-sm {
+            padding: 0.3em 0.6em;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
+        <button data-theme="light" aria-pressed="false">☀️</button>
+        <button data-theme="dark" aria-pressed="false">🌙</button>
+        <button data-theme="auto" aria-pressed="true">💻</button>
+    </div>
     <div class="container">
         <nav>
             <a href="/">&larr; Home</a>
@@ -55,24 +56,16 @@
                 </div>
                 <div style="margin-bottom: 1em;">
                     <strong>Patterns:</strong>
-                    <select id="pattern-select" class="pattern-select">
-                        <option value="">Select pattern...</option>
-                        <optgroup label="Oscillators">
-                            <option value="blinker">Blinker (period 2)</option>
-                            <option value="beacon">Beacon (period 2)</option>
-                            <option value="toad">Toad (period 2)</option>
-                            <option value="pulsar">Pulsar (period 3)</option>
-                            <option value="pentadecathlon">Pentadecathlon (period 15)</option>
-                        </optgroup>
-                        <optgroup label="Spaceships">
-                            <option value="glider">Glider (moves diagonally)</option>
-                            <option value="lwss">Lightweight Spaceship (moves horizontally)</option>
-                        </optgroup>
-                        <optgroup label="Guns">
-                            <option value="gosper">Gosper Glider Gun (infinite growth)</option>
-                        </optgroup>
-                    </select>
-                    <button class="btn" id="load-pattern-btn">Load</button>
+                    <div class="pattern-grid">
+                        <button class="btn btn-sm" data-pattern="blinker">Blinker</button>
+                        <button class="btn btn-sm" data-pattern="beacon">Beacon</button>
+                        <button class="btn btn-sm" data-pattern="toad">Toad</button>
+                        <button class="btn btn-sm" data-pattern="pulsar">Pulsar</button>
+                        <button class="btn btn-sm" data-pattern="pentadecathlon">Pentadecathlon</button>
+                        <button class="btn btn-sm" data-pattern="glider">Glider</button>
+                        <button class="btn btn-sm" data-pattern="lwss">Spaceship</button>
+                        <button class="btn btn-sm" data-pattern="gosper">Gosper Gun</button>
+                    </div>
                 </div>
                 <label>
                     Speed:
@@ -97,7 +90,7 @@
         </footer>
     </div>
 
-    <script src="../../../theme-toggle.js?v=1"></script>
-    <script src="game-of-life.js?v=3"></script>
+    <script src="../../../theme-toggle.js?v=2"></script>
+    <script src="game-of-life.js?v=4"></script>
 </body>
 </html>

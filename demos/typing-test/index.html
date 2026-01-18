@@ -8,7 +8,7 @@
     <meta property="og:title" content="Typing Test">
     <meta property="og:description" content="60-second typing speed and accuracy test.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
-    <link rel="stylesheet" href="../../style.css?v=3">
+    <link rel="stylesheet" href="../../style.css?v=4">
     <style>
         .typing-area {
             background: var(--bg-primary);
@@ -139,7 +139,11 @@
     </style>
 </head>
 <body>
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
+        <button data-theme="light" aria-pressed="false">☀️</button>
+        <button data-theme="dark" aria-pressed="false">🌙</button>
+        <button data-theme="auto" aria-pressed="true">💻</button>
+    </div>
     <div class="container">
         <nav>
             <a href="/">&larr; Home</a>
@@ -200,7 +204,7 @@
         </footer>
     </div>
 
-    <script src="../../theme-toggle.js?v=1"></script>
+    <script src="../../theme-toggle.js?v=2"></script>
     <script src="typing-test.js?v=3"></script>
 </body>
 </html>
