@@ -3,12 +3,14 @@
     const paletteEl = document.getElementById('palette');
     const generateBtn = document.getElementById('generate-btn');
     const harmonySelect = document.getElementById('harmony-select');
+    const exportSelect = document.getElementById('export-select');
     const historyEl = document.getElementById('history');
     const historySection = document.getElementById('history-section');
 
     const STORAGE_KEY = 'paletteHistory';
     let history = loadHistory();
     const MAX_HISTORY = 5;
+    let lockedColors = [null, null, null, null, null]; // Track locked colors by index
 
     function loadHistory() {
         try {
@@ -130,25 +132,55 @@
 
     // Render palette
     function renderPalette(colors) {
-        paletteEl.innerHTML = colors.map(color => {
+        paletteEl.innerHTML = colors.map((color, index) => {
             const textColor = getBrightness(color) > 128 ? '#1a1a1a' : '#ffffff';
+            const isLocked = lockedColors[index] !== null;
             return `
-                <div class="color-swatch" style="background: ${color};" data-color="${color}">
+                <div class="color-swatch${isLocked ? ' locked' : ''}" style="background: ${color};" data-color="${color}" data-index="${index}">
+                    <button class="lock-btn" title="${isLocked ? 'Unlock' : 'Lock'} this color" aria-label="${isLocked ? 'Unlock' : 'Lock'} this color">${isLocked ? '🔒' : '🔓'}</button>
                     <span class="hex" style="color: ${textColor}; background: rgba(${getBrightness(color) > 128 ? '255,255,255' : '0,0,0'},0.2)">${color.toUpperCase()}</span>
                     <span class="copied">Copied!</span>
                 </div>
             `;
         }).join('');
 
-        // Add click handlers
+        // Add click handlers for copying
         paletteEl.querySelectorAll('.color-swatch').forEach(swatch => {
-            swatch.addEventListener('click', () => {
+            swatch.addEventListener('click', (e) => {
+                // Don't copy if clicking the lock button
+                if (e.target.classList.contains('lock-btn')) return;
                 const color = swatch.dataset.color;
                 navigator.clipboard.writeText(color).then(() => {
                     const copied = swatch.querySelector('.copied');
                     copied.classList.add('show');
                     setTimeout(() => copied.classList.remove('show'), 1000);
                 });
+            });
+        });
+
+        // Add click handlers for locking
+        paletteEl.querySelectorAll('.lock-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const swatch = btn.closest('.color-swatch');
+                const index = parseInt(swatch.dataset.index);
+                const color = swatch.dataset.color;
+
+                if (lockedColors[index] !== null) {
+                    // Unlock
+                    lockedColors[index] = null;
+                    swatch.classList.remove('locked');
+                    btn.textContent = '🔓';
+                    btn.title = 'Lock this color';
+                    btn.setAttribute('aria-label', 'Lock this color');
+                } else {
+                    // Lock
+                    lockedColors[index] = color;
+                    swatch.classList.add('locked');
+                    btn.textContent = '🔒';
+                    btn.title = 'Unlock this color';
+                    btn.setAttribute('aria-label', 'Unlock this color');
+                }
             });
         });
     }
@@ -179,7 +211,12 @@
     // Generate and display new palette
     function generate() {
         const harmonyType = harmonySelect.value;
-        const colors = generatePalette(harmonyType);
+        let colors = generatePalette(harmonyType);
+
+        // Preserve locked colors
+        colors = colors.map((color, index) => {
+            return lockedColors[index] !== null ? lockedColors[index] : color;
+        });
 
         // Add current to history (if not first)
         const currentColors = Array.from(paletteEl.querySelectorAll('.color-swatch'))
@@ -196,8 +233,66 @@
         saveHistory();
     }
 
+    // Export functions
+    function getCurrentColors() {
+        return Array.from(paletteEl.querySelectorAll('.color-swatch'))
+            .map(s => s.dataset.color);
+    }
+
+    function exportAsCSS(colors) {
+        return `:root {\n${colors.map((c, i) => `  --color-${i + 1}: ${c};`).join('\n')}\n}`;
+    }
+
+    function exportAsJSON(colors) {
+        return JSON.stringify({ palette: colors }, null, 2);
+    }
+
+    function exportAsTailwind(colors) {
+        const colorNames = ['primary', 'secondary', 'accent', 'muted', 'highlight'];
+        const config = colors.reduce((acc, color, i) => {
+            acc[colorNames[i] || `color${i + 1}`] = color;
+            return acc;
+        }, {});
+        return `// tailwind.config.js\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: ${JSON.stringify(config, null, 8).replace(/"/g, "'")}\n    }\n  }\n}`;
+    }
+
+    function copyExport(format) {
+        const colors = getCurrentColors();
+        let output;
+
+        switch (format) {
+            case 'css':
+                output = exportAsCSS(colors);
+                break;
+            case 'json':
+                output = exportAsJSON(colors);
+                break;
+            case 'tailwind':
+                output = exportAsTailwind(colors);
+                break;
+            default:
+                return;
+        }
+
+        navigator.clipboard.writeText(output).then(() => {
+            // Show feedback - briefly change select text
+            const originalText = exportSelect.options[0].text;
+            exportSelect.options[0].text = 'Copied!';
+            setTimeout(() => {
+                exportSelect.options[0].text = originalText;
+                exportSelect.value = '';
+            }, 1000);
+        });
+    }
+
     // Event listeners
     generateBtn.addEventListener('click', generate);
+
+    exportSelect.addEventListener('change', (e) => {
+        if (e.target.value) {
+            copyExport(e.target.value);
+        }
+    });
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space' && e.target === document.body) {

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found - Lucas Bannister</title>
+    <meta name="description" content="The page you're looking for doesn't exist.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔍</text></svg>">
+    <link rel="stylesheet" href="/style.css?v=3">
+    <style>
+        .error-page {
+            text-align: center;
+            padding: 3em 1em;
+        }
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: var(--text-subtle);
+            margin: 0;
+            line-height: 1;
+        }
+        .error-message {
+            font-size: 1.5rem;
+            color: var(--text-heading);
+            margin: 1em 0;
+        }
+        .error-description {
+            color: var(--text-muted);
+            margin-bottom: 2em;
+        }
+        .error-links {
+            display: flex;
+            gap: 1em;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+    <div class="container">
+        <div class="error-page">
+            <p class="error-code">404</p>
+            <p class="error-message">Page Not Found</p>
+            <p class="error-description">The page you're looking for doesn't exist or has been moved.</p>
+            <div class="error-links">
+                <a href="/" class="btn">Go Home</a>
+                <a href="/demos/" class="btn">View Demos</a>
+                <a href="/photos/" class="btn">View Photos</a>
+            </div>
+        </div>
+    </div>
+    <script src="/theme-toggle.js?v=1"></script>
+</body>
+</html>

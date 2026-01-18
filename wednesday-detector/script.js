@@ -1,10 +1,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     const answerElement = document.getElementById('answer');
     const subtitleElement = document.getElementById('subtitle');
+    const extraFrogsContainer = document.getElementById('extra-frogs');
     const body = document.body;
 
     const today = new Date();
     const isWednesday = today.getDay() === 3;
+
+    // Clear any existing extra frogs
+    extraFrogsContainer.innerHTML = '';
 
     if (isWednesday) {
         body.classList.add('wednesday-mode');
@@ -12,7 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
         subtitleElement.textContent = "my dudes";
 
         // Add extra frogs for celebration
-        const container = document.getElementById('frog-container');
         for (let i = 0; i < 5; i++) {
             setTimeout(() => {
                 const extraFrog = document.createElement('span');
@@ -23,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 extraFrog.style.top = Math.random() * 80 + 10 + '%';
                 extraFrog.style.animation = 'frogDance 0.5s infinite alternate';
                 extraFrog.style.animationDelay = Math.random() * 0.5 + 's';
-                document.body.appendChild(extraFrog);
+                extraFrog.setAttribute('aria-hidden', 'true');
+                extraFrogsContainer.appendChild(extraFrog);
             }, i * 500);
         }
     } else {

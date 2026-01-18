@@ -38,12 +38,9 @@
             border: 1px solid var(--border-color);
             background: var(--bg-primary);
             color: var(--text-primary);
-            width: 200px;
+            max-width: 200px;
+            width: 100%;
             border-radius: 3px;
-        }
-        .location-form input:focus {
-            outline: none;
-            border-color: var(--link-color);
         }
         #error {
             color: #dc322f;
@@ -51,6 +48,7 @@
     </style>
 </head>
 <body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
     <div class="container">
         <nav>
             <a href="/">&larr; Home</a>
@@ -103,6 +101,7 @@
         </footer>
     </div>
 
+    <script src="../../../theme-toggle.js?v=1"></script>
     <script src="weather-haiku.js?v=3"></script>
 </body>
 </html>

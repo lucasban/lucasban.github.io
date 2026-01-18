@@ -58,6 +58,27 @@
         .color-swatch .copied.show {
             opacity: 1;
         }
+        .color-swatch .lock-btn {
+            position: absolute;
+            top: 0.5em;
+            right: 0.5em;
+            background: rgba(255,255,255,0.3);
+            border: none;
+            border-radius: 3px;
+            padding: 0.3em 0.5em;
+            cursor: pointer;
+            font-size: 0.9rem;
+            opacity: 0.5;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .color-swatch .lock-btn:hover {
+            opacity: 1;
+            background: rgba(255,255,255,0.5);
+        }
+        .color-swatch.locked .lock-btn {
+            opacity: 1;
+            background: rgba(255,255,255,0.7);
+        }
         .controls {
             margin: 1.5em 0;
             display: flex;
@@ -109,6 +130,7 @@
     </style>
 </head>
 <body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
     <div class="container">
         <nav>
             <a href="/">&larr; Home</a>
@@ -133,6 +155,12 @@
                 <option value="cool">Cool</option>
                 <option value="pastel">Pastel</option>
             </select>
+            <select class="harmony-select" id="export-select">
+                <option value="">Export as...</option>
+                <option value="css">CSS Variables</option>
+                <option value="json">JSON</option>
+                <option value="tailwind">Tailwind Config</option>
+            </select>
         </div>
 
         <div class="palette" id="palette"></div>
@@ -154,6 +182,7 @@
         </footer>
     </div>
 
+    <script src="../../theme-toggle.js?v=1"></script>
     <script src="palette.js?v=3"></script>
 </body>
 </html>

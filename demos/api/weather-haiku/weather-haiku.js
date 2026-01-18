@@ -97,9 +97,33 @@
         return options[Math.floor(Math.random() * options.length)];
     }
 
+    const FETCH_TIMEOUT = 10000; // 10 seconds
+
+    async function fetchWithTimeout(url, timeout = FETCH_TIMEOUT) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`Request failed (${response.status})`);
+            }
+
+            return response;
+        } catch (error) {
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                throw new Error('Request timed out. Please try again.');
+            }
+            throw error;
+        }
+    }
+
     async function geocodeCity(city) {
         const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url);
         const data = await response.json();
 
         if (!data.results || data.results.length === 0) {
@@ -116,7 +140,7 @@
 
     async function fetchWeather(lat, lon) {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,wind_speed_10m`;
-        const response = await fetch(url);
+        const response = await fetchWithTimeout(url);
         return await response.json();
     }
 

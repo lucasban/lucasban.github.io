@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentHour = today.getHours();
     const isSunday = currentDay === 0;
 
+    // Track intervals for cleanup
+    const activeIntervals = [];
+
     const morningVibes = [
         "Pancakes. Coffee. Infinite possibility.",
         "The world is quiet. Savor it.",
@@ -81,15 +84,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         updateCountdown();
-        setInterval(updateCountdown, 60000);
+        activeIntervals.push(setInterval(updateCountdown, 60000));
 
         // Evening gets progressively darker
         if (timeOfDay === "evening") {
             let darkness = 0;
-            setInterval(() => {
+            activeIntervals.push(setInterval(() => {
                 darkness = Math.min(darkness + 0.01, 0.3);
                 document.body.style.filter = `brightness(${1 - darkness})`;
-            }, 5000);
+            }, 5000));
         }
 
     } else {
@@ -109,4 +112,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         countdownElement.style.display = 'none';
     }
+
+    // Pause intervals when tab is hidden to save resources
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            activeIntervals.forEach(id => clearInterval(id));
+            activeIntervals.length = 0;
+        }
+    });
 });

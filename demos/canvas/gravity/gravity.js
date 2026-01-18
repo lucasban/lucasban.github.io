@@ -83,26 +83,40 @@
             this.x += this.vx;
             this.y += this.vy;
 
-            // Store trail
+            // Store trail (reduce length when many bodies for performance)
             if (showTrails) {
                 this.trail.push({ x: this.x, y: this.y });
-                if (this.trail.length > this.maxTrail) {
+                const dynamicMaxTrail = bodies.length > 10 ? 30 : bodies.length > 5 ? 60 : this.maxTrail;
+                if (this.trail.length > dynamicMaxTrail) {
                     this.trail.shift();
                 }
             }
         }
 
         draw() {
-            // Draw trail with gradient fade
+            // Draw trail - optimized with batched strokes
             if (showTrails && this.trail.length > 1) {
-                for (let i = 1; i < this.trail.length; i++) {
-                    const alpha = (i / this.trail.length) * 0.4;
+                // Batch trail drawing with fewer segments when many bodies exist
+                const step = bodies.length > 10 ? 3 : bodies.length > 5 ? 2 : 1;
+
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = this.radius * 0.5;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Draw trail in batches with progressively increasing alpha
+                const batchSize = Math.ceil(this.trail.length / 4);
+                for (let batch = 0; batch < 4; batch++) {
+                    const startIdx = batch * batchSize;
+                    const endIdx = Math.min((batch + 1) * batchSize, this.trail.length);
+                    if (startIdx >= this.trail.length) break;
+
+                    ctx.globalAlpha = ((batch + 1) / 4) * 0.4;
                     ctx.beginPath();
-                    ctx.moveTo(this.trail[i - 1].x, this.trail[i - 1].y);
-                    ctx.lineTo(this.trail[i].x, this.trail[i].y);
-                    ctx.strokeStyle = this.color;
-                    ctx.globalAlpha = alpha;
-                    ctx.lineWidth = this.radius * 0.5;
+                    ctx.moveTo(this.trail[startIdx].x, this.trail[startIdx].y);
+                    for (let i = startIdx + step; i < endIdx; i += step) {
+                        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    }
                     ctx.stroke();
                 }
                 ctx.globalAlpha = 1;

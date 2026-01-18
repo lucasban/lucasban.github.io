@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
     <div class="container">
         <header>
             <h1>Lucas Bannister</h1>
@@ -26,28 +27,38 @@
         <section>
             <h2>Explore</h2>
             <ul>
-                <li><a href="/photos/">Photos</a> &mdash; A collection of images</li>
-                <li><a href="/demos/">Demos</a> &mdash; Interactive experiments and visualizations</li>
+                <li><a href="/photos/">Photos</a> &mdash; A collection of images from Bluesky</li>
+                <li><a href="/demos/">Demos</a> &mdash; Interactive experiments and visualizations
+                    <ul>
+                        <li><a href="/demos/canvas/gravity/">Gravity</a> &mdash; Orbital simulator</li>
+                        <li><a href="/demos/canvas/game-of-life/">Game of Life</a> &mdash; Cellular automaton</li>
+                        <li><a href="/demos/api/weather-haiku/">Weather Haiku</a> &mdash; Poetry from weather</li>
+                        <li><a href="/demos/typing-test/">Typing Test</a> &mdash; Speed challenge</li>
+                        <li><a href="/demos/palette/">Color Palette</a> &mdash; Scheme generator</li>
+                        <li><a href="/demos/cost-per-wear/">Cost Per Wear</a> &mdash; Wardrobe calculator</li>
+                    </ul>
+                </li>
             </ul>
         </section>
 
         <section>
             <h2>Day Detectors</h2>
-            <p>A collection of single-purpose utilities that tell you if it's a specific day of the week. Each has its own personality.</p>
-            <ul>
-                <li><a href="/sunday-detector/">Sunday</a> &mdash; The Sunday Scaries</li>
-                <li><a href="/monday-detector/">Monday</a> &mdash; Existential glitch</li>
-                <li><a href="/tuesday-detector/">Tuesday</a> &mdash; Otter friend</li>
-                <li><a href="/wednesday-detector/">Wednesday</a> &mdash; It is Wednesday my dudes</li>
-                <li><a href="/thursday-detector/">Thursday</a> &mdash; The countdown</li>
-                <li><a href="/friday-detector/">Friday</a> &mdash; Premium uncertainty</li>
-                <li><a href="/saturday-detector/">Saturday</a> &mdash; Party mode</li>
-            </ul>
+            <p>Single-purpose utilities for each day of the week, each with its own personality.</p>
+            <p>
+                <a href="/sunday-detector/">Sunday</a> ·
+                <a href="/monday-detector/">Monday</a> ·
+                <a href="/tuesday-detector/">Tuesday</a> ·
+                <a href="/wednesday-detector/">Wednesday</a> ·
+                <a href="/thursday-detector/">Thursday</a> ·
+                <a href="/friday-detector/">Friday</a> ·
+                <a href="/saturday-detector/">Saturday</a>
+            </p>
         </section>
 
         <footer>
             <p>Built with plain HTML, CSS, and JS. No frameworks required.</p>
         </footer>
     </div>
+    <script src="theme-toggle.js?v=1"></script>
 </body>
 </html>

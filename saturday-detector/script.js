@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const currentDay = today.getDay();
     const isSaturday = currentDay === 6;
 
+    // Track interval for cleanup
+    let confettiInterval = null;
+
     const partyReadiness = {
         0: 16,  // Sunday - party hangover
         1: 0,   // Monday - no party energy
@@ -36,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
         answerElement.innerHTML = "YES! IT'S SATURDAY! 🎉🪩🎊";
 
         // Continuous confetti
-        setInterval(createConfetti, 100);
+        confettiInterval = setInterval(createConfetti, 100);
 
         // Initial burst
         for (let i = 0; i < 50; i++) {
@@ -57,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Animate party meter
     const meterPercent = document.getElementById('meter-percent');
+    const partyMeter = document.getElementById('party-meter');
     const targetPercent = partyReadiness[currentDay];
 
     setTimeout(() => {
@@ -70,7 +74,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 current = targetPercent;
                 clearInterval(interval);
             }
-            meterPercent.textContent = Math.round(current) + '%';
+            const roundedValue = Math.round(current);
+            meterPercent.textContent = roundedValue + '%';
+            partyMeter.setAttribute('aria-valuenow', roundedValue);
         }, 20);
     }, 300);
+
+    // Pause confetti when tab is hidden to save resources
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && confettiInterval) {
+            clearInterval(confettiInterval);
+            confettiInterval = null;
+        } else if (!document.hidden && isSaturday && !confettiInterval) {
+            confettiInterval = setInterval(createConfetti, 100);
+        }
+    });
 });

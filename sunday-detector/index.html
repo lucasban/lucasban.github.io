@@ -14,12 +14,12 @@
     <a href="/" class="home-link">&larr; Home</a>
     <div class="container">
         <h1>Is it Sunday?</h1>
-        <div id="answer"></div>
-        <div id="vibe"></div>
+        <div id="answer" role="status" aria-live="polite"></div>
+        <div id="vibe" aria-hidden="true"></div>
         <div id="clock-container">
-            <div id="countdown"></div>
+            <div id="countdown" role="timer" aria-label="Time until Monday"></div>
         </div>
-        <div id="shadow" class="hidden">Monday approaches...</div>
+        <div id="shadow" class="hidden" aria-hidden="true">Monday approaches...</div>
     </div>
     <script src="script.js?v=3"></script>
 </body>

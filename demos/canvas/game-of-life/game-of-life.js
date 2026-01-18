@@ -30,6 +30,16 @@
     let fps = 10;
     let lastFrame = 0;
 
+    // Get colors from CSS variables for dark mode support
+    function getColors() {
+        const style = getComputedStyle(document.documentElement);
+        return {
+            background: style.getPropertyValue('--bg-primary').trim() || '#fdf6e3',
+            grid: style.getPropertyValue('--border-color').trim() || '#93a1a1',
+            cell: style.getPropertyValue('--text-heading').trim() || '#586e75'
+        };
+    }
+
     function createGrid(r = rows, c = cols) {
         return Array(r).fill(null).map(() => Array(c).fill(0));
     }
@@ -65,11 +75,14 @@
     }
 
     function draw() {
-        ctx.fillStyle = '#fffff8';
+        const colors = getColors();
+
+        ctx.fillStyle = colors.background;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Draw grid lines
-        ctx.strokeStyle = '#ddd';
+        ctx.strokeStyle = colors.grid;
+        ctx.globalAlpha = 0.3;
         ctx.lineWidth = 0.5;
         for (let x = 0; x <= cols; x++) {
             ctx.beginPath();
@@ -83,9 +96,10 @@
             ctx.lineTo(canvas.width, y * cellSize);
             ctx.stroke();
         }
+        ctx.globalAlpha = 1;
 
         // Draw cells
-        ctx.fillStyle = '#1a1a1a';
+        ctx.fillStyle = colors.cell;
         for (let y = 0; y < rows; y++) {
             for (let x = 0; x < cols; x++) {
                 if (grid[y][x] === 1) {
@@ -281,6 +295,9 @@
     }
 
     window.addEventListener('resize', resizeCanvas);
+
+    // Redraw when color scheme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
 
     // Initialize
     resizeCanvas();

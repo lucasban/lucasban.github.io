@@ -5,15 +5,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const today = new Date();
-    const dayName = daysOfWeek[today.getDay()];
+    const currentDay = today.getDay();
+    const isTuesday = currentDay === 2;
 
-    if (dayName === "Tuesday") {
+    if (isTuesday) {
         answerElement.textContent = "Yes, it's Tuesday!";
         otterImage.querySelector('img').src = "happy_otter.svg";
         otterImage.querySelector('img').alt = "Happy Otter";
         container.classList.add('is-tuesday');
     } else {
-        answerElement.textContent = `No, it's ${dayName}.`;
+        answerElement.textContent = `No, it's ${daysOfWeek[currentDay]}.`;
         otterImage.querySelector('img').src = "sad_otter.svg";
         otterImage.querySelector('img').alt = "Sad Otter";
         container.classList.add('not-tuesday');

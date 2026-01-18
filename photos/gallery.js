@@ -2,6 +2,7 @@
 (function() {
     const BLUESKY_HANDLE = 'lucasban.com';
     const API_URL = `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${BLUESKY_HANDLE}&limit=100`;
+    const FETCH_TIMEOUT = 15000; // 15 seconds
 
     const gallery = document.getElementById('gallery');
     const lightbox = document.getElementById('lightbox');
@@ -18,11 +19,15 @@
 
     // Fetch photos from Bluesky
     async function fetchBlueskyPhotos() {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+
         try {
             if (loadingMessage) loadingMessage.style.display = 'block';
             if (emptyMessage) emptyMessage.style.display = 'none';
 
-            const response = await fetch(API_URL);
+            const response = await fetch(API_URL, { signal: controller.signal });
+            clearTimeout(timeoutId);
             if (!response.ok) throw new Error('Failed to fetch');
 
             const data = await response.json();
@@ -64,7 +69,12 @@
 
             return photos;
         } catch (error) {
-            console.error('Error fetching Bluesky photos:', error);
+            clearTimeout(timeoutId);
+            if (error.name === 'AbortError') {
+                console.error('Request timed out while fetching Bluesky photos');
+            } else {
+                console.error('Error fetching Bluesky photos:', error);
+            }
             return [];
         }
     }
