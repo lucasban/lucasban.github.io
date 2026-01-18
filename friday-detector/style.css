@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
 
 :root {
-    /* MCM palette for Friday's retro-premium satire */
+    /* Light mode - MCM palette for Friday's retro-premium satire */
+    color-scheme: light;
     --bg-primary: #f5ede4;
     --content-bg: #faf6f1;
     --content-border: #9a4a35;
@@ -14,8 +15,10 @@
     --link-color: #1a7a72;
 }
 
+/* Dark mode - via OS preference or explicit toggle */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --bg-primary: #2a2521;
         --content-bg: #1e1b18;
         --content-border: #d4856e;
@@ -27,6 +30,21 @@
         --button-text: #1e1b18;
         --link-color: #3ab5aa;
     }
+}
+
+/* Explicit dark mode override */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg-primary: #2a2521;
+    --content-bg: #1e1b18;
+    --content-border: #d4856e;
+    --content-shadow: #12100e;
+    --text-primary: #e8e2db;
+    --ad-bg: #1a2a28;
+    --button-bg: #d4856e;
+    --button-hover: #b5725a;
+    --button-text: #1e1b18;
+    --link-color: #3ab5aa;
 }
 
 body {
@@ -184,4 +202,41 @@ body {
         animation: none;
         display: none;
     }
+}
+
+/* Theme toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: inline-flex;
+    border: 1.5px solid var(--content-border);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1000;
+    background: var(--ad-bg);
+}
+
+.theme-toggle button {
+    padding: 0.5em 0.7em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background 0.2s;
+    color: var(--text-primary);
+}
+
+.theme-toggle button:hover {
+    background: var(--content-bg);
+}
+
+.theme-toggle button[aria-pressed="true"] {
+    background: var(--content-bg);
+}
+
+.theme-toggle button:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
 }

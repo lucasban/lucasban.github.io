@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
 
 :root {
-    /* MCM warm palette for Thursday */
+    /* Light mode - MCM warm palette for Thursday */
+    color-scheme: light;
     --bg-primary: #f5ede4;
     --text-primary: #3d3833;
     --heading-color: #c9942c;
@@ -14,8 +15,10 @@
     --border-color: #d4ccc3;
 }
 
+/* Dark mode - via OS preference or explicit toggle */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --bg-primary: #2a2521;
         --text-primary: #e8e2db;
         --heading-color: #e0ac3e;
@@ -27,6 +30,21 @@
         --link-color: #3ab5aa;
         --border-color: #4a433a;
     }
+}
+
+/* Explicit dark mode override */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg-primary: #2a2521;
+    --text-primary: #e8e2db;
+    --heading-color: #e0ac3e;
+    --button-bg: #3ab5aa;
+    --button-hover: #2a9590;
+    --result-bg: #1e1b18;
+    --result-text: #e8e2db;
+    --note-color: #d4856e;
+    --link-color: #3ab5aa;
+    --border-color: #4a433a;
 }
 
 body, html {
@@ -172,4 +190,41 @@ button:focus-visible {
     #result {
         animation: none;
     }
+}
+
+/* Theme toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: inline-flex;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1000;
+    background: var(--result-bg);
+}
+
+.theme-toggle button {
+    padding: 0.5em 0.7em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background 0.2s;
+    color: var(--text-primary);
+}
+
+.theme-toggle button:hover {
+    background: var(--bg-primary);
+}
+
+.theme-toggle button[aria-pressed="true"] {
+    background: var(--bg-primary);
+}
+
+.theme-toggle button:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
 }

@@ -15,9 +15,11 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 ## Architecture
 
 **Design System** (`style.css`):
-- Solarized Light/Dark theme with CSS custom properties
+- Mid-Century Modern "Sunlit Den" (light) / "Evening Greenhouse" (dark) theme
 - Dark mode: automatic via `prefers-color-scheme`, plus manual toggle via `data-theme` attribute
-- Colors: sepia bg (`#fdf6e3`), muted text (`#657b83`), blue links (`#268bd2`)
+- Light colors: warm beige bg (`#f0e9df`), dark brown text (`#3d3632`), deep green links (`#2d6a4f`)
+- Dark colors: deep forest bg (`#1a1f1c`), warm white text (`#e8e2db`), bright green links (`#52b788`)
+- Greenery palette: sage, wood tones, and rust accents
 - Layout: 750px max-width container
 
 **Day Detectors** (`*-detector/`):
@@ -38,4 +40,5 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 
 - All pages include inline HTML navigation (no shared template system)
 - Theme toggle component: 3-button (☀️/🌙/💻) with localStorage persistence
-- Typography: Helvetica for text, Courier for code
+- Typography: DM Sans for body text, Playfair Display for headings, JetBrains Mono for code
+- Google Fonts loaded on each page

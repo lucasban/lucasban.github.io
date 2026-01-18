@@ -10,8 +10,12 @@
     const trailsToggle = document.getElementById('trails-toggle');
     const bodyCountDisplay = document.getElementById('body-count');
 
-    // Detect dark mode
+    // Detect dark mode - check both explicit theme and system preference
     function isDarkMode() {
+        const theme = document.documentElement.getAttribute('data-theme');
+        if (theme === 'dark') return true;
+        if (theme === 'light') return false;
+        // Auto mode - use system preference
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
 
@@ -19,20 +23,29 @@
     function getColors() {
         const dark = isDarkMode();
         return {
-            bg: dark ? '#002b36' : '#fdf6e3',
-            text: dark ? '#839496' : '#657b83',
-            bodies: [
-                '#dc322f', // red
-                '#268bd2', // blue
-                '#859900', // green
-                '#d33682', // magenta
-                '#2aa198', // cyan
-                '#cb4b16', // orange
-                '#6c71c4', // violet
-                '#b58900', // yellow
+            bg: dark ? '#1a1f1c' : '#f0e9df',
+            text: dark ? '#e8e2db' : '#3d3632',
+            bodies: dark ? [
+                '#d4856e', // rust
+                '#52b788', // bright green
+                '#95d5b2', // light green
+                '#e0ac3e', // gold
+                '#3ab5aa', // teal
+                '#b7e4c7', // pale green
+                '#d4856e', // rust (repeat)
+                '#e0ac3e', // gold (repeat)
+            ] : [
+                '#8a4030', // rust
+                '#2d6a4f', // deep green
+                '#3d8b66', // mid green
+                '#b8863a', // gold
+                '#1a7a72', // teal
+                '#b8d4c4', // pale green
+                '#9a4a35', // rust variation
+                '#c9942c', // gold variation
             ],
-            sun: '#b58900',
-            line: dark ? 'rgba(131, 148, 150, 0.5)' : 'rgba(101, 123, 131, 0.5)'
+            sun: dark ? '#e0ac3e' : '#b8863a',
+            line: dark ? 'rgba(232, 226, 219, 0.3)' : 'rgba(61, 54, 50, 0.3)'
         };
     }
 
@@ -322,6 +335,11 @@
 
     // Update colors when theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        colors = getColors();
+    });
+
+    // Update colors when theme toggle is used
+    window.addEventListener('themechange', () => {
         colors = getColors();
     });
 

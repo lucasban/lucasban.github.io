@@ -8,9 +8,15 @@
 <meta property="og:title" content="Is It Friday?">
 <meta property="og:description" content="Find out if it's Friday - premium uncertainty included.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-<link rel="stylesheet" href="style.css?v=5">
+<script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
+<div class="theme-toggle" role="radiogroup" aria-label="Color theme">
+    <button data-theme="light" aria-pressed="false">☀️</button>
+    <button data-theme="dark" aria-pressed="false">🌙</button>
+    <button data-theme="auto" aria-pressed="true">💻</button>
+</div>
 <a href="/" class="home-link">&larr; Home</a>
 <div id="confetti-container"></div>
 <div id="content">
@@ -22,5 +28,6 @@
     </div>
 </div>
 <script src="script.js?v=3"></script>
+<script src="../theme-toggle.js?v=3"></script>
 </body>
 </html>

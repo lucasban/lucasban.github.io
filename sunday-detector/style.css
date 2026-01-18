@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500&display=swap');
 
 :root {
-    /* MCM-inspired warm tones for Sunday */
+    /* Light mode - MCM-inspired warm tones for Sunday */
+    color-scheme: light;
     --morning-bg-start: #e8f4f2;
     --morning-bg-end: #f5ede4;
     --afternoon-bg-start: #f5ede4;
@@ -23,8 +24,10 @@
     --link-color: #1a7a72;
 }
 
+/* Dark mode - via OS preference or explicit toggle */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --morning-bg-start: #1a2a28;
         --morning-bg-end: #2a2521;
         --afternoon-bg-start: #2a2521;
@@ -45,6 +48,30 @@
         --shadow-text: #d4856e;
         --link-color: #3ab5aa;
     }
+}
+
+/* Explicit dark mode override */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --morning-bg-start: #1a2a28;
+    --morning-bg-end: #2a2521;
+    --afternoon-bg-start: #2a2521;
+    --afternoon-bg-end: #1e1b18;
+    --evening-bg-start: #1a1815;
+    --evening-bg-end: #12100e;
+    --not-sunday-bg-start: #2a2521;
+    --not-sunday-bg-end: #1e1b18;
+    --heading-color: #e8e2db;
+    --answer-color: #c5bdb3;
+    --vibe-color: #9a928a;
+    --countdown-bg: rgba(42, 37, 33, 0.7);
+    --countdown-text: #9a928a;
+    --evening-heading: #e8e2db;
+    --evening-vibe: #9a928a;
+    --evening-countdown-bg: rgba(18, 16, 14, 0.6);
+    --evening-countdown-text: #c5bdb3;
+    --shadow-text: #d4856e;
+    --link-color: #3ab5aa;
 }
 
 body {
@@ -181,4 +208,41 @@ body.sunday-evening #countdown {
 /* Not Sunday - either relief or anticipation */
 body.not-sunday {
     background: linear-gradient(180deg, var(--not-sunday-bg-start) 0%, var(--not-sunday-bg-end) 100%);
+}
+
+/* Theme toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: inline-flex;
+    border: 1.5px solid rgba(26, 122, 114, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1000;
+    background: var(--countdown-bg);
+}
+
+.theme-toggle button {
+    padding: 0.5em 0.7em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background 0.2s;
+    color: var(--heading-color);
+}
+
+.theme-toggle button:hover {
+    background: rgba(26, 122, 114, 0.1);
+}
+
+.theme-toggle button[aria-pressed="true"] {
+    background: rgba(26, 122, 114, 0.15);
+}
+
+.theme-toggle button:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
 }

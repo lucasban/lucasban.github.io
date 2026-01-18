@@ -36,6 +36,8 @@
                 document.documentElement.setAttribute('data-theme', theme);
             }
             updateButtons();
+            // Dispatch custom event for theme change
+            window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
         }
 
         // Add click handlers to each button
