@@ -115,43 +115,11 @@ body.peaceful-mode .container {
     border-color: var(--leaf-deep);
 }
 
-/* === Overgrown decorations === */
-body.monday-mode .container::before {
-    content: "🌿";
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    font-size: 1.2rem;
-    opacity: 0.4;
-    animation: leafSway 6s ease-in-out infinite;
-}
-
-body.monday-mode .container::after {
-    content: "🍃";
-    position: absolute;
-    bottom: 10px;
-    right: 15px;
-    font-size: 1rem;
-    opacity: 0.35;
-    animation: leafSway 5s ease-in-out infinite reverse;
-}
-
-.container {
-    position: relative;
-}
-
-@keyframes leafSway {
-    0%, 100% { transform: rotate(-5deg); }
-    50% { transform: rotate(5deg); }
-}
-
 /* === Reduced Motion === */
 @media (prefers-reduced-motion: reduce) {
     body.monday-mode,
     body.monday-mode h1#title,
-    body.monday-mode #answer,
-    body.monday-mode .container::before,
-    body.monday-mode .container::after {
+    body.monday-mode #answer {
         animation: none;
     }
 }

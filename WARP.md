@@ -52,6 +52,10 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 
 ## Recent Activity (2026-01-18)
 
+- **Easter Eggs**:
+    - **Interactive Decoration**: Added clickable plant emoji (🌿) to all 7 day detectors with bounce animation, plant pun tooltips, emoji evolution stages (🌱→🌿→🪴→🌳→🌻), and floating emoji particles.
+- **Bug Fixes**:
+    - **Confetti Animation**: Added missing `.confetti` base CSS and `@keyframes confettiFall` animation to `shared/detector-base.css`. Fixed Thursday/Friday/Saturday detector confetti.
 - **Feature Expansion**:
     - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
     - **Digital Plant (v1)**: Created persistent fractal tree demo with localStorage health/age tracking.

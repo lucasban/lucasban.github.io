@@ -73,16 +73,6 @@
     filter: drop-shadow(0 4px 8px var(--shadow-color)) saturate(0.8);
 }
 
-/* === Lily Pad Decoration === */
-.container::before {
-    content: "🪷";
-    position: absolute;
-    bottom: 15px;
-    right: 20px;
-    font-size: 1.2rem;
-    opacity: 0.4;
-}
-
 /* === Reduced Motion === */
 @media (prefers-reduced-motion: reduce) {
     #otter-image img.high-five {
@@ -95,9 +85,4 @@
     #otter-image img:hover {
         transform: none;
     }
-}
-
-/* === Make container relative for decorations === */
-.container {
-    position: relative;
 }
