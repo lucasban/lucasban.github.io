@@ -74,10 +74,13 @@
     let time = 0;
     let fireflies = []; // Particle system for night
     let snowflakes = []; // Particle system for winter
+    let sparkles = []; // Sparkles for healthy plants
+    let hearts = []; // Hearts when watering
     let critterEventTimeout = null;
     let activeCritterEvent = null;
     let celebrationParticles = [];
     let milestoneMessage = null;
+    let blinkTimer = 0;
 
     // --- Seasonal Logic ---
 
@@ -175,6 +178,19 @@
         state.lastWaterDate = today;
         state.lastWatered = Date.now();
         saveState();
+
+        // Spawn hearts
+        for (let i = 0; i < 8; i++) {
+            hearts.push({
+                x: canvas.width / 2 + (Math.random() - 0.5) * 60,
+                y: canvas.height - 100,
+                vx: (Math.random() - 0.5) * 2,
+                vy: -2 - Math.random() * 2,
+                size: 10 + Math.random() * 10,
+                life: 60 + Math.random() * 30,
+                rotation: (Math.random() - 0.5) * 0.5
+            });
+        }
 
         // Visual feedback
         waterBtn.textContent = "💧 Watered!";
@@ -274,13 +290,15 @@
             }
         }
 
-        // Update Mood Message
+        // Update Mood Message (cuter!)
         let mood = "";
-        if (health <= 0) mood = `${state.name} has withered...`;
-        else if (health < 30) mood = `${state.name} is looking very thirsty.`;
-        else if (health < 60) mood = `${state.name} needs some water.`;
-        else if (health < 90) mood = `${state.name} is doing okay.`;
-        else mood = `${state.name} is feeling sunny and happy!`;
+        if (health <= 0) mood = `${state.name} has gone to plant heaven... 🥀`;
+        else if (health < 20) mood = `${state.name} is SO thirsty!! 😵`;
+        else if (health < 40) mood = `*${state.name} looks at you with big eyes* 🥺💧`;
+        else if (health < 60) mood = `${state.name} could use a little drink~ 💭`;
+        else if (health < 80) mood = `${state.name} is doing great! ✨`;
+        else if (health < 95) mood = `${state.name} is vibing~ 🌸`;
+        else mood = `${state.name} loves you so much!! 💕`;
         moodMessageEl.textContent = mood;
 
         // Color code health
@@ -682,6 +700,256 @@
         ctx.fill();
     }
 
+    function drawPlantFace(x, y, health) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const isBlinking = blinkTimer > 0 && blinkTimer < 8;
+        const isSad = health < 40;
+        const isDead = health <= 0;
+
+        // Face background (slightly lighter wood)
+        ctx.fillStyle = isDead ? '#5c524a' : '#4a4038';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 18, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Blush (when healthy)
+        if (health > 70 && !isDead) {
+            ctx.fillStyle = 'rgba(255, 150, 150, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(-12, 4, 5, 3, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, 4, 5, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Eyes
+        ctx.fillStyle = isDead ? '#888' : '#fff';
+        if (isBlinking && !isDead) {
+            // Blinking - draw lines
+            ctx.strokeStyle = '#2a2520';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-8, -2);
+            ctx.lineTo(-4, -2);
+            ctx.moveTo(4, -2);
+            ctx.lineTo(8, -2);
+            ctx.stroke();
+        } else if (isDead) {
+            // X eyes
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-8, -5); ctx.lineTo(-4, 1);
+            ctx.moveTo(-4, -5); ctx.lineTo(-8, 1);
+            ctx.moveTo(4, -5); ctx.lineTo(8, 1);
+            ctx.moveTo(8, -5); ctx.lineTo(4, 1);
+            ctx.stroke();
+        } else {
+            // Normal eyes
+            ctx.beginPath();
+            ctx.ellipse(-6, -2, 4, isSad ? 3 : 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(6, -2, 4, isSad ? 3 : 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupils
+            ctx.fillStyle = '#2a2520';
+            const pupilOffset = Math.sin(time * 0.001) * 1; // Gentle looking around
+            ctx.beginPath();
+            ctx.arc(-6 + pupilOffset, -2, 2, 0, Math.PI * 2);
+            ctx.arc(6 + pupilOffset, -2, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eye shine
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(-7, -3, 1, 0, Math.PI * 2);
+            ctx.arc(5, -3, 1, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Mouth
+        ctx.strokeStyle = isDead ? '#666' : '#2a2520';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        if (isDead) {
+            // Wavy dead mouth
+            ctx.moveTo(-5, 6);
+            ctx.lineTo(-2, 4);
+            ctx.lineTo(2, 6);
+            ctx.lineTo(5, 4);
+        } else if (isSad) {
+            // Sad mouth
+            ctx.arc(0, 10, 5, Math.PI * 1.2, Math.PI * 1.8);
+        } else if (health > 90) {
+            // Big happy smile
+            ctx.arc(0, 2, 7, 0.1 * Math.PI, 0.9 * Math.PI);
+        } else {
+            // Small smile
+            ctx.arc(0, 3, 5, 0.15 * Math.PI, 0.85 * Math.PI);
+        }
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawSunOrMoon(hour) {
+        const isDay = hour >= 6 && hour < 18;
+        const x = 50;
+        const y = 50;
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        if (isDay) {
+            // Sun rays
+            ctx.strokeStyle = 'rgba(255, 220, 100, 0.5)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2 + time * 0.0005;
+                const innerR = 22;
+                const outerR = 30 + Math.sin(time * 0.003 + i) * 3;
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(angle) * innerR, Math.sin(angle) * innerR);
+                ctx.lineTo(Math.cos(angle) * outerR, Math.sin(angle) * outerR);
+                ctx.stroke();
+            }
+
+            // Sun body
+            ctx.fillStyle = '#ffd93d';
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Happy face
+            ctx.fillStyle = '#d4a012';
+            ctx.beginPath();
+            ctx.arc(-6, -3, 2, 0, Math.PI * 2);
+            ctx.arc(6, -3, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#d4a012';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 2, 8, 0.1 * Math.PI, 0.9 * Math.PI);
+            ctx.stroke();
+        } else {
+            // Moon
+            ctx.fillStyle = '#f5f5dc';
+            ctx.beginPath();
+            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Moon shadow (crescent effect)
+            ctx.fillStyle = getSeason() === 'winter' ? '#d8dce0' : '#242a26';
+            ctx.beginPath();
+            ctx.arc(6, -2, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sleepy face
+            ctx.fillStyle = '#c0c0a0';
+            // Closed eyes (sleeping)
+            ctx.strokeStyle = '#a0a080';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(-5, -2, 3, 0, Math.PI);
+            ctx.stroke();
+
+            // Sleepy mouth
+            ctx.beginPath();
+            ctx.arc(0, 5, 3, 0, Math.PI);
+            ctx.stroke();
+
+            // Zzz
+            ctx.font = '10px sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            const zzOffset = Math.sin(time * 0.002) * 3;
+            ctx.fillText('z', 20, -5 + zzOffset);
+            ctx.fillText('z', 26, -12 + zzOffset);
+            ctx.fillText('Z', 33, -20 + zzOffset);
+        }
+
+        ctx.restore();
+    }
+
+    function updateAndRenderHearts() {
+        for (let i = hearts.length - 1; i >= 0; i--) {
+            const h = hearts[i];
+            h.x += h.vx;
+            h.y += h.vy;
+            h.vy += 0.05; // Slight gravity
+            h.life--;
+            h.rotation += 0.02;
+
+            if (h.life <= 0) {
+                hearts.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.translate(h.x, h.y);
+            ctx.rotate(h.rotation);
+            ctx.globalAlpha = Math.min(1, h.life / 20);
+
+            // Draw heart
+            ctx.fillStyle = '#ff6b8a';
+            ctx.beginPath();
+            const s = h.size / 10;
+            ctx.moveTo(0, s * 3);
+            ctx.bezierCurveTo(-s * 5, -s * 2, -s * 3, -s * 5, 0, -s * 2);
+            ctx.bezierCurveTo(s * 3, -s * 5, s * 5, -s * 2, 0, s * 3);
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
+    function updateAndRenderSparkles() {
+        const health = getHealth();
+
+        // Spawn sparkles occasionally for healthy plants
+        if (health > 80 && Math.random() < 0.03) {
+            const stage = getGrowthStage();
+            sparkles.push({
+                x: canvas.width / 2 + (Math.random() - 0.5) * (50 + stage * 15),
+                y: canvas.height - 80 - Math.random() * (stage * 20),
+                size: 3 + Math.random() * 4,
+                life: 30 + Math.random() * 20,
+                twinkle: Math.random() * Math.PI * 2
+            });
+        }
+
+        for (let i = sparkles.length - 1; i >= 0; i--) {
+            const s = sparkles[i];
+            s.life--;
+            s.twinkle += 0.3;
+
+            if (s.life <= 0) {
+                sparkles.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.translate(s.x, s.y);
+            ctx.globalAlpha = Math.min(1, s.life / 15) * (0.5 + Math.sin(s.twinkle) * 0.5);
+
+            // Draw 4-point star
+            ctx.fillStyle = '#fff8b8';
+            ctx.beginPath();
+            for (let j = 0; j < 4; j++) {
+                const angle = (j / 4) * Math.PI * 2 - Math.PI / 4;
+                const r = j % 2 === 0 ? s.size : s.size * 0.3;
+                if (j === 0) ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r);
+                else ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
     function getLeafColor(health) {
         const colors = getSeasonalColors();
         if (health <= 0) return '#8a4030'; // Dead brown
@@ -737,6 +1005,13 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         time += 16;
 
+        // Blink timer (random blinks)
+        if (blinkTimer > 0) {
+            blinkTimer--;
+        } else if (Math.random() < 0.005) {
+            blinkTimer = 15; // Start a blink
+        }
+
         // Sky Gradient (Day/Night cycle with seasonal colors)
         const hour = new Date().getHours();
         const colors = getSeasonalColors();
@@ -754,6 +1029,9 @@
 
         ctx.fillStyle = skyGradient;
         ctx.fillRect(0,0, canvas.width, canvas.height);
+
+        // Cute sun or moon
+        drawSunOrMoon(hour);
 
         renderFireflies(hour);
         renderSnowflakes();
@@ -773,6 +1051,14 @@
         const stage = getGrowthStage();
 
         drawTree(startX, startY, baseLen, 0, 12, stage);
+
+        // Cute face on trunk
+        const health = getHealth();
+        const faceY = startY - 60 - (stage * 3); // Move up as plant grows
+        drawPlantFace(startX, faceY, health);
+
+        // Sparkles around healthy plants
+        updateAndRenderSparkles();
 
         if (zoomEffect) {
             ctx.restore();
@@ -802,6 +1088,9 @@
         // Update and render interactive elements
         updateCritterEvent();
         renderCritterEvent();
+
+        // Hearts from watering
+        updateAndRenderHearts();
 
         updateCelebrationParticles();
         renderCelebrationParticles();
