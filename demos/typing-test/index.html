@@ -14,6 +14,24 @@
     <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
     <link rel="stylesheet" href="../../style.css?v=8">
     <style>
+        /* Typing test specific colors */
+        :root {
+            --typing-correct: #2d6a4f;
+            --typing-incorrect: #8a4030;
+            --typing-success-bg: #2d6a4f;
+            --typing-success-text: #f0e9df;
+            --typing-pb-bg: #b8863a;
+        }
+        :root[data-theme="dark"],
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --typing-correct: #52b788;
+                --typing-incorrect: #d4856e;
+                --typing-success-bg: #3d8b66;
+                --typing-success-text: #e8e2db;
+                --typing-pb-bg: #e0ac3e;
+            }
+        }
         .typing-area {
             background: var(--bg-primary);
             border: 2px solid var(--border-color);
@@ -32,10 +50,10 @@
             border-bottom: 2px solid var(--link-color);
         }
         .typing-area .word.correct {
-            color: #859900;
+            color: var(--typing-correct);
         }
         .typing-area .word.incorrect {
-            color: #dc322f;
+            color: var(--typing-incorrect);
             text-decoration: underline;
         }
         .typing-input {
@@ -90,12 +108,12 @@
             color: var(--text-primary);
         }
         .message.complete {
-            background: #859900;
-            color: #fdf6e3;
+            background: var(--typing-success-bg);
+            color: var(--typing-success-text);
         }
         .message.new-pb {
-            background: #b58900;
-            color: #fdf6e3;
+            background: var(--typing-pb-bg);
+            color: var(--typing-success-text);
         }
         .controls {
             display: flex;
@@ -208,7 +226,7 @@
         </footer>
     </div>
 
-    <script src="../../theme-toggle.js?v=2"></script>
+    <script src="../../theme-toggle.js?v=3"></script>
     <script src="typing-test.js?v=3"></script>
 </body>
 </html>
