@@ -66,8 +66,9 @@ Each detector is a standalone mini-app with a unique theme:
 ## Demos
 
 ### Canvas
-- **Digital Plant**: Persistent fractal tree that grows over real-time days and requires watering (localStorage).
+- **Digital Plant**: Tamagotchi-style fractal tree that grows over real-time days. Features naming, watering (localStorage), health-based mood, flowering, and animated critters.
 - **Gravity**: Click-and-drag to launch bodies, watch them orbit and attract
+
 - **Game of Life**: Cellular automaton with presets (glider, pulsar, gosper gun)
 
 ### API (no auth required)
@@ -106,6 +107,8 @@ Push to `main` branch - GitHub Pages deploys automatically.
 ## Recent Activity (2026-01-18)
 
 - **Feature Expansion**:
+    - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
+    - **Digital Plant (v1)**: Created persistent fractal tree demo with localStorage health/age tracking.
     - **Weather Haiku**: Expanded poem library, fixed CSS inconsistencies, and added a "Regenerate" button.
     - **Detector History**: Added "Last verified" tracking to all 7 day detectors via `shared/detector-utils.js`.
 - **Interactive Polish**:

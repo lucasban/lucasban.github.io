@@ -33,7 +33,7 @@ Personal static website hosted at https://lucasban.github.io. No build process â
 - Each has unique theme/personality (Sunday Scaries, Wednesday frog meme, Saturday party mode, etc.)
 
 **Demos** (`demos/`):
-- Canvas experiments: Digital Plant (Tamagotchi-style fractal tree), gravity simulator, Game of Life
+- Canvas experiments: Digital Plant (Tamagotchi-style fractal tree with naming/critters), gravity simulator, Game of Life
 - API integrations: weather haiku (Open-Meteo, no auth)
 - Utilities: typing test, color palette generator, cost-per-wear calculator
 
@@ -53,6 +53,8 @@ Personal static website hosted at https://lucasban.github.io. No build process â
 ## Recent Activity (2026-01-18)
 
 - **Feature Expansion**:
+    - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
+    - **Digital Plant (v1)**: Created persistent fractal tree demo with localStorage health/age tracking.
     - **Weather Haiku**: Expanded poem library, fixed CSS inconsistencies, and added a "Regenerate" button.
     - **Detector History**: Added "Last verified" tracking to all 7 day detectors via `shared/detector-utils.js`.
 - **Interactive Polish**:

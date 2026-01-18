@@ -66,46 +66,16 @@ Each detector is a standalone mini-app with a unique theme:
 ## Demos
 
 ### Canvas
-- **Digital Plant**: Persistent fractal tree that grows over real-time days and requires watering (localStorage).
+- **Digital Plant**: Tamagotchi-style fractal tree that grows over real-time days. Features naming, watering (localStorage), health-based mood, flowering, and animated critters.
 - **Gravity**: Click-and-drag to launch bodies, watch them orbit and attract
-- **Game of Life**: Cellular automaton with presets (glider, pulsar, gosper gun)
 
-### API (no auth required)
-- **Weather Haiku**: Generates poetry from current weather conditions
-
-### Fun
-- **Typing Test**: 60-second typing speed and accuracy test
-- **Color Palette**: Generate harmonious color schemes
-
-### Tools
-- **Cost Per Wear**: Calculate wardrobe value with wear frequency/season estimator
-
-## Photo Gallery
-
-- Fetches photos from Bluesky (@lucasban.com) via AT Protocol API
-- CSS Grid layout with vanilla JS lightbox
-- Keyboard navigation (arrows, escape)
-- Lazy loading images
-- No authentication required (public API)
-
-## Conventions
-
-- **Pre-Work Check**: Always open `tests/index.html` in a browser or review `tests/` before making core changes. Ensure the codebase is stable.
-- No build process - plain HTML/CSS/JS
-- All pages include inline HTML navigation
-- Day detection uses `new Date().getDay()` (0=Sunday, 6=Saturday)
-- **Cache busting**: CSS/JS files use `?v=N` query strings
-  - Global resources (style.css, theme-toggle.js) share a version number - update everywhere when changed
-  - Page-specific resources use independent versions - update only where used
-  - See `VERSIONS.md` for current versions and update procedures
-
-## Deployment
-
-Push to `main` branch - GitHub Pages deploys automatically.
+...
 
 ## Recent Activity (2026-01-18)
 
 - **Feature Expansion**:
+    - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
+    - **Digital Plant (v1)**: Created persistent fractal tree demo with localStorage health/age tracking.
     - **Weather Haiku**: Expanded poem library, fixed CSS inconsistencies, and added a "Regenerate" button.
     - **Detector History**: Added "Last verified" tracking to all 7 day detectors via `shared/detector-utils.js`.
 - **Interactive Polish**:
