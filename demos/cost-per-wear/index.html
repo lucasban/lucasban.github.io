@@ -209,6 +209,29 @@
             color: var(--text-muted);
             margin-top: 0.25em;
         }
+        .chart-section {
+            margin-top: 2em;
+            padding: 1.5em;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+        .chart-section.hidden {
+            display: none;
+        }
+        .chart-section h3 {
+            margin-top: 0;
+            margin-bottom: 0.5em;
+        }
+        .chart-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1em;
+        }
+        .cpw-chart {
+            max-width: 100%;
+            height: auto;
+        }
     </style>
 </head>
 <body>
@@ -317,6 +340,12 @@
             <div id="items-container">
                 <p class="no-items">No items saved yet.</p>
             </div>
+        </div>
+
+        <div class="chart-section hidden" id="chart-section">
+            <h3>Value Comparison</h3>
+            <p class="chart-description">Items sorted by cost per wear (best value at top)</p>
+            <canvas id="cpw-chart" class="cpw-chart" width="600" height="300"></canvas>
         </div>
 
         <section>

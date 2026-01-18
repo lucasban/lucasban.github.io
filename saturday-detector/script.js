@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const meterFill = document.getElementById('meter-fill');
     const body = document.body;
     const confettiContainer = document.getElementById('confetti-container');
+    const soundToggle = document.getElementById('sound-toggle');
+    const soundIcon = document.querySelector('.sound-icon');
 
     const today = new Date();
     const currentDay = today.getDay();
@@ -10,6 +12,86 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Track interval for cleanup
     let confettiInterval = null;
+
+    // Sound effects state
+    const SOUND_PREF_KEY = 'saturday-sound-enabled';
+    let soundEnabled = localStorage.getItem(SOUND_PREF_KEY) === 'true';
+    let audioContext = null;
+
+    // Initialize sound toggle state
+    soundToggle.checked = soundEnabled;
+    updateSoundIcon();
+
+    function updateSoundIcon() {
+        soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+    }
+
+    soundToggle.addEventListener('change', function() {
+        soundEnabled = soundToggle.checked;
+        localStorage.setItem(SOUND_PREF_KEY, soundEnabled);
+        updateSoundIcon();
+
+        // Play a test sound when enabling
+        if (soundEnabled) {
+            playPopSound();
+        }
+    });
+
+    // Initialize audio context on user interaction
+    function initAudio() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioContext;
+    }
+
+    function playPopSound() {
+        if (!soundEnabled) return;
+        try {
+            const ctx = initAudio();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            oscillator.frequency.setValueAtTime(600, ctx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.1);
+
+            gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
+
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.1);
+        } catch (e) {
+            // Audio not supported
+        }
+    }
+
+    function playPartyHorn() {
+        if (!soundEnabled) return;
+        try {
+            const ctx = initAudio();
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            oscillator.type = 'sawtooth';
+            oscillator.frequency.setValueAtTime(300, ctx.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.2);
+            oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.5);
+
+            gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+            oscillator.start(ctx.currentTime);
+            oscillator.stop(ctx.currentTime + 0.5);
+        } catch (e) {
+            // Audio not supported
+        }
+    }
 
     const partyReadiness = {
         0: 16,  // Sunday - party hangover
@@ -38,8 +120,20 @@ document.addEventListener('DOMContentLoaded', function() {
         body.classList.add('saturday-mode');
         answerElement.innerHTML = "YES! IT'S SATURDAY! 🎉🪩🎊";
 
-        // Continuous confetti
-        confettiInterval = setInterval(createConfetti, 100);
+        // Play party horn on load if sound is enabled
+        setTimeout(() => {
+            playPartyHorn();
+        }, 500);
+
+        // Continuous confetti with occasional pop sounds
+        let confettiCount = 0;
+        confettiInterval = setInterval(() => {
+            createConfetti();
+            confettiCount++;
+            if (confettiCount % 10 === 0) {
+                playPopSound();
+            }
+        }, 100);
 
         // Initial burst
         for (let i = 0; i < 50; i++) {

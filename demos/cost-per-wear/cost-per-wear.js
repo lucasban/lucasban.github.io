@@ -24,6 +24,11 @@
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
 
+    // Chart elements
+    const chartSection = document.getElementById('chart-section');
+    const chartCanvas = document.getElementById('cpw-chart');
+    const chartCtx = chartCanvas.getContext('2d');
+
     const STORAGE_KEY = 'cpw-items';
     const toast = document.getElementById('toast');
     let currentTab = 'actual';
@@ -122,6 +127,96 @@
         } else {
             return { text: 'Wear it more!', class: 'verdict-yikes' };
         }
+    }
+
+    // Get bar color based on CPW (for chart)
+    function getBarColor(cpw) {
+        if (cpw < 1) return '#859900'; // green - excellent
+        if (cpw < 3) return '#2aa198'; // teal - great
+        if (cpw < 5) return '#2aa198'; // teal - good
+        if (cpw < 10) return '#b58900'; // yellow - fair
+        if (cpw < 20) return '#cb4b16'; // orange - pricey
+        return '#dc322f'; // red - yikes
+    }
+
+    // Render the chart
+    function renderChart() {
+        const items = loadItems();
+
+        // Hide chart if no items
+        if (items.length === 0) {
+            chartSection.classList.add('hidden');
+            return;
+        }
+
+        chartSection.classList.remove('hidden');
+
+        // Sort by CPW (best first)
+        items.sort((a, b) => calculateCPW(a.price, a.wears) - calculateCPW(b.price, b.wears));
+
+        // Limit to top 10 items for readability
+        const displayItems = items.slice(0, 10);
+
+        // Get theme colors
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const bgColor = isDark ? '#002b36' : '#fdf6e3';
+        const textColor = isDark ? '#839496' : '#657b83';
+        const gridColor = isDark ? '#073642' : '#eee8d5';
+
+        // Responsive canvas sizing
+        const container = chartCanvas.parentElement;
+        const maxWidth = Math.min(600, container.clientWidth - 32);
+        const rowHeight = 35;
+        const chartHeight = Math.max(150, displayItems.length * rowHeight + 40);
+
+        chartCanvas.width = maxWidth;
+        chartCanvas.height = chartHeight;
+
+        // Clear canvas
+        chartCtx.fillStyle = bgColor;
+        chartCtx.fillRect(0, 0, chartCanvas.width, chartCanvas.height);
+
+        // Chart dimensions
+        const padding = { left: 120, right: 70, top: 20, bottom: 20 };
+        const chartWidth = chartCanvas.width - padding.left - padding.right;
+
+        // Find max CPW for scaling
+        const maxCPW = Math.max(...displayItems.map(item => calculateCPW(item.price, item.wears)));
+
+        // Draw bars
+        displayItems.forEach((item, index) => {
+            const cpw = calculateCPW(item.price, item.wears);
+            const barWidth = (cpw / maxCPW) * chartWidth;
+            const y = padding.top + index * rowHeight;
+            const barHeight = rowHeight - 8;
+
+            // Draw bar
+            chartCtx.fillStyle = getBarColor(cpw);
+            chartCtx.fillRect(padding.left, y, barWidth, barHeight);
+
+            // Draw item name (truncate if too long)
+            chartCtx.fillStyle = textColor;
+            chartCtx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+            chartCtx.textAlign = 'right';
+            chartCtx.textBaseline = 'middle';
+            let name = item.name;
+            if (name.length > 14) {
+                name = name.substring(0, 12) + '...';
+            }
+            chartCtx.fillText(name, padding.left - 8, y + barHeight / 2);
+
+            // Draw CPW value at end of bar
+            chartCtx.textAlign = 'left';
+            chartCtx.fillText(formatCurrency(cpw), padding.left + barWidth + 5, y + barHeight / 2);
+        });
+
+        // Draw vertical axis line
+        chartCtx.strokeStyle = gridColor;
+        chartCtx.lineWidth = 1;
+        chartCtx.beginPath();
+        chartCtx.moveTo(padding.left, padding.top);
+        chartCtx.lineTo(padding.left, chartCanvas.height - padding.bottom);
+        chartCtx.stroke();
     }
 
     // Format currency
@@ -292,6 +387,9 @@
                 deleteItem(id);
             });
         });
+
+        // Update chart
+        renderChart();
     }
 
     // Escape HTML to prevent XSS
@@ -339,6 +437,12 @@
             updateEstimate();
         });
     });
+
+    // Redraw chart when theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderChart);
+
+    // Redraw chart on window resize
+    window.addEventListener('resize', renderChart);
 
     // Initialize
     renderItems();

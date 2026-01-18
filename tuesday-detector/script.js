@@ -19,4 +19,39 @@ document.addEventListener('DOMContentLoaded', function() {
         otterImage.querySelector('img').alt = "Sad Otter";
         container.classList.add('not-tuesday');
     }
+
+    // High five interaction
+    let highFiveCount = 0;
+    const highFiveMessages = [
+        "High five!",
+        "Nice one!",
+        "Woohoo!",
+        "You're awesome!",
+        "Best friends!",
+        "Otter-ly amazing!",
+        "Tuesday buddy!"
+    ];
+
+    otterImage.addEventListener('click', function() {
+        const img = otterImage.querySelector('img');
+
+        // Trigger animation
+        img.classList.remove('high-five');
+        void img.offsetWidth; // Force reflow
+        img.classList.add('high-five');
+
+        // Show floating text
+        const text = document.createElement('span');
+        text.className = 'high-five-text';
+        text.textContent = highFiveMessages[highFiveCount % highFiveMessages.length];
+        otterImage.appendChild(text);
+
+        // Clean up after animation
+        setTimeout(() => {
+            text.remove();
+            img.classList.remove('high-five');
+        }, 1000);
+
+        highFiveCount++;
+    });
 });

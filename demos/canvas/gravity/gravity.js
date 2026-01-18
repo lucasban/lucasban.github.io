@@ -4,9 +4,11 @@
     const ctx = canvas.getContext('2d');
     const clearBtn = document.getElementById('clear-btn');
     const presetBtn = document.getElementById('preset-btn');
+    const pauseBtn = document.getElementById('pause-btn');
     const massSlider = document.getElementById('mass-slider');
     const massPreview = document.getElementById('mass-preview');
     const trailsToggle = document.getElementById('trails-toggle');
+    const bodyCountDisplay = document.getElementById('body-count');
 
     // Detect dark mode
     function isDarkMode() {
@@ -40,6 +42,7 @@
     let dragCurrent = null;
     let showTrails = true;
     let colorIndex = 0;
+    let isPaused = false;
 
     const G = 0.5; // Gravitational constant (tweaked for fun)
     const MIN_DIST = 5; // Prevent extreme forces at close range
@@ -191,23 +194,33 @@
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
+    function updateBodyCount() {
+        const count = bodies.filter(b => !b.isSun).length;
+        bodyCountDisplay.textContent = count;
+    }
+
     function animate() {
         // Clear canvas each frame
         ctx.fillStyle = colors.bg;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Update and draw bodies
-        for (const body of bodies) {
-            body.update(bodies);
+        // Update bodies only if not paused
+        if (!isPaused) {
+            for (const body of bodies) {
+                body.update(bodies);
+            }
+
+            // Remove offscreen bodies (except sun)
+            bodies = bodies.filter(b => b.isSun || !b.isOffscreen());
         }
 
-        // Remove offscreen bodies (except sun)
-        bodies = bodies.filter(b => b.isSun || !b.isOffscreen());
-
-        // Draw bodies
+        // Always draw bodies (even when paused)
         for (const body of bodies) {
             body.draw();
         }
+
+        // Update body count
+        updateBodyCount();
 
         // Draw drag line
         if (dragStart && dragCurrent) {
@@ -292,6 +305,10 @@
 
     clearBtn.addEventListener('click', clear);
     presetBtn.addEventListener('click', addSun);
+    pauseBtn.addEventListener('click', () => {
+        isPaused = !isPaused;
+        pauseBtn.textContent = isPaused ? 'Resume' : 'Pause';
+    });
     massSlider.addEventListener('input', updateMassPreview);
     trailsToggle.addEventListener('change', (e) => {
         showTrails = e.target.checked;

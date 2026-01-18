@@ -176,3 +176,52 @@ body.weekday-mode #meter-fill {
     outline: 2px solid var(--text-primary);
     outline-offset: 2px;
 }
+
+/* Sound toggle */
+.sound-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    margin-top: 1.5em;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: var(--container-bg);
+    padding: 0.5em 1em;
+    border-radius: 20px;
+    transition: opacity 0.2s;
+}
+
+.sound-toggle:hover {
+    opacity: 0.8;
+}
+
+.sound-toggle input {
+    display: none;
+}
+
+.sound-toggle .sound-icon {
+    font-size: 1.2em;
+}
+
+.sound-toggle input:checked + .sound-icon::before {
+    content: '🔊';
+}
+
+.sound-toggle input:not(:checked) + .sound-icon::before {
+    content: '🔇';
+}
+
+.sound-toggle .sound-icon::before {
+    content: '🔇';
+}
+
+.sound-toggle input:checked ~ .sound-icon {
+    display: none;
+}
+
+/* Simpler approach - just swap the icon text */
+.sound-toggle .sound-icon {
+    display: inline;
+}

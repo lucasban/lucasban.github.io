@@ -14,6 +14,19 @@
             max-width: 100%;
             height: auto;
         }
+        .pattern-select {
+            padding: 0.4em 0.6em;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .pattern-select:focus {
+            outline: none;
+            border-color: var(--link-color);
+        }
     </style>
 </head>
 <body>
@@ -41,11 +54,25 @@
                     <button class="btn" id="random-btn">Random</button>
                 </div>
                 <div style="margin-bottom: 1em;">
-                    <strong>Presets:</strong>
-                    <button class="btn" id="preset-glider">Glider</button>
-                    <button class="btn" id="preset-blinker">Blinker</button>
-                    <button class="btn" id="preset-pulsar">Pulsar</button>
-                    <button class="btn" id="preset-gosper">Gosper Gun</button>
+                    <strong>Patterns:</strong>
+                    <select id="pattern-select" class="pattern-select">
+                        <option value="">Select pattern...</option>
+                        <optgroup label="Oscillators">
+                            <option value="blinker">Blinker (period 2)</option>
+                            <option value="beacon">Beacon (period 2)</option>
+                            <option value="toad">Toad (period 2)</option>
+                            <option value="pulsar">Pulsar (period 3)</option>
+                            <option value="pentadecathlon">Pentadecathlon (period 15)</option>
+                        </optgroup>
+                        <optgroup label="Spaceships">
+                            <option value="glider">Glider (moves diagonally)</option>
+                            <option value="lwss">Lightweight Spaceship (moves horizontally)</option>
+                        </optgroup>
+                        <optgroup label="Guns">
+                            <option value="gosper">Gosper Glider Gun (infinite growth)</option>
+                        </optgroup>
+                    </select>
+                    <button class="btn" id="load-pattern-btn">Load</button>
                 </div>
                 <label>
                     Speed:

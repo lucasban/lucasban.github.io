@@ -89,6 +89,53 @@
             background: #859900;
             color: #fdf6e3;
         }
+        .message.new-pb {
+            background: #b58900;
+            color: #fdf6e3;
+        }
+        .controls {
+            display: flex;
+            gap: 1em;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .difficulty-label {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+        .difficulty-select {
+            padding: 0.4em 0.6em;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: pointer;
+            margin-left: 0.5em;
+        }
+        .difficulty-select:focus {
+            outline: none;
+            border-color: var(--link-color);
+        }
+        .personal-best {
+            margin-top: 1em;
+            padding: 0.75em 1em;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+        .pb-label {
+            color: var(--text-subtle);
+        }
+        .pb-value {
+            font-weight: bold;
+            color: var(--text-heading);
+        }
+        .pb-value.new-record {
+            color: #b58900;
+        }
     </style>
 </head>
 <body>
@@ -127,7 +174,20 @@
         <input type="text" class="typing-input" id="typing-input" placeholder="Start typing here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 
         <div class="controls">
+            <label class="difficulty-label">
+                Difficulty:
+                <select id="difficulty-select" class="difficulty-select">
+                    <option value="easy">Easy (45s, common words)</option>
+                    <option value="normal" selected>Normal (60s)</option>
+                    <option value="hard">Hard (60s, longer words)</option>
+                </select>
+            </label>
             <button class="btn" id="restart-btn">New Test</button>
+        </div>
+
+        <div class="personal-best" id="personal-best">
+            <span class="pb-label">Personal Best:</span>
+            <span class="pb-value" id="pb-value">--</span> WPM
         </div>
 
         <section>

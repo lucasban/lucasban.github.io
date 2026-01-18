@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const subtitleElement = document.getElementById('subtitle');
     const extraFrogsContainer = document.getElementById('extra-frogs');
     const body = document.body;
+    const mainFrog = document.getElementById('frog');
 
     const today = new Date();
     const isWednesday = today.getDay() === 3;
@@ -40,5 +41,20 @@ document.addEventListener('DOMContentLoaded', function() {
         subtitleElement.textContent = daysUntilWednesday === 1
             ? "Almost Wednesday, my dude..."
             : `${daysUntilWednesday} days until Wednesday, my dudes`;
+    }
+
+    // Frog hop interaction
+    if (mainFrog) {
+        mainFrog.addEventListener('click', function() {
+            // Don't re-trigger if already hopping
+            if (mainFrog.classList.contains('hopping')) return;
+
+            mainFrog.classList.add('hopping');
+
+            // Remove class after animation completes
+            setTimeout(() => {
+                mainFrog.classList.remove('hopping');
+            }, 500);
+        });
     }
 });

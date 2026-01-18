@@ -12,11 +12,9 @@
     const speedValue = document.getElementById('speed-value');
     const generationDisplay = document.getElementById('generation');
 
-    // Preset buttons
-    const presetGlider = document.getElementById('preset-glider');
-    const presetBlinker = document.getElementById('preset-blinker');
-    const presetPulsar = document.getElementById('preset-pulsar');
-    const presetGosper = document.getElementById('preset-gosper');
+    // Pattern selector
+    const patternSelect = document.getElementById('pattern-select');
+    const loadPatternBtn = document.getElementById('load-pattern-btn');
 
     // Grid settings
     const cellSize = 10;
@@ -148,6 +146,16 @@
         blinker: [
             [-1, 0], [0, 0], [1, 0]
         ],
+        beacon: [
+            // Two 2x2 squares offset diagonally
+            [-2, -2], [-1, -2], [-2, -1], [-1, -1],
+            [0, 0], [1, 0], [0, 1], [1, 1]
+        ],
+        toad: [
+            // Two offset rows of 3
+            [0, 0], [1, 0], [2, 0],
+            [-1, 1], [0, 1], [1, 1]
+        ],
         pulsar: (function() {
             const pts = [];
             const coords = [2, 3, 4, 8, 9, 10];
@@ -169,6 +177,21 @@
             }
             return pts;
         })(),
+        pentadecathlon: [
+            // Period-15 oscillator (vertical row with modifications)
+            [0, -4], [0, -3],
+            [-1, -2], [1, -2],
+            [0, -1], [0, 0], [0, 1], [0, 2],
+            [-1, 3], [1, 3],
+            [0, 4], [0, 5]
+        ],
+        lwss: [
+            // Lightweight spaceship (moves right)
+            [0, 0], [3, 0],
+            [4, 1],
+            [0, 2], [4, 2],
+            [1, 3], [2, 3], [3, 3], [4, 3]
+        ].map(([x, y]) => [x - 2, y - 2]),
         gosper: [
             // Left square
             [0, 4], [0, 5], [1, 4], [1, 5],
@@ -230,35 +253,22 @@
         speedValue.textContent = fps;
     });
 
-    presetGlider.addEventListener('click', () => {
-        grid = createGrid();
-        generation = 0;
-        generationDisplay.textContent = generation;
-        setPattern(patterns.glider, -10, -10);
-        draw();
-    });
+    loadPatternBtn.addEventListener('click', () => {
+        const patternName = patternSelect.value;
+        if (!patternName || !patterns[patternName]) return;
 
-    presetBlinker.addEventListener('click', () => {
         grid = createGrid();
         generation = 0;
         generationDisplay.textContent = generation;
-        setPattern(patterns.blinker);
-        draw();
-    });
 
-    presetPulsar.addEventListener('click', () => {
-        grid = createGrid();
-        generation = 0;
-        generationDisplay.textContent = generation;
-        setPattern(patterns.pulsar);
-        draw();
-    });
-
-    presetGosper.addEventListener('click', () => {
-        grid = createGrid();
-        generation = 0;
-        generationDisplay.textContent = generation;
-        setPattern(patterns.gosper);
+        // Position glider and lwss in upper-left for movement room
+        if (patternName === 'glider') {
+            setPattern(patterns[patternName], -10, -10);
+        } else if (patternName === 'lwss') {
+            setPattern(patterns[patternName], -15, 0);
+        } else {
+            setPattern(patterns[patternName]);
+        }
         draw();
     });
 

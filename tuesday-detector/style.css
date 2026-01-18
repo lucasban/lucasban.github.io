@@ -71,6 +71,49 @@ h1 {
     transform: scale(1.05);
 }
 
+#otter-image {
+    position: relative;
+    cursor: pointer;
+}
+
+#otter-image img.high-five {
+    animation: highFive 0.4s ease-out;
+}
+
+@keyframes highFive {
+    0% { transform: scale(1) rotate(0); }
+    50% { transform: scale(1.3) rotate(-15deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+.high-five-text {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--happy-color);
+    opacity: 0;
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-40px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #otter-image img.high-five {
+        animation: none;
+    }
+    .high-five-text {
+        animation: none;
+        opacity: 1;
+    }
+}
+
 /* Happy state styling */
 .is-tuesday #answer {
     color: var(--happy-color);
