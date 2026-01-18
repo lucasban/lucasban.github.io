@@ -1111,6 +1111,56 @@
         }
     }
 
+    function renderFireflies(hour) {
+        // Only visible at night
+        if (hour >= 6 && hour < 18) return;
+
+        ctx.save();
+        ctx.fillStyle = '#ffffe0';
+        ctx.shadowColor = '#ffff00';
+        ctx.shadowBlur = 4;
+
+        fireflies.forEach(fly => {
+            // Gentle hovering movement
+            const hoverY = Math.sin(time * 0.002 + fly.offset) * 5;
+            const hoverX = Math.cos(time * 0.0015 + fly.offset) * 5;
+            
+            // Blink effect
+            const opacity = 0.3 + (Math.sin(time * 0.003 + fly.offset) + 1) / 2 * 0.7;
+            
+            ctx.globalAlpha = opacity;
+            ctx.beginPath();
+            ctx.arc(fly.x + hoverX, fly.y + hoverY, fly.s, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.restore();
+    }
+
+    function renderSnowflakes() {
+        if (getSeason() !== 'winter') return;
+
+        ctx.save();
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+
+        snowflakes.forEach(flake => {
+            flake.y += flake.speed;
+            flake.x += Math.sin(time * 0.001 + flake.offset) * 0.5;
+
+            // Loop
+            if (flake.y > canvas.height) {
+                flake.y = -5;
+                flake.x = Math.random() * canvas.width;
+            }
+
+            ctx.beginPath();
+            ctx.arc(flake.x, flake.y, flake.s, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.restore();
+    }
+
     function renderRain() {
         if (weather.type === 'rain' || weather.type === 'storm') {
             ctx.save();
