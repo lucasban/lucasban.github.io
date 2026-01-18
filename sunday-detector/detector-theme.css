@@ -1,0 +1,131 @@
+/* Sunday Detector Theme - "Sunday in the Garden" */
+/* Time-based mood via greenery gradients */
+
+/* === Time of Day Colors === */
+:root {
+    /* Morning - Bright sage garden */
+    --morning-bg-start: #d4e8df;
+    --morning-bg-end: var(--bg-primary);
+
+    /* Afternoon - Warm garden */
+    --afternoon-bg-start: var(--leaf-soft);
+    --afternoon-bg-end: var(--bg-primary);
+
+    /* Evening - Dark fern (Sunday Scaries) */
+    --evening-bg-start: #1a2a22;
+    --evening-bg-end: #0f1a14;
+    --evening-text: #e8e2db;
+    --evening-muted: #9a928a;
+
+    /* Not Sunday */
+    --not-sunday-bg-start: var(--bg-primary);
+    --not-sunday-bg-end: var(--bg-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --morning-bg-start: #1a2a22;
+        --morning-bg-end: var(--bg-primary);
+        --afternoon-bg-start: #1f3328;
+        --afternoon-bg-end: var(--bg-primary);
+        --evening-bg-start: #0a1410;
+        --evening-bg-end: #05100c;
+    }
+}
+
+:root[data-theme="dark"] {
+    --morning-bg-start: #1a2a22;
+    --morning-bg-end: var(--bg-primary);
+    --afternoon-bg-start: #1f3328;
+    --afternoon-bg-end: var(--bg-primary);
+    --evening-bg-start: #0a1410;
+    --evening-bg-end: #05100c;
+}
+
+/* === Full-page background for time of day === */
+body {
+    transition: background 2s ease;
+}
+
+/* Sunday Morning - Fresh garden */
+body.sunday-morning {
+    background: linear-gradient(180deg, var(--morning-bg-start) 0%, var(--morning-bg-end) 100%);
+}
+
+/* Sunday Afternoon - Warm garden */
+body.sunday-afternoon {
+    background: linear-gradient(180deg, var(--afternoon-bg-start) 0%, var(--afternoon-bg-end) 100%);
+}
+
+/* Sunday Evening - Dark fern (Sunday Scaries) */
+body.sunday-evening {
+    background: linear-gradient(180deg, var(--evening-bg-start) 0%, var(--evening-bg-end) 100%);
+}
+
+body.sunday-evening h1,
+body.sunday-evening #answer {
+    color: var(--evening-text);
+}
+
+body.sunday-evening #vibe {
+    color: var(--evening-muted);
+}
+
+body.sunday-evening #countdown {
+    background: rgba(26, 42, 34, 0.8);
+    border-color: #2d4a3e;
+    color: var(--evening-muted);
+}
+
+body.sunday-evening .container {
+    background-color: rgba(26, 42, 34, 0.6);
+    border-color: #2d4a3e;
+}
+
+body.sunday-evening .home-link,
+body.sunday-evening .theme-toggle {
+    background: rgba(26, 42, 34, 0.8);
+    border-color: #2d4a3e;
+}
+
+/* Not Sunday */
+body.not-sunday {
+    background: linear-gradient(180deg, var(--not-sunday-bg-start) 0%, var(--not-sunday-bg-end) 100%);
+}
+
+/* === Shadow Warning === */
+#shadow {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(15, 26, 20, 0.9));
+    color: var(--wood-rust);
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 10;
+}
+
+#shadow.visible {
+    opacity: 1;
+}
+
+/* === Clock Container === */
+#clock-container {
+    margin-top: 25px;
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+    body {
+        transition: none;
+    }
+    #shadow {
+        transition: none;
+    }
+}

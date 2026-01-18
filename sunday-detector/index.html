@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Is It Sunday?</title>
-    <meta name="description" content="Find out if it's Sunday - featuring the Sunday Scaries.">
+    <meta name="description" content="Find out if it's Sunday - Sunday in the Garden.">
     <meta property="og:title" content="Is It Sunday?">
     <meta property="og:description" content="Find out if it's Sunday - featuring the Sunday Scaries.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☀️</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="../detector-base.css?v=1">
+    <link rel="stylesheet" href="detector-theme.css?v=1">
 </head>
 <body>
+    <a href="/" class="home-link">&larr; Home</a>
     <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
         <button data-theme="light" aria-pressed="false">☀️</button>
         <button data-theme="dark" aria-pressed="false">🌙</button>
         <button data-theme="auto" aria-pressed="true">💻</button>
     </div>
-    <a href="/" class="home-link">&larr; Home</a>
     <div class="container">
         <h1>Is it Sunday?</h1>
         <div id="answer" role="status" aria-live="polite"></div>
@@ -27,7 +31,7 @@
         </div>
         <div id="shadow" class="hidden" aria-hidden="true">Monday approaches...</div>
     </div>
-    <script src="script.js?v=3"></script>
     <script src="../theme-toggle.js?v=3"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>

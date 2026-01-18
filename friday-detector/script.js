@@ -1,3 +1,4 @@
+// Friday Detector - "Premium Greenhouse Experience"
 document.addEventListener('DOMContentLoaded', function() {
     const today = new Date();
     const dayOfWeek = today.getDay();
@@ -20,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Easter egg: Subscribe button interactions
     let clickCount = 0;
-    const confettiColors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#f093fb', '#00f2fe'];
+    // Greenery palette for confetti
+    const confettiColors = ['#2d6a4f', '#3d8b66', '#b8d4c4', '#b8863a', '#8a4030'];
 
     function createConfetti() {
         const confetti = document.createElement('div');
@@ -69,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             // Click 6+: Easter egg reveal
             subscribeButton.classList.add('success');
-            subscribeButton.textContent = '🎉 Unlocked!';
+            subscribeButton.textContent = '🌿 Unlocked!';
             subscribeButton.disabled = true;
             message.textContent = `Fine, it's free: Today is ${daysOfWeek[dayOfWeek]}!`;
             launchConfetti();

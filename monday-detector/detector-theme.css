@@ -1,0 +1,157 @@
+/* Monday Detector Theme - "The Overgrown Path" */
+/* Deep forest greens with subtle vine sway */
+
+/* === Monday Override Colors === */
+:root {
+    --monday-deep: #0f1a14;
+    --monday-forest: #1a2a22;
+    --monday-moss: #2d4a3e;
+    --monday-text: #c5bdb3;
+    --monday-answer: #d4856e;
+}
+
+/* === Title with Monospace Flair === */
+h1#title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+}
+
+/* === Answer Override === */
+#answer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    padding: 15px;
+    letter-spacing: -0.01em;
+}
+
+/* === Monday Mode - The Overgrown Path === */
+body.monday-mode {
+    background: linear-gradient(180deg,
+        var(--monday-forest) 0%,
+        var(--monday-deep) 100%);
+    animation: vineSway 8s ease-in-out infinite;
+}
+
+body.monday-mode .container {
+    background-color: rgba(15, 26, 20, 0.7);
+    border-color: var(--monday-moss);
+}
+
+body.monday-mode h1#title {
+    color: var(--monday-text);
+    animation: titleSway 4s ease-in-out infinite;
+}
+
+body.monday-mode #answer {
+    color: var(--monday-answer);
+    animation: subtlePulse 3s ease-in-out infinite;
+}
+
+body.monday-mode #existential-dread {
+    color: var(--monday-text);
+    opacity: 0.7;
+}
+
+body.monday-mode .home-link,
+body.monday-mode .theme-toggle {
+    background: rgba(26, 42, 34, 0.9);
+    border-color: var(--monday-moss);
+}
+
+body.monday-mode .theme-toggle button {
+    color: var(--monday-text);
+}
+
+@keyframes vineSway {
+    0%, 100% {
+        background-image:
+            radial-gradient(ellipse at 10% 90%, rgba(45, 74, 62, 0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 90% 10%, rgba(45, 74, 62, 0.1) 0%, transparent 40%);
+    }
+    25% {
+        background-image:
+            radial-gradient(ellipse at 15% 85%, rgba(45, 74, 62, 0.2) 0%, transparent 55%),
+            radial-gradient(ellipse at 85% 15%, rgba(45, 106, 79, 0.08) 0%, transparent 35%);
+    }
+    50% {
+        background-image:
+            radial-gradient(ellipse at 20% 80%, rgba(45, 106, 79, 0.12) 0%, transparent 45%),
+            radial-gradient(ellipse at 80% 20%, rgba(45, 74, 62, 0.15) 0%, transparent 45%);
+    }
+    75% {
+        background-image:
+            radial-gradient(ellipse at 12% 88%, rgba(45, 74, 62, 0.18) 0%, transparent 50%),
+            radial-gradient(ellipse at 88% 12%, rgba(45, 74, 62, 0.06) 0%, transparent 40%);
+    }
+}
+
+@keyframes titleSway {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+@keyframes subtlePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+}
+
+/* === Peaceful Mode - Not Monday === */
+body.peaceful-mode {
+    background: linear-gradient(135deg,
+        var(--leaf-soft) 0%,
+        var(--bg-primary) 100%);
+}
+
+body.peaceful-mode #answer {
+    color: var(--accent-positive);
+}
+
+body.peaceful-mode .container {
+    background: linear-gradient(135deg,
+        rgba(184, 212, 196, 0.3) 0%,
+        var(--bg-secondary) 100%);
+    border-color: var(--leaf-deep);
+}
+
+/* === Overgrown decorations === */
+body.monday-mode .container::before {
+    content: "🌿";
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 1.2rem;
+    opacity: 0.4;
+    animation: leafSway 6s ease-in-out infinite;
+}
+
+body.monday-mode .container::after {
+    content: "🍃";
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 1rem;
+    opacity: 0.35;
+    animation: leafSway 5s ease-in-out infinite reverse;
+}
+
+.container {
+    position: relative;
+}
+
+@keyframes leafSway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+    body.monday-mode,
+    body.monday-mode h1#title,
+    body.monday-mode #answer,
+    body.monday-mode .container::before,
+    body.monday-mode .container::after {
+        animation: none;
+    }
+}

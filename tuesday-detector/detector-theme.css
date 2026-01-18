@@ -1,0 +1,103 @@
+/* Tuesday Detector Theme - "Otter in the Pond" */
+/* Warm greenery with aquatic touches */
+
+/* === Otter Image === */
+#otter-image {
+    margin: 25px auto;
+    position: relative;
+    cursor: pointer;
+}
+
+#otter-image img {
+    width: 160px;
+    height: auto;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 4px 8px var(--shadow-color));
+}
+
+#otter-image img:hover {
+    transform: scale(1.05);
+}
+
+/* High five animation */
+#otter-image img.high-five {
+    animation: highFive 0.4s ease-out;
+}
+
+@keyframes highFive {
+    0% { transform: scale(1) rotate(0); }
+    50% { transform: scale(1.2) rotate(-12deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+.high-five-text {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--leaf-deep);
+    opacity: 0;
+    pointer-events: none;
+    animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-35px); }
+}
+
+/* === Tuesday States === */
+/* Happy state - it's Tuesday! */
+.is-tuesday #answer {
+    color: var(--accent-positive);
+}
+
+.is-tuesday #otter-image::after {
+    content: "🌿";
+    position: absolute;
+    bottom: -10px;
+    right: -20px;
+    font-size: 1.5rem;
+    opacity: 0.6;
+}
+
+/* Sad state - not Tuesday */
+.not-tuesday #answer {
+    color: var(--accent-negative);
+}
+
+.not-tuesday #otter-image img {
+    filter: drop-shadow(0 4px 8px var(--shadow-color)) saturate(0.8);
+}
+
+/* === Lily Pad Decoration === */
+.container::before {
+    content: "🪷";
+    position: absolute;
+    bottom: 15px;
+    right: 20px;
+    font-size: 1.2rem;
+    opacity: 0.4;
+}
+
+/* === Reduced Motion === */
+@media (prefers-reduced-motion: reduce) {
+    #otter-image img.high-five {
+        animation: none;
+    }
+    .high-five-text {
+        animation: none;
+        opacity: 1;
+    }
+    #otter-image img:hover {
+        transform: none;
+    }
+}
+
+/* === Make container relative for decorations === */
+.container {
+    position: relative;
+}

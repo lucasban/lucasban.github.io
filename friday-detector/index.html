@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Is It Friday?</title>
-<meta name="description" content="Find out if it's Friday - premium uncertainty included.">
-<meta property="og:title" content="Is It Friday?">
-<meta property="og:description" content="Find out if it's Friday - premium uncertainty included.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
-<script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
-<link rel="stylesheet" href="style.css?v=6">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Is It Friday?</title>
+    <meta name="description" content="Find out if it's Friday - premium greenhouse experience.">
+    <meta property="og:title" content="Is It Friday?">
+    <meta property="og:description" content="Find out if it's Friday - premium uncertainty included.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+    <link rel="stylesheet" href="../detector-base.css?v=1">
+    <link rel="stylesheet" href="detector-theme.css?v=1">
 </head>
 <body>
-<div class="theme-toggle" role="radiogroup" aria-label="Color theme">
-    <button data-theme="light" aria-pressed="false">☀️</button>
-    <button data-theme="dark" aria-pressed="false">🌙</button>
-    <button data-theme="auto" aria-pressed="true">💻</button>
-</div>
-<a href="/" class="home-link">&larr; Home</a>
-<div id="confetti-container"></div>
-<div id="content">
-    <h1 id="message" role="status" aria-live="polite">Checking...</h1>
-    <!-- Premium Plan Advertisement with Price -->
-    <div id="premium-ad">
-        <p>Uncertain if it's Friday? <strong>Upgrade to our Premium Plan for only $10.99</strong> and never doubt again!</p>
-        <button id="subscribe-button" aria-label="Subscribe to premium plan">Subscribe Now</button>
+    <a href="/" class="home-link">&larr; Home</a>
+    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
+        <button data-theme="light" aria-pressed="false">☀️</button>
+        <button data-theme="dark" aria-pressed="false">🌙</button>
+        <button data-theme="auto" aria-pressed="true">💻</button>
     </div>
-</div>
-<script src="script.js?v=3"></script>
-<script src="../theme-toggle.js?v=3"></script>
+    <div id="confetti-container"></div>
+    <div id="content" class="container premium-container">
+        <h1 id="message" role="status" aria-live="polite">Checking...</h1>
+        <div id="premium-ad">
+            <p>Uncertain if it's Friday? <strong>Upgrade to our Premium Greenhouse Plan for only $10.99</strong> and never doubt again!</p>
+            <button id="subscribe-button" aria-label="Subscribe to premium plan">Subscribe Now</button>
+        </div>
+    </div>
+    <script src="../theme-toggle.js?v=3"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>

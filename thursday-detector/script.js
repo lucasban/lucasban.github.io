@@ -1,14 +1,14 @@
-// script.js
+// Thursday Detector - "The Clearing Ahead"
 (function() {
     const confettiContainer = document.getElementById('confetti-container');
-    const confettiColors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#f093fb', '#00f2fe', '#48D1CC'];
+    // Greenery palette for falling leaves
+    const confettiColors = ['#2d6a4f', '#3d8b66', '#b8d4c4', '#b8863a', '#8a4030'];
 
     function createConfetti() {
         const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
+        confetti.classList.add('confetti', 'leaf');
         confetti.style.left = Math.random() * 100 + '%';
         confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
-        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
         confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
         confettiContainer.appendChild(confetti);
 
@@ -19,9 +19,9 @@
         // Respect reduced motion preference
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-        // Burst of confetti
-        for (let i = 0; i < 40; i++) {
-            setTimeout(createConfetti, i * 30);
+        // Burst of falling leaves
+        for (let i = 0; i < 35; i++) {
+            setTimeout(createConfetti, i * 40);
         }
     }
 
@@ -29,14 +29,20 @@
         const today = new Date();
         const isThursday = today.getDay() === 4;
         const resultDiv = document.getElementById('result');
-        resultDiv.classList.remove('hidden');
+        resultDiv.classList.remove('hidden', 'positive');
 
         if (isThursday) {
-            resultDiv.innerHTML = "Yes, it's Thursday! Friday's almost here! 🥳";
+            resultDiv.textContent = "Yes! It's Thursday - the clearing ahead!";
+            resultDiv.classList.add('positive');
             launchConfetti();
         } else {
             const daysUntilThursday = (4 - today.getDay() + 7) % 7;
-            resultDiv.innerHTML = daysUntilThursday === 0 ? "It's not Thursday, but that means it's Friday! 🎉" : `Nope, but only ${daysUntilThursday} day(s) until Thursday!`;
+            if (daysUntilThursday === 0) {
+                resultDiv.textContent = "It's Friday! You've passed the clearing.";
+                resultDiv.classList.add('positive');
+            } else {
+                resultDiv.textContent = `Not yet... ${daysUntilThursday} day${daysUntilThursday === 1 ? '' : 's'} until Thursday.`;
+            }
         }
     });
 })();

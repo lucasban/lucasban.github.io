@@ -1,3 +1,4 @@
+// Saturday Detector - "Garden Party"
 document.addEventListener('DOMContentLoaded', function() {
     const answerElement = document.getElementById('answer');
     const meterFill = document.getElementById('meter-fill');
@@ -103,12 +104,14 @@ document.addEventListener('DOMContentLoaded', function() {
         6: 100  // Saturday - PARTY
     };
 
+    // Greenery palette for confetti
+    const confettiColors = ['#2d6a4f', '#3d8b66', '#b8d4c4', '#b8863a', '#8a4030'];
+
     function createConfetti() {
-        const colors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#f093fb', '#00f2fe'];
         const confetti = document.createElement('div');
         confetti.classList.add('confetti');
         confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
         confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
         confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
         confettiContainer.appendChild(confetti);
@@ -118,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (isSaturday) {
         body.classList.add('saturday-mode');
-        answerElement.innerHTML = "YES! IT'S SATURDAY! 🎉🪩🎊";
+        answerElement.innerHTML = "YES! IT'S SATURDAY! 🌻🌿🎊";
 
         // Play party horn on load if sound is enabled
         setTimeout(() => {
