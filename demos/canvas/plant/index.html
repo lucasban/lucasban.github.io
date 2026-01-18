@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Plant - Demos - Lucas Bannister</title>
+    <meta name="description" content="A persistent digital plant that grows over time. Don't forget to water it!">
+    <meta property="og:title" content="Digital Plant">
+    <meta property="og:description" content="A persistent digital plant that grows over time.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+    <link rel="stylesheet" href="../../../style.css?v=8">
+    <style>
+        .demo-canvas {
+            display: block;
+            margin: 0 auto;
+            border-bottom: 2px solid var(--border-color);
+            background: linear-gradient(to bottom, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+        
+        .plant-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1em;
+            padding: 1em;
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .status-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .status-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-subtle);
+        }
+
+        .status-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .water-btn {
+            background: var(--leaf-deep);
+            color: #fff;
+            border: none;
+            padding: 0.8em 1.5em;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .water-btn:hover {
+            background: var(--leaf-bright);
+            transform: scale(1.05);
+        }
+
+        .water-btn:active {
+            transform: scale(0.95);
+        }
+
+        .water-btn:disabled {
+            background: var(--text-muted);
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .reset-link {
+            font-size: 0.85rem;
+            color: var(--text-subtle);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 1em;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
+        <button data-theme="light" aria-pressed="false">☀️</button>
+        <button data-theme="dark" aria-pressed="false">🌙</button>
+        <button data-theme="auto" aria-pressed="true">💻</button>
+    </div>
+    <div class="container">
+        <nav>
+            <a href="/">&larr; Home</a>
+        </nav>
+
+        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Digital Plant</p>
+
+        <header>
+            <h1>Digital Plant</h1>
+            <p class="subtitle">A little persistent friend. It grows in real-time.</p>
+        </header>
+
+        <div class="demo-container">
+            <div class="plant-status">
+                <div class="status-item">
+                    <span class="status-label">Age</span>
+                    <span class="status-value" id="age-display">0 Days</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Health</span>
+                    <span class="status-value" id="health-display">100%</span>
+                </div>
+                <button class="water-btn" id="water-btn">
+                    💧 Water
+                </button>
+            </div>
+
+            <canvas id="canvas" class="demo-canvas" width="600" height="500"></canvas>
+            
+            <div style="text-align: center;">
+                <a class="reset-link" id="reset-btn">Plant a new seed (Reset)</a>
+            </div>
+        </div>
+
+        <section>
+            <h2>Care Instructions</h2>
+            <ul>
+                <li><strong>Watering:</strong> Water your plant when the health drops. It gets thirsty over time (even when you're gone).</li>
+                <li><strong>Growth:</strong> The plant grows slowly. Come back tomorrow to see new branches.</li>
+                <li><strong>Neglect:</strong> If health reaches 0%, the plant will wither. You'll need to plant a new seed.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p><a href="/demos/">&larr; Back to demos</a></p>
+        </footer>
+    </div>
+
+    <script src="../../../theme-toggle.js?v=3"></script>
+    <script src="plant.js?v=1"></script>
+</body>
+</html>

@@ -66,6 +66,7 @@ Each detector is a standalone mini-app with a unique theme:
 ## Demos
 
 ### Canvas
+- **Digital Plant**: Persistent fractal tree that grows over real-time days and requires watering (localStorage).
 - **Gravity**: Click-and-drag to launch bodies, watch them orbit and attract
 - **Game of Life**: Cellular automaton with presets (glider, pulsar, gosper gun)
 

@@ -33,7 +33,7 @@ Personal static website hosted at https://lucasban.github.io. No build process â
 - Each has unique theme/personality (Sunday Scaries, Wednesday frog meme, Saturday party mode, etc.)
 
 **Demos** (`demos/`):
-- Canvas experiments: gravity simulator, Game of Life
+- Canvas experiments: Digital Plant (Tamagotchi-style fractal tree), gravity simulator, Game of Life
 - API integrations: weather haiku (Open-Meteo, no auth)
 - Utilities: typing test, color palette generator, cost-per-wear calculator
 
