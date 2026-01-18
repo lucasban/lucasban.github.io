@@ -802,6 +802,12 @@
         ctx.restore();
     }
 
+    function getLeafColor(health) {
+        if (health <= 0) return '#5c524a'; // Dead
+        if (health < 30) return '#d4a012'; // Drying
+        return getSeasonalColors().leafBase;
+    }
+
     function drawLeaf(health) {
         ctx.beginPath();
         // Heart-shaped leaf

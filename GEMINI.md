@@ -94,7 +94,7 @@ Each detector is a standalone mini-app with a unique theme:
 - **Bug Fixes**:
     - **Confetti Animation**: Added missing `.confetti` base CSS and `@keyframes confettiFall` animation to `shared/detector-base.css`. Fixed Thursday/Friday/Saturday detector confetti.
     - **Winter grass flickering**: Changed random grass rendering to deterministic spacing
-    - **Digital Plant Crash**: Implemented missing `renderFireflies` and `renderSnowflakes` functions that were causing a runtime error in the render loop.
+    - **Digital Plant Crash**: Implemented missing `renderFireflies`, `renderSnowflakes`, and `getLeafColor` functions that were causing runtime errors in the render loop.
 - **Feature Expansion**:
     - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
     - **Digital Plant (v1)**: Created persistent fractal tree demo with localStorage health/age tracking.
