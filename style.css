@@ -3,6 +3,7 @@
 /* === CSS Custom Properties === */
 :root {
     /* Light Mode - "Sunlit Den" */
+    color-scheme: light;
     --bg-primary: #f0e9df;
     --bg-secondary: #e8dfd3;
     --bg-code: #e5dcd0;
@@ -34,6 +35,7 @@
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
         /* Dark Mode - "Evening Greenhouse" */
+        color-scheme: dark;
         --bg-primary: #1a1f1c;
         --bg-secondary: #242a26;
         --bg-code: #242a26;
@@ -64,6 +66,7 @@
 
 /* Explicit dark mode override */
 :root[data-theme="dark"] {
+    color-scheme: dark;
     --bg-primary: #1a1f1c;
     --bg-secondary: #242a26;
     --bg-code: #242a26;
