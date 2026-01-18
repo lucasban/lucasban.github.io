@@ -6,6 +6,7 @@ DetectorUtils.init({
         const subtitleElement = document.getElementById('subtitle');
         const extraFrogsContainer = document.getElementById('extra-frogs');
         const mainFrog = document.getElementById('frog');
+        if (!subtitleElement || !extraFrogsContainer) return;
 
         body.classList.add('wednesday-mode');
         answerElement.textContent = "IT IS WEDNESDAY";
@@ -34,6 +35,8 @@ DetectorUtils.init({
         const body = document.body;
         const subtitleElement = document.getElementById('subtitle');
         const mainFrog = document.getElementById('frog');
+        if (!subtitleElement) return;
+
         const currentDay = today.getDay();
         const daysUntilWednesday = (3 - currentDay + 7) % 7 || 7;
 

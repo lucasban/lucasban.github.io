@@ -30,6 +30,8 @@ function setupParty(isSaturday) {
     const confettiContainer = document.getElementById('confetti-container');
     const soundToggle = document.getElementById('sound-toggle');
     const soundIcon = document.querySelector('.sound-icon');
+    if (!confettiContainer || !soundToggle || !soundIcon) return;
+
     const confettiColors = ['#2d6a4f', '#3d8b66', '#b8d4c4', '#b8863a', '#8a4030'];
 
     let confettiInterval = null;
@@ -70,7 +72,9 @@ function setupParty(isSaturday) {
             gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
             oscillator.start(ctx.currentTime);
             oscillator.stop(ctx.currentTime + 0.1);
-        } catch (e) {}
+        } catch (e) {
+            // AudioContext may fail on browsers without Web Audio API support
+        }
     }
 
     function playPartyHorn() {
@@ -89,7 +93,9 @@ function setupParty(isSaturday) {
             gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
             oscillator.start(ctx.currentTime);
             oscillator.stop(ctx.currentTime + 0.5);
-        } catch (e) {}
+        } catch (e) {
+            // AudioContext may fail on browsers without Web Audio API support
+        }
     }
 
     function createConfetti() {

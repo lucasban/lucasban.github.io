@@ -1,6 +1,9 @@
 // Thursday Detector - "The Clearing Ahead"
 (function() {
     const confettiContainer = document.getElementById('confetti-container');
+    const checkButton = document.getElementById('checkButton');
+    if (!confettiContainer || !checkButton) return;
+
     const confettiColors = ['#2d6a4f', '#3d8b66', '#b8d4c4', '#b8863a', '#8a4030'];
 
     function createConfetti() {
@@ -21,7 +24,7 @@
         }
     }
 
-    document.getElementById('checkButton').addEventListener('click', () => {
+    checkButton.addEventListener('click', () => {
         const today = new Date();
         const currentDay = today.getDay();
         const isThursday = currentDay === 4;

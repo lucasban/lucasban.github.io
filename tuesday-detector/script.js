@@ -4,23 +4,31 @@ DetectorUtils.init({
     onDay: (today, answerElement) => {
         const otterImage = document.getElementById('otter-image');
         const container = document.querySelector('.container');
-        
+        if (!otterImage || !container) return;
+
+        const img = otterImage.querySelector('img');
+        if (!img) return;
+
         answerElement.textContent = "Yes, it's Tuesday!";
-        otterImage.querySelector('img').src = "happy_otter.svg";
-        otterImage.querySelector('img').alt = "Happy Otter";
+        img.src = "happy_otter.svg";
+        img.alt = "Happy Otter";
         container.classList.add('is-tuesday');
-        
+
         setupHighFives(otterImage);
     },
     notDay: (today, answerElement, currentDayName) => {
         const otterImage = document.getElementById('otter-image');
         const container = document.querySelector('.container');
-        
+        if (!otterImage || !container) return;
+
+        const img = otterImage.querySelector('img');
+        if (!img) return;
+
         answerElement.textContent = `No, it's ${currentDayName}.`;
-        otterImage.querySelector('img').src = "sad_otter.svg";
-        otterImage.querySelector('img').alt = "Sad Otter";
+        img.src = "sad_otter.svg";
+        img.alt = "Sad Otter";
         container.classList.add('not-tuesday');
-        
+
         setupHighFives(otterImage);
     }
 });

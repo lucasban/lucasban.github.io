@@ -68,7 +68,12 @@
             background: transparent;
             color: var(--text-heading);
             width: 200px;
+            max-width: 100%;
             border-bottom: 2px solid var(--leaf-deep);
+        }
+
+        .plant-name-input:invalid {
+            border-bottom-color: #8a4030;
         }
 
         .plant-name-input:focus {
@@ -158,7 +163,7 @@
                 <div class="status-header">
                     <div class="plant-name-group">
                         <span id="plant-name" class="plant-name" title="Click to rename">Sprout</span>
-                        <input type="text" id="plant-name-input" class="plant-name-input" style="display: none;" maxlength="15">
+                        <input type="text" id="plant-name-input" class="plant-name-input" style="display: none;" maxlength="15" pattern="\S.*" required title="Plant name cannot be empty">
                     </div>
                     <div id="mood-message" class="mood-message">Feeling sunny!</div>
                 </div>
@@ -171,6 +176,10 @@
                     <div class="status-item">
                         <span class="status-label">Health</span>
                         <span class="status-value" id="health-display">100%</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Streak</span>
+                        <span class="status-value" id="streak-display" title="Water daily to build a streak!">—</span>
                     </div>
                     <button class="water-btn" id="water-btn">
                         💧 Water
@@ -200,6 +209,6 @@
     </div>
 
     <script src="../../../theme-toggle.js?v=3"></script>
-    <script src="plant.js?v=2"></script>
+    <script src="plant.js?v=3"></script>
 </body>
 </html>

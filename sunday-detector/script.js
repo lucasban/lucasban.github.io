@@ -6,6 +6,8 @@ DetectorUtils.init({
         const body = document.body;
         const vibeElement = document.getElementById('vibe');
         const shadowElement = document.getElementById('shadow');
+        if (!vibeElement || !shadowElement) return;
+
         const currentHour = today.getHours();
 
         answerElement.textContent = "Yes, it's Sunday";
@@ -55,6 +57,8 @@ DetectorUtils.init({
         const body = document.body;
         const vibeElement = document.getElementById('vibe');
         const countdownElement = document.getElementById('countdown');
+        if (!vibeElement || !countdownElement) return;
+
         const currentDay = today.getDay();
 
         body.classList.add('not-sunday');

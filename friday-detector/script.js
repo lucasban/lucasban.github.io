@@ -4,6 +4,8 @@ DetectorUtils.init({
     targetDayName: "Friday",
     onDay: (today, answerElement) => {
         const message = document.getElementById('message');
+        if (!message) return;
+
         // Simulate uncertainty for non-premium users
         const isFridayForSure = (Math.random() < 0.5);
 
@@ -16,6 +18,8 @@ DetectorUtils.init({
     },
     notDay: (today, answerElement, currentDayName) => {
         const message = document.getElementById('message');
+        if (!message) return;
+
         message.textContent = "No, it's not Friday.";
         setupEasterEgg();
     }
@@ -25,6 +29,8 @@ function setupEasterEgg() {
     const subscribeButton = document.getElementById('subscribe-button');
     const confettiContainer = document.getElementById('confetti-container');
     const message = document.getElementById('message');
+    if (!subscribeButton || !confettiContainer || !message) return;
+
     const confettiColors = ['#2d6a4f', '#3d8b66', '#b8d4c4', '#b8863a', '#8a4030'];
     let clickCount = 0;
 
