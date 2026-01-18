@@ -107,17 +107,31 @@ body {
     color: var(--text-primary);
     line-height: 1.65;
     letter-spacing: -0.01em;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(201, 148, 44, 0.03) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(45, 106, 79, 0.025) 0%, transparent 35%);
+}
+
+/* === Text Selection - Soft Sage === */
+::selection {
+    background: var(--leaf-soft);
+    color: var(--text-heading);
 }
 
 /* === Layout === */
 .container {
+    position: relative;
     max-width: 720px;
     margin: 0 auto;
     padding: 24px;
     background-color: var(--bg-secondary);
     border: 1.5px solid var(--border-color);
     border-radius: 12px;
+    box-shadow:
+        0 1px 3px rgba(154, 74, 53, 0.08),
+        0 4px 12px rgba(154, 74, 53, 0.06);
 }
+
 
 /* === Typography === */
 h1, h2 {
@@ -142,6 +156,17 @@ h3, h4, h5, h6 {
 h1 { font-size: 1.85rem; }
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.15rem; }
+
+h1::after {
+    content: "";
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: var(--wood-warm);
+    margin-top: 0.3em;
+    border-radius: 2px;
+    opacity: 0.6;
+}
 
 p {
     margin: 0 0 1em 0;
@@ -271,6 +296,15 @@ footer {
     color: var(--text-subtle);
 }
 
+footer::after {
+    content: "🌱";
+    display: block;
+    text-align: center;
+    margin-top: 1em;
+    opacity: 0.35;
+    font-size: 0.9rem;
+}
+
 /* === Buttons === */
 .btn {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -285,13 +319,15 @@ footer {
     color: var(--text-primary);
     display: inline-block;
     transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(154, 74, 53, 0.1);
 }
 
 .btn:hover {
     background: var(--btn-hover);
-    border-color: var(--text-muted);
+    border-color: var(--leaf-deep);
     color: var(--text-heading);
     transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(45, 106, 79, 0.15);
 }
 
 .btn:active {
@@ -320,6 +356,9 @@ select:focus-visible,
 textarea:focus-visible {
     outline: 2px solid var(--link-color);
     outline-offset: 2px;
+    box-shadow:
+        0 0 0 3px rgba(45, 106, 79, 0.12),
+        0 1px 2px rgba(154, 74, 53, 0.08);
 }
 
 /* === Card Grid === */
@@ -335,12 +374,16 @@ textarea:focus-visible {
     padding: 1.25em;
     background: var(--bg-primary);
     border-radius: 8px;
-    transition: border-color 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 1px 2px rgba(154, 74, 53, 0.06);
 }
 
 .card:hover {
     border-color: var(--leaf-deep);
     transform: translateY(-2px);
+    box-shadow:
+        0 2px 4px rgba(154, 74, 53, 0.08),
+        0 4px 12px rgba(45, 106, 79, 0.1);
 }
 
 .card h3 {
