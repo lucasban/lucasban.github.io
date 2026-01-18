@@ -66,17 +66,36 @@ Each detector is a standalone mini-app with a unique theme:
 ## Demos
 
 ### Canvas
-- **Digital Plant**: Tamagotchi-style fractal tree that grows over real-time days. Features naming, watering (localStorage), health-based mood, flowering, and animated critters.
+- **Digital Plant**: Tamagotchi-style fractal tree that grows over real-time days. Features:
+  - Naming, watering (localStorage), health-based mood, flowering, and animated critters
+  - **Kawaii face** on trunk that blinks, smiles/frowns based on health
+  - **Seasonal themes** (spring/summer/autumn/winter color palettes, winter snowflakes)
+  - **Watering streak counter** with milestone notifications (3/7/14/30 days)
+  - **Growth milestone celebrations** (particle bursts, zoom effects, confetti)
+  - **Interactive critter events** every 2-3 min (ladybug, butterfly, bee, aphids give health bonuses)
+  - **Happy sun / sleepy moon** with faces in corner
+  - **Hearts** float up when watering, **sparkles** around healthy plants
 - **Gravity**: Click-and-drag to launch bodies, watch them orbit and attract
-
-...
+- **Game of Life**: Conway's cellular automaton with presets
 
 ## Recent Activity (2026-01-18)
 
+- **Digital Plant v3** (latest):
+    - **Kawaii features**: Cute face on trunk (blinks, reacts to health), happy sun/sleepy moon, floating hearts when watering, sparkles around healthy plants, cuter mood messages with emojis
+    - **Seasonal themes**: Spring/summer/autumn/winter color palettes affecting leaves, flowers, fruit, sky, and ground; winter adds snowflakes
+    - **Watering streak**: Tracks consecutive days watered with milestone notifications at 3/7/14/30 days
+    - **Growth milestones**: Particle burst (stage 5), zoom effect (stage 8), golden pulse (stage 10), confetti (stage 12)
+    - **Interactive critter events**: Random events every 2-3 min - click ladybug/bee/aphids for health bonuses
+- **Codebase Fixes**:
+    - **Memory leaks**: Fixed Monday detector interval not clearing on visibility change
+    - **Null safety**: Added null checks to all 7 detector scripts for DOM elements
+    - **Error handling**: Documented empty catch blocks in Saturday detector audio code
+    - **Input validation**: Added pattern validation and responsive max-width to plant name input
 - **Easter Eggs**:
     - **Interactive Decoration**: Added clickable plant emoji (🌿) to all 7 day detectors with bounce animation, plant pun tooltips, emoji evolution stages (🌱→🌿→🪴→🌳→🌻), and floating emoji particles.
 - **Bug Fixes**:
     - **Confetti Animation**: Added missing `.confetti` base CSS and `@keyframes confettiFall` animation to `shared/detector-base.css`. Fixed Thursday/Friday/Saturday detector confetti.
+    - **Winter grass flickering**: Changed random grass rendering to deterministic spacing
 - **Feature Expansion**:
     - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
     - **Digital Plant (v1)**: Created persistent fractal tree demo with localStorage health/age tracking.
