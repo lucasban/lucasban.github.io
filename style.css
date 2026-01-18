@@ -2,32 +2,32 @@
 
 /* === CSS Custom Properties === */
 :root {
-    /* Light Mode - "Planted Studio" */
-    --bg-primary: #faf8f5;
-    --bg-secondary: #f0f4f1;
-    --bg-code: #f0f4f1;
-    --text-primary: #3d3833;
-    --text-heading: #2c2521;
-    --text-muted: #5c554e;
-    --text-subtle: #7a726a;
-    --border-color: #d4ccc3;
+    /* Light Mode - "Sunlit Den" */
+    --bg-primary: #f0e9df;
+    --bg-secondary: #e8dfd3;
+    --bg-code: #e5dcd0;
+    --text-primary: #3d3632;
+    --text-heading: #2a2420;
+    --text-muted: #5c524a;
+    --text-subtle: #7a6f65;
+    --border-color: #c9bfb3;
     --link-color: #2d6a4f;
-    --link-visited: #9a4a35;
-    --link-hover: #40916c;
-    --link-active: #9a4a35;
-    --btn-bg: #faf8f5;
-    --btn-hover: #f0f4f1;
-    --btn-active: #e5ebe7;
-    --lightbox-bg: rgba(26, 31, 28, 0.95);
-    --lightbox-border: #f0f4f1;
+    --link-visited: #8a4030;
+    --link-hover: #3d8b66;
+    --link-active: #8a4030;
+    --btn-bg: #ebe2d6;
+    --btn-hover: #e0d5c7;
+    --btn-active: #d4c8b8;
+    --lightbox-bg: rgba(26, 22, 18, 0.95);
+    --lightbox-border: #e8dfd3;
 
     /* Accent colors - Greenery palette */
     --leaf-deep: #2d6a4f;
-    --leaf-bright: #40916c;
-    --leaf-soft: #95d5b2;
-    --sage-bg: #f0f4f1;
-    --wood-warm: #c9942c;
-    --wood-rust: #9a4a35;
+    --leaf-bright: #3d8b66;
+    --leaf-soft: #b8d4c4;
+    --sage-bg: #e0d9ce;
+    --wood-warm: #b8863a;
+    --wood-rust: #8a4030;
 }
 
 /* Dark mode - via OS preference or explicit toggle */
