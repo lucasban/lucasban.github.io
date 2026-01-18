@@ -1,26 +1,31 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const answerElement = document.getElementById('answer');
-    const otterImage = document.getElementById('otter-image');
-    const container = document.querySelector('.container');
-
-    const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const today = new Date();
-    const currentDay = today.getDay();
-    const isTuesday = currentDay === 2;
-
-    if (isTuesday) {
+DetectorUtils.init({
+    dayIndex: 2,
+    targetDayName: "Tuesday",
+    onDay: (today, answerElement) => {
+        const otterImage = document.getElementById('otter-image');
+        const container = document.querySelector('.container');
+        
         answerElement.textContent = "Yes, it's Tuesday!";
         otterImage.querySelector('img').src = "happy_otter.svg";
         otterImage.querySelector('img').alt = "Happy Otter";
         container.classList.add('is-tuesday');
-    } else {
-        answerElement.textContent = `No, it's ${daysOfWeek[currentDay]}.`;
+        
+        setupHighFives(otterImage);
+    },
+    notDay: (today, answerElement, currentDayName) => {
+        const otterImage = document.getElementById('otter-image');
+        const container = document.querySelector('.container');
+        
+        answerElement.textContent = `No, it's ${currentDayName}.`;
         otterImage.querySelector('img').src = "sad_otter.svg";
         otterImage.querySelector('img').alt = "Sad Otter";
         container.classList.add('not-tuesday');
+        
+        setupHighFives(otterImage);
     }
+});
 
-    // High five interaction
+function setupHighFives(otterImage) {
     let highFiveCount = 0;
     const highFiveMessages = [
         "High five!",
@@ -43,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Show floating text
         const text = document.createElement('span');
         text.className = 'high-five-text';
-        text.textContent = highFiveMessages[highFiveCount % highFiveMessages.length];
+        text.textContent = DetectorUtils.getRandom(highFiveMessages);
         otterImage.appendChild(text);
 
         // Clean up after animation
@@ -54,4 +59,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
         highFiveCount++;
     });
-});
+}

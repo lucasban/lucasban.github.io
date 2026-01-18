@@ -1,34 +1,276 @@
 /* Base styles for day detector pages
  * Provides consistent navigation and theme toggle structure
  * Individual detectors customize appearance via CSS custom properties
- *
- * Custom properties that detectors should define:
- * --detector-link-color
- * --detector-link-bg
- * --detector-link-border
- * --detector-toggle-bg
- * --detector-toggle-border
- * --detector-toggle-button-hover
- * --detector-toggle-button-active
  */
+
+/* === Light Mode - "Sunlit Den" (Defaults) === */
+:root {
+    color-scheme: light;
+    --bg-primary: #f0e9df;
+    --bg-secondary: #e8dfd3;
+    --bg-code: #e5dcd0;
+    --text-primary: #3d3632;
+    --text-heading: #2a2420;
+    --text-muted: #5c524a;
+    --text-subtle: #7a6f65;
+    --border-color: #c9bfb3;
+    --link-color: #2d6a4f;
+    --link-visited: #8a4030;
+    --link-hover: #3d8b66;
+    --btn-bg: #ebe2d6;
+    --btn-hover: #e0d5c7;
+    --btn-active: #d4c8b8;
+
+    /* Accent colors - Greenery palette */
+    --leaf-deep: #2d6a4f;
+    --leaf-bright: #3d8b66;
+    --leaf-soft: #b8d4c4;
+    --sage-bg: #e0d9ce;
+    --wood-warm: #b8863a;
+    --wood-rust: #8a4030;
+
+    /* Detector-specific accents */
+    --accent-positive: #2d6a4f;
+    --accent-negative: #8a4030;
+    --accent-neutral: #5c524a;
+    --countdown-bg: rgba(232, 223, 211, 0.9);
+    --shadow-color: rgba(61, 54, 50, 0.08);
+
+    /* Shared component overrides (can be redefined in individual detectors) */
+    --detector-link-color: var(--link-color);
+    --detector-link-bg: var(--bg-secondary);
+    --detector-link-border: 1.5px solid var(--border-color);
+    --detector-toggle-bg: var(--btn-bg);
+    --detector-toggle-border: 1.5px solid var(--border-color);
+}
+
+/* Dark mode - via OS preference */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --bg-primary: #1a1f1c;
+        --bg-secondary: #242a26;
+        --bg-code: #242a26;
+        --text-primary: #e8e2db;
+        --text-heading: #f5f0e8;
+        --text-muted: #c5bdb3;
+        --text-subtle: #9a928a;
+        --border-color: #3a4a3e;
+        --link-color: #52b788;
+        --link-visited: #d4856e;
+        --link-hover: #95d5b2;
+        --btn-bg: #242a26;
+        --btn-hover: #2e3a32;
+        --btn-active: #3a4a3e;
+
+        --leaf-deep: #52b788;
+        --leaf-bright: #95d5b2;
+        --leaf-soft: #b7e4c7;
+        --sage-bg: #242a26;
+        --wood-warm: #e0ac3e;
+        --wood-rust: #d4856e;
+
+        --accent-positive: #52b788;
+        --accent-negative: #d4856e;
+        --accent-neutral: #9a928a;
+        --countdown-bg: rgba(36, 42, 38, 0.9);
+        --shadow-color: rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Explicit dark mode override */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg-primary: #1a1f1c;
+    --bg-secondary: #242a26;
+    --bg-code: #242a26;
+    --text-primary: #e8e2db;
+    --text-heading: #f5f0e8;
+    --text-muted: #c5bdb3;
+    --text-subtle: #9a928a;
+    --border-color: #3a4a3e;
+    --link-color: #52b788;
+    --link-visited: #d4856e;
+    --link-hover: #95d5b2;
+    --btn-bg: #242a26;
+    --btn-hover: #2e3a32;
+    --btn-active: #3a4a3e;
+
+    --leaf-deep: #52b788;
+    --leaf-bright: #95d5b2;
+    --leaf-soft: #b7e4c7;
+    --sage-bg: #242a26;
+    --wood-warm: #e0ac3e;
+    --wood-rust: #d4856e;
+
+    --accent-positive: #52b788;
+    --accent-negative: #d4856e;
+    --accent-neutral: #9a928a;
+    --countdown-bg: rgba(36, 42, 38, 0.9);
+    --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+/* === Base Reset === */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.65;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(45, 106, 79, 0.03) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(184, 134, 58, 0.025) 0%, transparent 35%);
+}
+
+/* === Text Selection === */
+::selection {
+    background: var(--leaf-soft);
+    color: var(--text-heading);
+}
+
+/* === Container === */
+.container {
+    text-align: center;
+    max-width: 500px;
+    padding: 40px;
+    background-color: var(--bg-secondary);
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow:
+        0 1px 3px var(--shadow-color),
+        0 4px 12px var(--shadow-color);
+}
+
+/* === Typography === */
+h1 {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--text-heading);
+    margin: 0 0 0.5em 0;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+}
+
+/* === Answer Display === */
+#answer {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-size: 1.5rem;
+    color: var(--text-heading);
+    margin: 20px 0;
+    font-weight: 600;
+}
+
+#answer.positive {
+    color: var(--accent-positive);
+}
+
+#answer.negative {
+    color: var(--accent-negative);
+}
+
+/* === Subtitle / Vibe Text === */
+#subtitle, #vibe, #existential-dread {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 15px 0;
+    line-height: 1.6;
+}
+
+/* === Countdown Timer === */
+#countdown, .countdown {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    padding: 12px 18px;
+    background: var(--countdown-bg);
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 20px;
+}
+
+/* === Buttons === */
+button, .btn {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.7em 1.5em;
+    background: var(--leaf-deep);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #f5f0e8;
+    display: inline-block;
+    transition: all 0.15s ease;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+button:hover, .btn:hover {
+    background: var(--leaf-bright);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+
+button:active, .btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px var(--shadow-color);
+}
+
+button:focus-visible, .btn:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* === View Transitions === */
+@view-transition {
+    navigation: auto;
+}
 
 /* Home Link */
 .home-link {
+    view-transition-name: home-link;
     position: fixed;
     top: 20px;
     left: 20px;
     color: var(--detector-link-color, var(--link-color));
-    background: var(--detector-link-bg, transparent);
-    border: var(--detector-link-border, none);
+    background: var(--detector-link-bg, var(--bg-secondary));
+    border: var(--detector-link-border, 1.5px solid var(--border-color));
     text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
     font-size: 0.9rem;
+    font-weight: 500;
     padding: 10px 14px;
     border-radius: 8px;
     transition: all 0.2s ease;
-    z-index: 10;
+    z-index: 100;
 }
 
 .home-link:hover {
+    color: var(--link-hover);
+    border-color: var(--leaf-deep);
+    transform: translateY(-1px);
     text-decoration: underline;
     text-decoration-thickness: 2px;
 }
@@ -40,12 +282,13 @@
 
 /* Theme Toggle */
 .theme-toggle {
+    view-transition-name: theme-toggle;
     position: fixed;
     top: 20px;
     right: 20px;
     display: inline-flex;
-    background: var(--detector-toggle-bg, rgba(255, 255, 255, 0.1));
-    border: 1.5px solid var(--detector-toggle-border, rgba(255, 255, 255, 0.2));
+    background: var(--detector-toggle-bg, var(--btn-bg));
+    border: var(--detector-toggle-border, 1.5px solid var(--border-color));
     border-radius: 8px;
     overflow: hidden;
     z-index: 1000;
@@ -59,20 +302,29 @@
     font-size: 1rem;
     line-height: 1;
     transition: background 0.2s;
+    border-radius: 0;
+    box-shadow: none;
     color: inherit;
 }
 
 .theme-toggle button:hover {
-    background: var(--detector-toggle-button-hover, rgba(255, 255, 255, 0.15));
+    background: var(--detector-toggle-button-hover, var(--btn-hover));
+    transform: none;
+    box-shadow: none;
 }
 
 .theme-toggle button[aria-pressed="true"] {
-    background: var(--detector-toggle-button-active, rgba(255, 255, 255, 0.2));
+    background: var(--detector-toggle-button-active, var(--bg-secondary));
 }
 
 .theme-toggle button:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: -2px;
+}
+
+/* === Container === */
+.container {
+    view-transition-name: main-container;
 }
 
 /* Accessibility - Reduced motion */
@@ -83,5 +335,46 @@
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+    }
+
+    .confetti {
+        display: none;
+    }
+}
+
+/* === Responsive === */
+@media (max-width: 600px) {
+    body {
+        padding: 15px;
+    }
+
+    .container {
+        padding: 25px;
+        border-radius: 10px;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    #answer {
+        font-size: 1.3rem;
+    }
+
+    .home-link {
+        top: 15px;
+        left: 15px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+
+    .theme-toggle {
+        top: 15px;
+        right: 15px;
+    }
+
+    .theme-toggle button {
+        padding: 0.4em 0.6em;
+        font-size: 0.9rem;
     }
 }

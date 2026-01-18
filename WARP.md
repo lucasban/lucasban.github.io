@@ -10,6 +10,7 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 
 - **Local preview**: Open any `.html` file directly in browser, or use `python3 -m http.server` for proper routing
 - **Deploy**: Push to `main` — GitHub Pages deploys automatically
+- **Tests**: Open `tests/index.html` to run the vanilla JS test suite. Always check this before major changes.
 - **Cache busting**: CSS/JS files use `?v=N` query strings
   - Global resources (style.css, theme-toggle.js) use shared version — update everywhere
   - Page-specific resources use independent versions — update only where used
@@ -27,8 +28,9 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 
 **Day Detectors** (`*-detector/`):
 - 7 standalone mini-apps, one per day of the week
+- **Shared Logic**: `shared/detector-utils.js` handles date checking and UI initialization
+- **Shared Styles**: `shared/detector-base.css` provides consistent nav/toggle structure
 - Each has unique theme/personality (Sunday Scaries, Wednesday frog meme, Saturday party mode, etc.)
-- Day detection: `new Date().getDay()` (0=Sunday, 6=Saturday)
 
 **Demos** (`demos/`):
 - Canvas experiments: gravity simulator, Game of Life
@@ -38,10 +40,28 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 **Photo Gallery** (`photos/`):
 - Fetches from Bluesky via AT Protocol API (no auth required)
 - CSS Grid layout with vanilla JS lightbox, keyboard navigation
+- Includes JSDoc typing and error retry logic
 
 ## Conventions
 
+- **Pre-Work Check**: Always open `tests/index.html` in a browser or review `tests/` before making core changes.
 - All pages include inline HTML navigation (no shared template system)
 - Theme toggle component: 3-button (☀️/🌙/💻) with localStorage persistence
 - Typography: DM Sans for body text, Playfair Display for headings, JetBrains Mono for code
 - Google Fonts loaded on each page
+
+## Recent Activity (2026-01-18)
+
+- **Feature Expansion**:
+    - **Weather Haiku**: Expanded poem library, fixed CSS inconsistencies, and added a "Regenerate" button.
+    - **Detector History**: Added "Last verified" tracking to all 7 day detectors via `shared/detector-utils.js`.
+- **Interactive Polish**:
+    - Implemented **View Transitions API** for smooth morphing between pages.
+    - Added **Skeleton Loading** shimmering placeholders to the photo gallery.
+    - Enhanced **Micro-interactions** with tactile hover/active animations for links and buttons.
+- **Robust Engineering**: Added `.editorconfig` for consistent formatting.
+- **Testing**: Created a vanilla JS test framework in `tests/` with unit tests for `detector-utils.js`.
+- **Type Safety**: Added JSDoc annotations to `shared/detector-utils.js` and `photos/gallery.js`.
+- **CSS Consolidation**: Merged root `detector-base.css` into `shared/detector-base.css` with variable fallbacks. Updated all detectors.
+- **Detector Refactoring**: Created `shared/detector-utils.js` to centralize date logic.
+- **Gallery Improvements**: Added retry logic and improved error handling.

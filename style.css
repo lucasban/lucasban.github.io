@@ -121,8 +121,14 @@ body {
     color: var(--text-heading);
 }
 
+/* === View Transitions === */
+@view-transition {
+    navigation: auto;
+}
+
 /* === Layout === */
 .container {
+    view-transition-name: main-container;
     position: relative;
     max-width: 720px;
     margin: 0 auto;
@@ -205,7 +211,7 @@ a {
     color: var(--link-color);
     text-decoration: none;
     text-underline-offset: 3px;
-    transition: color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 a:visited {
@@ -216,10 +222,12 @@ a:hover {
     color: var(--link-hover);
     text-decoration: underline;
     text-decoration-thickness: 2px;
+    transform: translateY(-1px);
 }
 
 a:active {
     color: var(--link-active);
+    transform: translateY(0);
 }
 
 a:focus-visible {
@@ -415,12 +423,13 @@ textarea:focus-visible {
     border: 1.5px solid var(--border-color);
     border-radius: 8px;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .gallery-grid img:hover {
-    opacity: 0.9;
-    transform: scale(1.02);
+    opacity: 0.95;
+    transform: scale(1.04) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .gallery-grid img:focus-visible {
@@ -538,8 +547,41 @@ textarea:focus-visible {
     font-style: italic;
 }
 
+/* === Skeleton Loading === */
+.skeleton {
+    background: var(--bg-code);
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.skeleton::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.05) 20%,
+        rgba(255, 255, 255, 0.1) 60%,
+        rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 /* === Theme Toggle === */
 .theme-toggle {
+    view-transition-name: theme-toggle;
     position: fixed;
     top: 20px;
     right: 20px;
@@ -558,11 +600,16 @@ textarea:focus-visible {
     cursor: pointer;
     font-size: 1rem;
     line-height: 1;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
 }
 
 .theme-toggle button:hover {
     background: var(--btn-hover);
+    transform: scale(1.1);
+}
+
+.theme-toggle button:active {
+    transform: scale(0.95);
 }
 
 .theme-toggle button[aria-pressed="true"] {

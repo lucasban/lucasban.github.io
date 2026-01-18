@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tests</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; background: #1a1a1a; color: #fff; padding: 20px; }
+        .test-result { margin: 5px 0; padding: 5px 10px; border-radius: 4px; font-family: monospace; }
+        .suite { font-weight: bold; font-size: 1.2em; margin-top: 20px; color: #aaa; border-bottom: 1px solid #333; }
+        .pass { color: #52b788; background: rgba(82, 183, 136, 0.1); }
+        .fail { color: #e63946; background: rgba(230, 57, 70, 0.1); font-weight: bold; }
+        .info { color: #aaa; }
+        h1 { margin-bottom: 20px; }
+        .controls { margin-bottom: 20px; }
+        button { padding: 10px 20px; cursor: pointer; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; }
+        button:hover { background: #444; }
+    </style>
+</head>
+<body>
+    <h1>Test Runner</h1>
+    <div class="controls">
+        <button onclick="location.reload()">Rerun Tests</button>
+        <a href="/" style="color: #aaa; margin-left: 20px;">Back to Home</a>
+    </div>
+    <div id="test-results"></div>
+
+    <!-- 1. Load the Framework -->
+    <script src="test-framework.js"></script>
+
+    <!-- 2. Load the Code Under Test -->
+    <script src="../shared/detector-utils.js"></script>
+
+    <!-- 3. Load the Test Suites -->
+    <script src="detector-utils.test.js"></script>
+
+    <!-- 4. Run -->
+    <script>
+        // Wait for everything to load, then report
+        window.addEventListener('load', () => {
+            window.runTests();
+        });
+    </script>
+</body>
+</html>

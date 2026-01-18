@@ -24,23 +24,25 @@ These use **independent version numbers**. Only bump when that specific file cha
 - `style.css` → **v=8**
 - `theme-toggle.js` → **v=3**
 
-### Shared Resources (optional)
-- `shared/detector-base.css` → **v=1** (optional base styles for day detectors)
+### Shared Resources
+- `shared/detector-base.css` → **v=1** (Base styles for day detectors)
+- `shared/detector-utils.js` → **v=2** (Added history tracking)
 
 ### Day Detector Resources
 - All detector `style.css` files → **v=6**
-- All detector `script.js` files → **v=3**
+- All detector `script.js` files → **v=4** (Refactored to use detector-utils.js)
+- `sunday-detector/script.js` → **v=5** (Fix countdown bug)
 
 ### Demo Resources
 - `demos/canvas/gravity/gravity.js` → v=6
 - `demos/canvas/game-of-life/game-of-life.js` → v=4
-- `demos/api/weather-haiku/weather-haiku.js` → v=3
+- `demos/api/weather-haiku/weather-haiku.js` → **v=4** (Regenerate button + new poems)
 - `demos/typing-test/typing-test.js` → v=3
 - `demos/palette/palette.js` → v=3
 - `demos/cost-per-wear/cost-per-wear.js` → v=3
 
 ### Other Resources
-- `photos/gallery.js` → v=4
+- `photos/gallery.js` → **v=5** (Added retry logic)
 
 ## How to Bump Versions
 

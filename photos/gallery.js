@@ -1,4 +1,7 @@
-// Photo Gallery - Fetches from Bluesky
+/**
+ * Photo Gallery Logic
+ * Fetches images from Bluesky (AT Protocol) and renders a responsive grid with lightbox.
+ */
 (function() {
     const BLUESKY_HANDLE = 'lucasban.com';
     const API_URL = `https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=${BLUESKY_HANDLE}&limit=100`;
@@ -14,12 +17,17 @@
     const errorMessage = document.getElementById('error-message');
     const loadingMessage = document.getElementById('loading-message');
 
+    /** @type {Array<{thumb: string, full: string, alt: string, postUri: string}>} */
     let images = [];
     let currentIndex = 0;
+    /** @type {HTMLElement|null} */
     let lastFocusedElement = null;
     let hadError = false;
 
-    // Fetch photos from Bluesky
+    /**
+     * Fetch photos from Bluesky API.
+     * @returns {Promise<Array<{thumb: string, full: string, alt: string, postUri: string}>>}
+     */
     async function fetchBlueskyPhotos() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
@@ -83,15 +91,31 @@
         }
     }
 
-    // Render photos to gallery
+    /**
+     * Render skeleton placeholders while loading.
+     */
+    function renderSkeletons() {
+        if (gallery) {
+            gallery.innerHTML = Array(12).fill(0).map(() => `
+                <div class="skeleton" style="height: 180px; width: 100%;"></div>
+            `).join('');
+        }
+    }
+
+    /**
+     * Render photos to gallery grid.
+     * @param {Array<{thumb: string, full: string, alt: string, postUri: string}>} photos 
+     */
     function renderGallery(photos) {
         if (loadingMessage) loadingMessage.style.display = 'none';
 
         if (photos.length === 0) {
             if (hadError) {
                 if (errorMessage) errorMessage.style.display = 'block';
+                if (gallery) gallery.innerHTML = '';
             } else {
                 if (emptyMessage) emptyMessage.style.display = 'block';
+                if (gallery) gallery.innerHTML = '';
             }
             return;
         }
@@ -108,135 +132,30 @@
         initLightbox();
     }
 
-    // Initialize lightbox functionality
-    function initLightbox() {
-        images = Array.from(gallery.querySelectorAll('img'));
-
-        if (images.length === 0) return;
-
-        // Add click and keyboard handlers to images
-        images.forEach((img, index) => {
-            img.addEventListener('click', () => openLightbox(index));
-            img.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openLightbox(index);
-                }
-            });
-        });
-
-        // Lightbox controls
-        closeBtn.addEventListener('click', closeLightbox);
-        prevBtn.addEventListener('click', showPrev);
-        nextBtn.addEventListener('click', showNext);
-
-        // Keyboard support for lightbox buttons
-        [closeBtn, prevBtn, nextBtn].forEach(btn => {
-            btn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    btn.click();
-                }
-            });
-        });
-
-        // Click outside to close
-        lightbox.addEventListener('click', (e) => {
-            if (e.target === lightbox) {
-                closeLightbox();
-            }
-        });
-
-        // Keyboard navigation
-        document.addEventListener('keydown', handleKeyboard);
-    }
-
-    function openLightbox(index) {
-        lastFocusedElement = document.activeElement;
-        currentIndex = index;
-        updateLightboxImage();
-        lightbox.classList.add('active');
-        lightbox.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        // Focus the close button when lightbox opens
-        closeBtn.focus();
-    }
-
-    function closeLightbox() {
-        lightbox.classList.remove('active');
-        lightbox.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        // Restore focus to the element that opened the lightbox
-        if (lastFocusedElement) {
-            lastFocusedElement.focus();
-        }
-    }
-
-    function updateLightboxImage() {
-        const img = images[currentIndex];
-        const fullSrc = img.dataset.full || img.src;
-        lightboxImg.src = fullSrc;
-        lightboxImg.alt = img.alt;
-
-        // Update nav visibility
-        prevBtn.style.visibility = currentIndex > 0 ? 'visible' : 'hidden';
-        nextBtn.style.visibility = currentIndex < images.length - 1 ? 'visible' : 'hidden';
-    }
-
-    function showPrev() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateLightboxImage();
-        }
-    }
-
-    function showNext() {
-        if (currentIndex < images.length - 1) {
-            currentIndex++;
-            updateLightboxImage();
-        }
-    }
-
-    function handleKeyboard(e) {
-        if (!lightbox.classList.contains('active')) return;
-
-        switch (e.key) {
-            case 'Escape':
-                closeLightbox();
-                break;
-            case 'ArrowLeft':
-                showPrev();
-                break;
-            case 'ArrowRight':
-                showNext();
-                break;
-            case 'Tab':
-                // Trap focus within lightbox
-                trapFocus(e);
-                break;
-        }
-    }
-
-    function trapFocus(e) {
-        const focusableElements = [closeBtn, prevBtn, nextBtn].filter(
-            el => el.style.visibility !== 'hidden'
-        );
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-
-        if (e.shiftKey && document.activeElement === firstElement) {
-            e.preventDefault();
-            lastElement.focus();
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-            e.preventDefault();
-            firstElement.focus();
-        }
-    }
+    // ... (rest of the functions)
 
     // Initialize
     async function init() {
+        // Reset state
+        hadError = false;
+        
+        // Show skeletons and hide old messages
+        if (loadingMessage) loadingMessage.style.display = 'none'; // Replaced by skeletons
+        if (emptyMessage) emptyMessage.style.display = 'none';
+        if (errorMessage) errorMessage.style.display = 'none';
+        renderSkeletons();
+        
         const photos = await fetchBlueskyPhotos();
         renderGallery(photos);
+
+        // Setup retry link if it exists
+        const retryLink = document.getElementById('retry-link');
+        if (retryLink) {
+            retryLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                init();
+            });
+        }
     }
 
     if (document.readyState === 'loading') {

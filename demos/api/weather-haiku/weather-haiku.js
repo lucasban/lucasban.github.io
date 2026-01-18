@@ -3,6 +3,7 @@
     const cityInput = document.getElementById('city');
     const searchBtn = document.getElementById('search-btn');
     const locationBtn = document.getElementById('location-btn');
+    const regenerateBtn = document.getElementById('regenerate-btn');
     const weatherDisplay = document.getElementById('weather-display');
     const statusEl = document.getElementById('status');
     const errorEl = document.getElementById('error');
@@ -15,6 +16,8 @@
     const temperatureEl = document.getElementById('temperature');
     const conditionEl = document.getElementById('condition');
     const windEl = document.getElementById('wind');
+
+    let lastWeatherData = null;
 
     // Weather code to description and icon
     const weatherCodes = {
@@ -49,40 +52,52 @@
         clear: [
             ['Blue sky stretches wide', 'Sunlight warms the earth below', 'Shadows dance and play'],
             ['Cloudless dome above', 'The sun traces its slow arc', 'Day unfolds in peace'],
-            ['Crystal air so clear', 'Horizons sharp and defined', 'Light finds every crack']
+            ['Crystal air so clear', 'Horizons sharp and defined', 'Light finds every crack'],
+            ['Golden light descends', 'Not a cloud to mar the view', 'World basks in the glow'],
+            ['Infinite blue height', 'Breeze whispers a gentle song', 'Nature breathes ease']
         ],
         cloudy: [
             ['Gray blanket above', 'The world wrapped in soft cotton', 'Quiet contemplation'],
             ['Clouds drift overhead', 'Shapes forming and dissolving', 'Stories in the sky'],
-            ['Overcast today', 'The light diffused and gentle', 'Colors softly glow']
+            ['Overcast today', 'The light diffused and gentle', 'Colors softly glow'],
+            ['Sky of slate and ash', 'Sunlight hidden from our sight', 'Calm descends on all'],
+            ['Rolling waves of gray', 'A ceiling low and heavy', 'World feels small today']
         ],
         rain: [
             ['Raindrops tap the glass', 'A rhythm old as the earth', 'The garden drinks deep'],
             ['Wet streets mirror lights', 'Umbrellas bloom like flowers', 'The world washed anew'],
-            ['Steady rain falling', 'Each drop a small universe', 'The ground welcomes all']
+            ['Steady rain falling', 'Each drop a small universe', 'The ground welcomes all'],
+            ['Clouds weep soft gray tears', 'Washing dust from every leaf', 'Life returns to roots'],
+            ['Patter on the roof', 'Symphony of falling water', 'Sleep comes easy now']
         ],
         snow: [
             ['White silence descends', 'Each flake unique and perfect', 'The world holds its breath'],
             ['Snow blankets the land', 'Footprints mark paths through the white', 'Winter speaks softly'],
-            ['Crystalline and cold', 'The air bites with frozen teeth', 'Beauty in stillness']
+            ['Crystalline and cold', 'The air bites with frozen teeth', 'Beauty in stillness'],
+            ['Falling stars of ice', 'Covering the earth in sleep', 'Pure and bright and cold'],
+            ['Softly piling up', 'Muffling sounds of the city', 'Peace in every drift']
         ],
         fog: [
             ['Mist shrouds everything', 'Familiar made mysterious', 'Boundaries dissolve'],
             ['Gray ghosts drift slowly', 'The world reduced to whispers', 'Near becomes distant'],
-            ['Fog swallows the light', 'Sound travels strange distances', 'I walk through a dream']
+            ['Fog swallows the light', 'Sound travels strange distances', 'I walk through a dream'],
+            ['Veil across the world', 'Hiding secrets in the damp', 'Morning holds its breath']
         ],
         storm: [
             ['Thunder rolls above', 'Lightning cracks the darkened sky', 'Nature shows its force'],
             ['The storm gathers strength', 'Wind howls its ancient warning', 'We shelter within'],
-            ['Electric air crackles', 'Rain drives horizontal', 'Power and fury']
+            ['Electric air crackles', 'Rain drives horizontal', 'Power and fury'],
+            ['Darkness swallows day', 'Flash of light reveals the world', 'Boom shakes the windows']
         ],
         hot: [
             ['Heat shimmers and waves', 'The air thick and slow to move', 'Seeking shade and cool'],
-            ['Summer sun blazes', 'Pavement radiates its warmth', 'Ice melts in the glass']
+            ['Summer sun blazes', 'Pavement radiates its warmth', 'Ice melts in the glass'],
+            ['Burning orb above', 'Shadows offer brief relief', 'Stillness rules the day']
         ],
         cold: [
             ['Bitter cold bites deep', 'Breath hangs visible and still', 'Bundle up and wait'],
-            ['Frost paints the windows', 'The world crisp and crystalline', 'Warmth found within walls']
+            ['Frost paints the windows', 'The world crisp and crystalline', 'Warmth found within walls'],
+            ['Winter\'s icy grip', 'Fingers numb and noses red', 'Fire calls us home']
         ]
     };
 
@@ -157,6 +172,21 @@
         weatherDisplay.style.display = 'none';
     }
 
+    function updateHaikuDisplay(haiku, weatherInfo) {
+        weatherIcon.textContent = weatherInfo.icon;
+        
+        // Animate text change
+        const lines = [line1, line2, line3];
+        lines.forEach((line, index) => {
+            line.style.opacity = '0';
+            setTimeout(() => {
+                line.textContent = haiku[index];
+                line.style.transition = 'opacity 0.5s ease';
+                line.style.opacity = '1';
+            }, 200 + (index * 100));
+        });
+    }
+
     async function displayWeather(lat, lon, displayName) {
         showLoading();
 
@@ -167,14 +197,13 @@
             const temp = current.temperature_2m;
             const wind = current.wind_speed_10m;
 
+            // Store for regeneration
+            lastWeatherData = { code, temp };
+
             const weatherInfo = weatherCodes[code] || { desc: 'Unknown', icon: '🌡️', mood: 'clear' };
             const haiku = getHaiku(weatherInfo.mood, temp);
 
-            // Update display
-            weatherIcon.textContent = weatherInfo.icon;
-            line1.textContent = haiku[0];
-            line2.textContent = haiku[1];
-            line3.textContent = haiku[2];
+            updateHaikuDisplay(haiku, weatherInfo);
 
             locationName.textContent = displayName;
             temperatureEl.textContent = `${temp}°C`;
@@ -188,6 +217,16 @@
         } catch (error) {
             showError('Error fetching weather data: ' + error.message);
         }
+    }
+
+    function regenerateHaiku() {
+        if (!lastWeatherData) return;
+        
+        const { code, temp } = lastWeatherData;
+        const weatherInfo = weatherCodes[code] || { desc: 'Unknown', icon: '🌡️', mood: 'clear' };
+        const haiku = getHaiku(weatherInfo.mood, temp);
+        
+        updateHaikuDisplay(haiku, weatherInfo);
     }
 
     async function searchCity() {
@@ -231,6 +270,9 @@
     // Event listeners
     searchBtn.addEventListener('click', searchCity);
     locationBtn.addEventListener('click', useGeolocation);
+    if (regenerateBtn) {
+        regenerateBtn.addEventListener('click', regenerateHaiku);
+    }
 
     cityInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {

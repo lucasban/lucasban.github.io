@@ -21,6 +21,7 @@
             padding: 2em;
             background: var(--bg-primary);
             border: 1px solid var(--border-color);
+            border-radius: 8px;
             margin: 1.5em 0;
             font-style: italic;
         }
@@ -33,21 +34,23 @@
             margin-bottom: 0.5em;
         }
         .location-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
             margin: 1em 0;
         }
         .location-form input {
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            font-size: 1rem;
-            padding: 0.5em;
-            border: 1px solid var(--border-color);
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            max-width: 200px;
-            width: 100%;
-            border-radius: 3px;
+            flex: 1;
+            min-width: 200px;
         }
         #error {
-            color: #dc322f;
+            color: var(--accent-negative, #dc322f);
+            margin-top: 1em;
+        }
+        .controls {
+            text-align: center;
+            margin-top: 1em;
         }
     </style>
 </head>
@@ -70,8 +73,7 @@
         </header>
 
         <div class="location-form">
-            <label for="city">Enter a city: </label>
-            <input type="text" id="city" placeholder="e.g., Madison, Tokyo">
+            <input type="text" id="city" placeholder="Enter a city (e.g. Tokyo)" aria-label="City name">
             <button class="btn" id="search-btn">Get Haiku</button>
             <button class="btn" id="location-btn">Use My Location</button>
         </div>
@@ -82,6 +84,10 @@
                 <span class="haiku-line" id="line1"></span>
                 <span class="haiku-line" id="line2"></span>
                 <span class="haiku-line" id="line3"></span>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" id="regenerate-btn">Regenerate Poem</button>
             </div>
 
             <dl class="data-box">
@@ -110,6 +116,6 @@
     </div>
 
     <script src="../../../theme-toggle.js?v=3"></script>
-    <script src="weather-haiku.js?v=3"></script>
+    <script src="weather-haiku.js?v=4"></script>
 </body>
 </html>

@@ -36,7 +36,10 @@
         <div class="gallery-grid" id="gallery"></div>
 
         <p id="empty-message" style="display: none;">No photos found.</p>
-        <p id="error-message" style="display: none; color: var(--link-visited);">Failed to load photos from Bluesky. Please try again later.</p>
+        <p id="error-message" style="display: none; color: var(--link-visited);">
+            Failed to load photos from Bluesky. 
+            <a href="#" id="retry-link" style="text-decoration: underline; cursor: pointer; color: var(--link-color);">Try again?</a>
+        </p>
 
         <footer>
             <p><a href="/">&larr; Back to home</a></p>
@@ -52,6 +55,6 @@
     </div>
 
     <script src="../theme-toggle.js?v=3"></script>
-    <script src="gallery.js?v=4"></script>
+    <script src="gallery.js?v=5"></script>
 </body>
 </html>
