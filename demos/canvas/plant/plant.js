@@ -213,38 +213,22 @@
 
         const subBranch = len * 0.75;
         
-        // Recursive calls
-        drawTree(0, -len, subBranch, -20 + (r1 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
-        drawTree(0, -len, subBranch, 20 + (r2 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
+        // Pseudo-random check for flowers (stable per frame)
+        // Use sin/cos of seed + depth to determine if this specific branch tip gets a flower
+        const hasFlower = Math.abs(Math.sin(state.seed * depth * 789)) > 0.8;
 
-        ctx.restore();
-    }
-
-    function drawLeaf(health) {
-        ctx.beginPath();
-        // Heart-shaped leaf
-        ctx.scale(1, 1);
-        ctx.moveTo(0,0);
-        ctx.bezierCurveTo(-5, -5, -10, -15, 0, -20);
-        ctx.bezierCurveTo(10, -15, 5, -5, 0, 0);
-        
-        ctx.fillStyle = getLeafColor(health);
-        ctx.fill();
-    }
-
-    function drawFlower() {
-        ctx.beginPath();
-        ctx.fillStyle = '#ffb7b2'; // Pinkish
-        for(let i=0; i<5; i++) {
-            ctx.rotate((Math.PI * 2) / 5);
-            ctx.ellipse(0, 5, 3, 6, 0, 0, Math.PI * 2);
+        if (!len || depth <= 0) {
+            // Draw Leaf or Flower
+            if (depth <= 0) {
+                if (health > 90 && hasFlower) { 
+                    drawFlower();
+                } else {
+                    drawLeaf(health);
+                }
+            }
+            ctx.restore();
+            return;
         }
-        ctx.fill();
-        ctx.beginPath();
-        ctx.fillStyle = '#fff';
-        ctx.arc(0,0,2,0, Math.PI*2);
-        ctx.fill();
-    }
 
     function getLeafColor(health) {
         if (health <= 0) return '#8a4030'; // Dead brown
