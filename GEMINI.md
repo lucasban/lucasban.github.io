@@ -67,25 +67,23 @@ Each detector is a standalone mini-app with a unique theme:
 
 ### Canvas
 - **Digital Plant**: Tamagotchi-style fractal tree that grows over real-time days. Features:
-  - Naming, watering (localStorage), health-based mood, flowering, and animated critters
-  - **Kawaii face** on trunk that blinks, smiles/frowns based on health
-  - **Seasonal themes** (spring/summer/autumn/winter color palettes, winter snowflakes)
-  - **Watering streak counter** with milestone notifications (3/7/14/30 days)
-  - **Growth milestone celebrations** (particle bursts, zoom effects, confetti)
-  - **Interactive critter events** every 2-3 min (ladybug, butterfly, bee, aphids give health bonuses)
-  - **Happy sun / sleepy moon** with faces in corner
-  - **Hearts** float up when watering, **sparkles** around healthy plants
+  - **Dynamic Weather**: Random cycles of rain (waters plant), clouds, and storms (high wind sway).
+  - **Plant Wisdom**: Unlock daily quotes by clicking the plant's face; collected in a persistent "Leaf Journal".
+  - Naming, watering (localStorage), health-based mood, flowering, and animated critters.
+  - **Kawaii face** on trunk that blinks, smiles/frowns based on health.
+  - **Seasonal themes** (spring/summer/autumn/winter color palettes).
 - **Gravity**: Click-and-drag to launch bodies, watch them orbit and attract
-- **Game of Life**: Conway's cellular automaton with presets
+
+...
 
 ## Recent Activity (2026-01-18)
 
-- **Digital Plant v3** (latest):
-    - **Kawaii features**: Cute face on trunk (blinks, reacts to health), happy sun/sleepy moon, floating hearts when watering, sparkles around healthy plants, cuter mood messages with emojis
-    - **Seasonal themes**: Spring/summer/autumn/winter color palettes affecting leaves, flowers, fruit, sky, and ground; winter adds snowflakes
-    - **Watering streak**: Tracks consecutive days watered with milestone notifications at 3/7/14/30 days
-    - **Growth milestones**: Particle burst (stage 5), zoom effect (stage 8), golden pulse (stage 10), confetti (stage 12)
-    - **Interactive critter events**: Random events every 2-3 min - click ladybug/bee/aphids for health bonuses
+- **Digital Plant v3**:
+    - **Plant Wisdom**: Added "Leaf Journal" mechanic. Unlock daily wisdom quotes by clicking the plant's face.
+    - **Dynamic Weather**: Implemented rain, clouds, and variable wind. Rain provides natural watering; wind affects tree sway.
+    - **Kawaii features**: Cute face on trunk, happy sun/sleepy moon, floating hearts, seasonal themes.
+- **Feature Expansion**:
+    - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
 - **Codebase Fixes**:
     - **Memory leaks**: Fixed Monday detector interval not clearing on visibility change
     - **Null safety**: Added null checks to all 7 detector scripts for DOM elements
