@@ -1,87 +1,93 @@
-/* Mid-Century Modern Design System - Warm Studio / Evening Study */
+/* Mid-Century Modern Design System - Planted Studio / Evening Greenhouse */
 
 /* === CSS Custom Properties === */
 :root {
-    /* Light Mode - "Warm Studio" */
-    --bg-primary: #faf6f1;
-    --bg-secondary: #f5ede4;
-    --bg-code: #f5ede4;
+    /* Light Mode - "Planted Studio" */
+    --bg-primary: #faf8f5;
+    --bg-secondary: #f0f4f1;
+    --bg-code: #f0f4f1;
     --text-primary: #3d3833;
     --text-heading: #2c2521;
     --text-muted: #5c554e;
     --text-subtle: #7a726a;
     --border-color: #d4ccc3;
-    --link-color: #1a7a72;
+    --link-color: #2d6a4f;
     --link-visited: #9a4a35;
-    --link-hover: #c9942c;
+    --link-hover: #40916c;
     --link-active: #9a4a35;
-    --btn-bg: #faf6f1;
-    --btn-hover: #f5ede4;
-    --btn-active: #ebe3d8;
-    --lightbox-bg: rgba(30, 27, 24, 0.95);
-    --lightbox-border: #f5ede4;
+    --btn-bg: #faf8f5;
+    --btn-hover: #f0f4f1;
+    --btn-active: #e5ebe7;
+    --lightbox-bg: rgba(26, 31, 28, 0.95);
+    --lightbox-border: #f0f4f1;
 
-    /* Accent colors */
-    --accent-teal: #1a7a72;
-    --accent-mustard: #c9942c;
-    --accent-rust: #9a4a35;
-    --accent-green: #5d8c61;
+    /* Accent colors - Greenery palette */
+    --leaf-deep: #2d6a4f;
+    --leaf-bright: #40916c;
+    --leaf-soft: #95d5b2;
+    --sage-bg: #f0f4f1;
+    --wood-warm: #c9942c;
+    --wood-rust: #9a4a35;
 }
 
 /* Dark mode - via OS preference or explicit toggle */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        /* Dark Mode - "Evening Study" */
-        --bg-primary: #1e1b18;
-        --bg-secondary: #2a2521;
-        --bg-code: #2a2521;
+        /* Dark Mode - "Evening Greenhouse" */
+        --bg-primary: #1a1f1c;
+        --bg-secondary: #242a26;
+        --bg-code: #242a26;
         --text-primary: #e8e2db;
         --text-heading: #f5f0e8;
         --text-muted: #c5bdb3;
         --text-subtle: #9a928a;
-        --border-color: #4a433a;
-        --link-color: #3ab5aa;
+        --border-color: #3a4a3e;
+        --link-color: #52b788;
         --link-visited: #d4856e;
-        --link-hover: #e0ac3e;
+        --link-hover: #95d5b2;
         --link-active: #d4856e;
-        --btn-bg: #2a2521;
-        --btn-hover: #3a332d;
-        --btn-active: #4a423a;
+        --btn-bg: #242a26;
+        --btn-hover: #2e3a32;
+        --btn-active: #3a4a3e;
         --lightbox-bg: rgba(0, 0, 0, 0.95);
-        --lightbox-border: #4a433a;
+        --lightbox-border: #3a4a3e;
 
-        /* Accent colors - brighter for dark mode */
-        --accent-teal: #3ab5aa;
-        --accent-mustard: #e0ac3e;
-        --accent-rust: #d4856e;
-        --accent-green: #7ab57f;
+        /* Accent colors - Greenery palette for dark mode */
+        --leaf-deep: #52b788;
+        --leaf-bright: #95d5b2;
+        --leaf-soft: #b7e4c7;
+        --sage-bg: #242a26;
+        --wood-warm: #e0ac3e;
+        --wood-rust: #d4856e;
     }
 }
 
 /* Explicit dark mode override */
 :root[data-theme="dark"] {
-    --bg-primary: #1e1b18;
-    --bg-secondary: #2a2521;
-    --bg-code: #2a2521;
+    --bg-primary: #1a1f1c;
+    --bg-secondary: #242a26;
+    --bg-code: #242a26;
     --text-primary: #e8e2db;
     --text-heading: #f5f0e8;
     --text-muted: #c5bdb3;
     --text-subtle: #9a928a;
-    --border-color: #4a433a;
-    --link-color: #3ab5aa;
+    --border-color: #3a4a3e;
+    --link-color: #52b788;
     --link-visited: #d4856e;
-    --link-hover: #e0ac3e;
+    --link-hover: #95d5b2;
     --link-active: #d4856e;
-    --btn-bg: #2a2521;
-    --btn-hover: #3a332d;
-    --btn-active: #4a423a;
+    --btn-bg: #242a26;
+    --btn-hover: #2e3a32;
+    --btn-active: #3a4a3e;
     --lightbox-bg: rgba(0, 0, 0, 0.95);
-    --lightbox-border: #4a433a;
+    --lightbox-border: #3a4a3e;
 
-    --accent-teal: #3ab5aa;
-    --accent-mustard: #e0ac3e;
-    --accent-rust: #d4856e;
-    --accent-green: #7ab57f;
+    --leaf-deep: #52b788;
+    --leaf-bright: #95d5b2;
+    --leaf-soft: #b7e4c7;
+    --sage-bg: #242a26;
+    --wood-warm: #e0ac3e;
+    --wood-rust: #d4856e;
 }
 
 /* === Base Reset & Typography === */
@@ -243,11 +249,17 @@ li {
     margin-bottom: 0.4em;
 }
 
-/* === Horizontal Rule === */
+/* === Horizontal Rule - Botanical === */
 hr {
     border: none;
-    border-top: 1.5px solid var(--border-color);
-    margin: 2em 0;
+    text-align: center;
+    margin: 2.5em 0;
+}
+
+hr::before {
+    content: "· 🌿 ·";
+    color: var(--leaf-deep);
+    letter-spacing: 0.5em;
 }
 
 /* === Footer === */
@@ -327,7 +339,7 @@ textarea:focus-visible {
 }
 
 .card:hover {
-    border-color: var(--text-muted);
+    border-color: var(--leaf-deep);
     transform: translateY(-2px);
 }
 
