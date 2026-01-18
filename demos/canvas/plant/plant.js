@@ -787,17 +787,16 @@
         ctx.fillStyle = groundColor;
         ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
 
-        // Grass tufts (less in winter)
-        if (season !== 'winter' || Math.random() > 0.5) {
-            const grassColor = season === 'autumn' ? '#8a7a4b' : colors.leafBase;
-            ctx.strokeStyle = grassColor;
-            ctx.lineWidth = 2;
-            for(let i=0; i<canvas.width; i+=15) {
-                ctx.beginPath();
-                ctx.moveTo(i, canvas.height-20);
-                ctx.lineTo(i+5, canvas.height-25 - Math.sin(i)*5);
-                ctx.stroke();
-            }
+        // Grass tufts (sparser in winter)
+        const grassColor = season === 'autumn' ? '#8a7a4b' : colors.leafBase;
+        const grassSpacing = season === 'winter' ? 30 : 15; // Fewer tufts in winter
+        ctx.strokeStyle = grassColor;
+        ctx.lineWidth = 2;
+        for(let i=0; i<canvas.width; i+=grassSpacing) {
+            ctx.beginPath();
+            ctx.moveTo(i, canvas.height-20);
+            ctx.lineTo(i+5, canvas.height-25 - Math.sin(i)*5);
+            ctx.stroke();
         }
 
         // Update and render interactive elements
