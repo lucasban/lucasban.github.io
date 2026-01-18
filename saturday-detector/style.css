@@ -1,30 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=DM+Sans:wght@400;500&display=swap');
 
 :root {
-    --bg-start: #667eea;
-    --bg-end: #764ba2;
-    --container-bg: rgba(255, 255, 255, 0.15);
-    --text-primary: #fff;
-    --answer-color: #ffd700;
+    /* MCM party colors for Saturday */
+    --bg-start: #1a7a72;
+    --bg-end: #c9942c;
+    --container-bg: rgba(250, 246, 241, 0.18);
+    --text-primary: #faf6f1;
+    --answer-color: #faf6f1;
     --meter-bg: rgba(255, 255, 255, 0.3);
-    --weekday-bg-start: #636e72;
-    --weekday-bg-end: #2d3436;
-    --weekday-answer: #b2bec3;
-    --weekday-meter: #636e72;
+    --weekday-bg-start: #5c554e;
+    --weekday-bg-end: #3d3833;
+    --weekday-answer: #c5bdb3;
+    --weekday-meter: #5c554e;
+    --link-color: #faf6f1;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-start: #3a4a9a;
-        --bg-end: #4a2a72;
-        --container-bg: rgba(0, 0, 0, 0.25);
-        --text-primary: #e8e8e8;
-        --answer-color: #ffc800;
+        --bg-start: #15635c;
+        --bg-end: #8a6520;
+        --container-bg: rgba(30, 27, 24, 0.35);
+        --text-primary: #e8e2db;
+        --answer-color: #e0ac3e;
         --meter-bg: rgba(255, 255, 255, 0.2);
-        --weekday-bg-start: #3a3d40;
-        --weekday-bg-end: #1a1c1e;
-        --weekday-answer: #8a9499;
-        --weekday-meter: #4a4d50;
+        --weekday-bg-start: #3d3833;
+        --weekday-bg-end: #1e1b18;
+        --weekday-answer: #9a928a;
+        --weekday-meter: #4a433a;
+        --link-color: #e8e2db;
     }
 }
 
@@ -91,8 +94,10 @@ h1 {
 }
 
 #meter-label {
+    font-family: 'DM Sans', sans-serif;
     color: var(--text-primary);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 500;
     margin-bottom: 10px;
 }
 
@@ -108,7 +113,7 @@ h1 {
 
 #meter-fill {
     height: 100%;
-    background: linear-gradient(90deg, #ff6b6b, #ffd93d, #6bcb77, #4d96ff);
+    background: linear-gradient(90deg, #9a4a35, #c9942c, #1a7a72, #3ab5aa);
     background-size: 300% 100%;
     border-radius: 15px;
     transition: width 1s ease-out;
@@ -127,15 +132,19 @@ body.saturday-mode {
 
 @keyframes disco {
     0%, 100% { background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); }
-    25% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    50% { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    75% { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    25% { background: linear-gradient(135deg, #9a4a35 0%, #c9942c 100%); }
+    50% { background: linear-gradient(135deg, #1a7a72 0%, #3ab5aa 100%); }
+    75% { background: linear-gradient(135deg, #c9942c 0%, #9a4a35 100%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
     body.saturday-mode {
         animation: none;
         background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+    }
+    .confetti {
+        animation: none;
+        display: none;
     }
 }
 
@@ -157,24 +166,25 @@ body.weekday-mode #meter-fill {
     position: fixed;
     top: 20px;
     left: 20px;
-    color: var(--text-primary);
+    color: var(--link-color);
     text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
     font-size: 0.9rem;
-    font-family: Arial, sans-serif;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--container-bg);
-    border-radius: 5px;
-    transition: opacity 0.3s;
+    border-radius: 8px;
+    transition: all 0.2s ease;
     z-index: 10;
 }
 
 .home-link:hover {
-    opacity: 0.8;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
 }
 
 .home-link:focus-visible {
     outline: 2px solid var(--text-primary);
-    outline-offset: 2px;
+    outline-offset: 3px;
 }
 
 /* Sound toggle */
@@ -184,11 +194,12 @@ body.weekday-mode #meter-fill {
     gap: 0.5em;
     margin-top: 1.5em;
     cursor: pointer;
-    font-family: Arial, sans-serif;
+    font-family: 'DM Sans', sans-serif;
     font-size: 0.9rem;
+    font-weight: 500;
     color: var(--text-primary);
     background: var(--container-bg);
-    padding: 0.5em 1em;
+    padding: 0.6em 1.2em;
     border-radius: 20px;
     transition: opacity 0.2s;
 }

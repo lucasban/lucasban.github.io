@@ -1,31 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap');
+
 :root {
-    --bg-primary: #F0EAD6;
-    --text-primary: #333;
-    --heading-color: #DAA520;
-    --button-bg: #48D1CC;
-    --button-hover: #3CAEA3;
-    --result-bg: #E0FFFF;
-    --result-text: #2F4F4F;
-    --note-color: #8B4513;
+    /* MCM warm palette for Thursday */
+    --bg-primary: #f5ede4;
+    --text-primary: #3d3833;
+    --heading-color: #c9942c;
+    --button-bg: #1a7a72;
+    --button-hover: #15635c;
+    --result-bg: #faf6f1;
+    --result-text: #2c2521;
+    --note-color: #9a4a35;
+    --link-color: #1a7a72;
+    --border-color: #d4ccc3;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-primary: #2a2820;
-        --text-primary: #d4d4d4;
-        --heading-color: #e8b923;
-        --button-bg: #2a9d97;
-        --button-hover: #238a85;
-        --result-bg: #1a3535;
-        --result-text: #a8c8c8;
-        --note-color: #c27a3a;
+        --bg-primary: #2a2521;
+        --text-primary: #e8e2db;
+        --heading-color: #e0ac3e;
+        --button-bg: #3ab5aa;
+        --button-hover: #2a9590;
+        --result-bg: #1e1b18;
+        --result-text: #e8e2db;
+        --note-color: #d4856e;
+        --link-color: #3ab5aa;
+        --border-color: #4a433a;
     }
 }
 
 body, html {
     min-height: 100%;
     margin: 0;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
 }
@@ -35,41 +42,61 @@ body, html {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    min-height: 100vh;
+    padding: 20px;
 }
 
 h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 600;
     color: var(--heading-color);
+    font-size: 2.5rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1em;
 }
 
 button {
-    padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    padding: 12px 24px;
     background-color: var(--button-bg);
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    color: var(--text-primary);
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    color: #faf6f1;
 }
 
 button:hover {
     background-color: var(--button-hover);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--heading-color);
+    outline-offset: 3px;
 }
 
 #result {
-    margin-top: 20px;
-    font-size: 20px;
+    margin-top: 24px;
+    font-size: 1.2rem;
     color: var(--result-text);
-    padding: 10px;
-    border-radius: 5px;
+    padding: 16px 24px;
+    border-radius: 12px;
     background-color: var(--result-bg);
+    border: 1.5px solid var(--border-color);
 }
 
 .note {
-    margin-top: 20px;
+    margin-top: 24px;
     color: var(--note-color);
     font-style: italic;
+    font-size: 0.95rem;
 }
 
 .hidden {
@@ -90,22 +117,25 @@ button:hover {
     position: fixed;
     top: 20px;
     left: 20px;
-    color: var(--note-color);
+    color: var(--link-color);
     text-decoration: none;
     font-size: 0.9rem;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--result-bg);
-    border-radius: 5px;
-    transition: opacity 0.3s;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .home-link:hover {
-    opacity: 0.8;
+    color: #c9942c;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
 }
 
 .home-link:focus-visible {
     outline: 2px solid var(--heading-color);
-    outline-offset: 2px;
+    outline-offset: 3px;
 }
 
 /* Confetti styles */
@@ -138,5 +168,8 @@ button:hover {
     .confetti {
         animation: none;
         display: none;
+    }
+    #result {
+        animation: none;
     }
 }

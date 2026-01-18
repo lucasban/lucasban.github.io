@@ -1,68 +1,87 @@
-/* Warm Sepia Design System - Solarized Light/Dark inspired */
+/* Mid-Century Modern Design System - Warm Studio / Evening Study */
 
 /* === CSS Custom Properties === */
 :root {
-    --bg-primary: #fdf6e3;
-    --bg-secondary: #eee8d5;
-    --bg-code: #fdf6e3;
-    --text-primary: #657b83;
-    --text-heading: #586e75;
-    --text-muted: #839496;
-    --text-subtle: #93a1a1;
-    --border-color: #93a1a1;
-    --link-color: #268bd2;
-    --link-visited: #6c71c4;
-    --link-hover: #2aa198;
-    --link-active: #cb4b16;
-    --btn-bg: #fdf6e3;
-    --btn-hover: #eee8d5;
-    --btn-active: #ddd6c3;
-    --lightbox-bg: rgba(0, 43, 54, 0.95);
-    --lightbox-border: #eee8d5;
+    /* Light Mode - "Warm Studio" */
+    --bg-primary: #faf6f1;
+    --bg-secondary: #f5ede4;
+    --bg-code: #f5ede4;
+    --text-primary: #3d3833;
+    --text-heading: #2c2521;
+    --text-muted: #5c554e;
+    --text-subtle: #7a726a;
+    --border-color: #d4ccc3;
+    --link-color: #1a7a72;
+    --link-visited: #9a4a35;
+    --link-hover: #c9942c;
+    --link-active: #9a4a35;
+    --btn-bg: #faf6f1;
+    --btn-hover: #f5ede4;
+    --btn-active: #ebe3d8;
+    --lightbox-bg: rgba(30, 27, 24, 0.95);
+    --lightbox-border: #f5ede4;
+
+    /* Accent colors */
+    --accent-teal: #1a7a72;
+    --accent-mustard: #c9942c;
+    --accent-rust: #9a4a35;
+    --accent-green: #5d8c61;
 }
 
 /* Dark mode - via OS preference or explicit toggle */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        --bg-primary: #002b36;
-        --bg-secondary: #073642;
-        --bg-code: #073642;
-        --text-primary: #839496;
-        --text-heading: #93a1a1;
-        --text-muted: #657b83;
-        --text-subtle: #586e75;
-        --border-color: #586e75;
-        --link-color: #268bd2;
-        --link-visited: #6c71c4;
-        --link-hover: #2aa198;
-        --link-active: #cb4b16;
-        --btn-bg: #073642;
-        --btn-hover: #094552;
-        --btn-active: #0a5565;
+        /* Dark Mode - "Evening Study" */
+        --bg-primary: #1e1b18;
+        --bg-secondary: #2a2521;
+        --bg-code: #2a2521;
+        --text-primary: #e8e2db;
+        --text-heading: #f5f0e8;
+        --text-muted: #c5bdb3;
+        --text-subtle: #9a928a;
+        --border-color: #4a433a;
+        --link-color: #3ab5aa;
+        --link-visited: #d4856e;
+        --link-hover: #e0ac3e;
+        --link-active: #d4856e;
+        --btn-bg: #2a2521;
+        --btn-hover: #3a332d;
+        --btn-active: #4a423a;
         --lightbox-bg: rgba(0, 0, 0, 0.95);
-        --lightbox-border: #073642;
+        --lightbox-border: #4a433a;
+
+        /* Accent colors - brighter for dark mode */
+        --accent-teal: #3ab5aa;
+        --accent-mustard: #e0ac3e;
+        --accent-rust: #d4856e;
+        --accent-green: #7ab57f;
     }
 }
 
 /* Explicit dark mode override */
 :root[data-theme="dark"] {
-    --bg-primary: #002b36;
-    --bg-secondary: #073642;
-    --bg-code: #073642;
-    --text-primary: #839496;
-    --text-heading: #93a1a1;
-    --text-muted: #657b83;
-    --text-subtle: #586e75;
-    --border-color: #586e75;
-    --link-color: #268bd2;
-    --link-visited: #6c71c4;
-    --link-hover: #2aa198;
-    --link-active: #cb4b16;
-    --btn-bg: #073642;
-    --btn-hover: #094552;
-    --btn-active: #0a5565;
+    --bg-primary: #1e1b18;
+    --bg-secondary: #2a2521;
+    --bg-code: #2a2521;
+    --text-primary: #e8e2db;
+    --text-heading: #f5f0e8;
+    --text-muted: #c5bdb3;
+    --text-subtle: #9a928a;
+    --border-color: #4a433a;
+    --link-color: #3ab5aa;
+    --link-visited: #d4856e;
+    --link-hover: #e0ac3e;
+    --link-active: #d4856e;
+    --btn-bg: #2a2521;
+    --btn-hover: #3a332d;
+    --btn-active: #4a423a;
     --lightbox-bg: rgba(0, 0, 0, 0.95);
-    --lightbox-border: #073642;
+    --lightbox-border: #4a433a;
+
+    --accent-teal: #3ab5aa;
+    --accent-mustard: #e0ac3e;
+    --accent-rust: #d4856e;
+    --accent-green: #7ab57f;
 }
 
 /* === Base Reset & Typography === */
@@ -77,35 +96,46 @@ html {
 body {
     margin: 0;
     padding: 20px;
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    line-height: 1.6;
+    line-height: 1.65;
+    letter-spacing: -0.01em;
 }
 
 /* === Layout === */
 .container {
-    max-width: 750px;
+    max-width: 720px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 24px;
     background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
 }
 
 /* === Typography === */
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'Helvetica', 'Arial', sans-serif;
-    font-weight: bold;
+h1, h2 {
+    font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    color: var(--text-heading);
+    letter-spacing: -0.02em;
+}
+
+h3, h4, h5, h6 {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-weight: 700;
     line-height: 1.3;
     margin-top: 1.5em;
     margin-bottom: 0.5em;
     color: var(--text-heading);
 }
 
-h1 { font-size: 1.75rem; }
-h2 { font-size: 1.4rem; }
-h3 { font-size: 1.2rem; }
+h1 { font-size: 1.85rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.15rem; }
 
 p {
     margin: 0 0 1em 0;
@@ -113,22 +143,22 @@ p {
 }
 
 code, pre {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.9em;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.875em;
 }
 
 pre {
     background: var(--bg-code);
-    border: 1px solid var(--border-color);
+    border: 1.5px solid var(--border-color);
     padding: 1em;
     overflow-x: auto;
-    border-radius: 3px;
+    border-radius: 8px;
 }
 
 code {
     background: var(--bg-code);
-    padding: 0.15em 0.3em;
-    border-radius: 2px;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
 }
 
 pre code {
@@ -140,6 +170,8 @@ pre code {
 a {
     color: var(--link-color);
     text-decoration: none;
+    text-underline-offset: 3px;
+    transition: color 0.2s ease;
 }
 
 a:visited {
@@ -149,6 +181,7 @@ a:visited {
 a:hover {
     color: var(--link-hover);
     text-decoration: underline;
+    text-decoration-thickness: 2px;
 }
 
 a:active {
@@ -157,16 +190,17 @@ a:active {
 
 a:focus-visible {
     outline: 2px solid var(--link-color);
-    outline-offset: 2px;
+    outline-offset: 3px;
+    border-radius: 2px;
 }
 
 /* === Navigation === */
 nav {
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.9rem;
     margin-bottom: 2em;
     padding-bottom: 1em;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1.5px solid var(--border-color);
 }
 
 nav a {
@@ -206,13 +240,13 @@ ul, ol {
 }
 
 li {
-    margin-bottom: 0.35em;
+    margin-bottom: 0.4em;
 }
 
 /* === Horizontal Rule === */
 hr {
     border: none;
-    border-top: 1px solid var(--border-color);
+    border-top: 1.5px solid var(--border-color);
     margin: 2em 0;
 }
 
@@ -220,34 +254,37 @@ hr {
 footer {
     margin-top: 3em;
     padding-top: 1em;
-    border-top: 1px solid var(--border-color);
+    border-top: 1.5px solid var(--border-color);
     font-size: 0.85rem;
     color: var(--text-subtle);
 }
 
 /* === Buttons === */
 .btn {
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.9rem;
-    padding: 0.5em 1em;
+    font-weight: 500;
+    padding: 0.6em 1.2em;
     background: var(--btn-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 3px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
     cursor: pointer;
     text-decoration: none;
     color: var(--text-primary);
     display: inline-block;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .btn:hover {
     background: var(--btn-hover);
-    border-color: var(--text-heading);
+    border-color: var(--text-muted);
     color: var(--text-heading);
+    transform: translateY(-1px);
 }
 
 .btn:active {
     background: var(--btn-active);
+    transform: translateY(0);
 }
 
 .btn:focus-visible {
@@ -257,12 +294,12 @@ footer {
 
 /* === Form Inputs === */
 input, select, textarea {
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 1rem;
-    padding: 0.5em;
+    padding: 0.6em;
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
     color: var(--text-primary);
 }
 
@@ -282,10 +319,16 @@ textarea:focus-visible {
 }
 
 .card {
-    border: 1px solid var(--border-color);
-    padding: 1em;
+    border: 1.5px solid var(--border-color);
+    padding: 1.25em;
     background: var(--bg-primary);
-    border-radius: 3px;
+    border-radius: 8px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    border-color: var(--text-muted);
+    transform: translateY(-2px);
 }
 
 .card h3 {
@@ -311,14 +354,15 @@ textarea:focus-visible {
     width: 100%;
     height: 180px;
     object-fit: cover;
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s, transform 0.2s;
 }
 
 .gallery-grid img:hover {
-    opacity: 0.85;
+    opacity: 0.9;
+    transform: scale(1.02);
 }
 
 .gallery-grid img:focus-visible {
@@ -348,7 +392,7 @@ textarea:focus-visible {
     max-width: 90%;
     max-height: 90%;
     border: 4px solid var(--lightbox-border);
-    border-radius: 3px;
+    border-radius: 8px;
 }
 
 .lightbox-close {
@@ -358,7 +402,7 @@ textarea:focus-visible {
     color: var(--lightbox-border);
     font-size: 2rem;
     cursor: pointer;
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .lightbox-nav {
@@ -387,8 +431,8 @@ textarea:focus-visible {
 }
 
 .demo-canvas {
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
     display: block;
     max-width: 100%;
     background: var(--bg-primary);
@@ -398,26 +442,26 @@ textarea:focus-visible {
     margin-top: 1em;
     padding: 1em;
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
 }
 
 .demo-controls label {
     display: block;
     margin-bottom: 0.5em;
-    font-family: 'Helvetica', 'Arial', sans-serif;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 0.9rem;
 }
 
 /* === Data Display === */
 .data-box {
     background: var(--bg-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 3px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
     padding: 1em;
     margin: 1em 0;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 0.875rem;
 }
 
 .data-box dt {
@@ -442,15 +486,15 @@ textarea:focus-visible {
     top: 20px;
     right: 20px;
     display: inline-flex;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
     overflow: hidden;
     z-index: 1000;
     background: var(--btn-bg);
 }
 
 .theme-toggle button {
-    padding: 0.4em 0.6em;
+    padding: 0.5em 0.7em;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -479,11 +523,12 @@ textarea:focus-visible {
     }
 
     .container {
-        padding: 15px;
+        padding: 18px;
+        border-radius: 10px;
     }
 
-    h1 { font-size: 1.5rem; }
-    h2 { font-size: 1.25rem; }
+    h1 { font-size: 1.6rem; }
+    h2 { font-size: 1.3rem; }
 
     .gallery-grid {
         grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

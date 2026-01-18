@@ -1,88 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap');
+
 :root {
-    --bg-primary: #f4d2d0;
-    --content-bg: #fdfd96;
-    --content-border: #8b4513;
-    --content-shadow: #333;
-    --text-primary: #2f4f4f;
-    --ad-bg: #99c2c2;
-    --button-bg: #ff4500;
-    --button-hover: #cd3700;
-    --button-text: #ffffff;
+    /* MCM palette for Friday's retro-premium satire */
+    --bg-primary: #f5ede4;
+    --content-bg: #faf6f1;
+    --content-border: #9a4a35;
+    --content-shadow: #2c2521;
+    --text-primary: #3d3833;
+    --ad-bg: #e8f2ed;
+    --button-bg: #9a4a35;
+    --button-hover: #7d3a2a;
+    --button-text: #faf6f1;
+    --link-color: #1a7a72;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --bg-primary: #3d2524;
-        --content-bg: #4a4a28;
-        --content-border: #6b3410;
-        --content-shadow: #111;
-        --text-primary: #c5c5c5;
-        --ad-bg: #2a4a4a;
-        --button-bg: #cc3800;
-        --button-hover: #a32d00;
-        --button-text: #ffffff;
+        --bg-primary: #2a2521;
+        --content-bg: #1e1b18;
+        --content-border: #d4856e;
+        --content-shadow: #12100e;
+        --text-primary: #e8e2db;
+        --ad-bg: #1a2a28;
+        --button-bg: #d4856e;
+        --button-hover: #b5725a;
+        --button-text: #1e1b18;
+        --link-color: #3ab5aa;
     }
 }
 
 body {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'JetBrains Mono', monospace;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: var(--bg-primary);
+    margin: 0;
+    padding: 20px;
 }
 
 #content {
     text-align: center;
-    width: 80%;
-    max-width: 600px;
+    width: 90%;
+    max-width: 550px;
     background-color: var(--content-bg);
     border: 2px dashed var(--content-border);
-    padding: 20px;
+    border-radius: 12px;
+    padding: 24px;
     box-shadow: 5px 5px var(--content-shadow);
 }
 
 #message {
+    font-family: 'DM Sans', sans-serif;
     color: var(--text-primary);
-    font-size: 24px;
+    font-size: 1.4rem;
+    font-weight: 500;
     margin-bottom: 20px;
+    line-height: 1.5;
 }
 
 #premium-ad {
     background-color: var(--ad-bg);
-    border-radius: 0;
-    padding: 15px;
-    border-top: 3px solid var(--content-shadow);
+    border-radius: 8px;
+    padding: 18px;
+    border-top: 2px solid var(--content-shadow);
+    margin-top: 16px;
 }
 
 #premium-ad p {
-    margin: 0 0 10px 0;
+    font-family: 'DM Sans', sans-serif;
+    margin: 0 0 12px 0;
     color: var(--text-primary);
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 0.95rem;
 }
 
 #subscribe-button {
     background-color: var(--button-bg);
     color: var(--button-text);
-    padding: 10px 20px;
+    padding: 12px 24px;
     cursor: pointer;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 500;
     text-transform: uppercase;
+    letter-spacing: 1px;
     border: none;
+    border-radius: 8px;
     outline: none;
     box-shadow: 3px 3px 0 var(--content-shadow);
-    transition: background-color 0.3s, box-shadow 0.3s;
+    transition: all 0.2s ease;
 }
 
 #subscribe-button:hover, #subscribe-button:focus {
     background-color: var(--button-hover);
-    box-shadow: 6px 6px 0 var(--content-shadow);
-    position: relative;
-    top: -3px;
-    left: -3px;
+    box-shadow: 5px 5px 0 var(--content-shadow);
+    transform: translate(-2px, -2px);
+}
+
+#subscribe-button:active {
+    box-shadow: 2px 2px 0 var(--content-shadow);
+    transform: translate(1px, 1px);
 }
 
 #subscribe-button:focus-visible {
@@ -94,22 +114,25 @@ body {
     position: fixed;
     top: 20px;
     left: 20px;
-    color: var(--text-primary);
+    color: var(--link-color);
     text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
     font-size: 0.9rem;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--ad-bg);
-    border-radius: 5px;
-    transition: opacity 0.3s;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .home-link:hover {
-    opacity: 0.8;
+    color: #c9942c;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
 }
 
 .home-link:focus-visible {
-    outline: 2px solid var(--text-primary);
-    outline-offset: 2px;
+    outline: 2px solid var(--link-color);
+    outline-offset: 3px;
 }
 
 /* Subscribe button animations */
@@ -124,7 +147,7 @@ body {
 }
 
 #subscribe-button.success {
-    background-color: #859900;
+    background-color: #1a7a72;
 }
 
 /* Confetti styles */

@@ -1,51 +1,54 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500&display=swap');
 
 :root {
-    --morning-bg-start: #a8edea;
-    --morning-bg-end: #fed6e3;
-    --afternoon-bg-start: #ffecd2;
-    --afternoon-bg-end: #fcb69f;
-    --evening-bg-start: #2c3e50;
-    --evening-bg-end: #4a5568;
-    --not-sunday-bg-start: #e0e5ec;
-    --not-sunday-bg-end: #d9e2ec;
-    --heading-color: #5d4e37;
-    --answer-color: #8b7355;
-    --vibe-color: #a08060;
-    --countdown-bg: rgba(255, 255, 255, 0.5);
-    --countdown-text: #666;
-    --evening-heading: #cbd5e0;
-    --evening-vibe: #a0aec0;
-    --evening-countdown-bg: rgba(0, 0, 0, 0.3);
-    --evening-countdown-text: #e2e8f0;
-    --shadow-text: #ff6b6b;
+    /* MCM-inspired warm tones for Sunday */
+    --morning-bg-start: #e8f4f2;
+    --morning-bg-end: #f5ede4;
+    --afternoon-bg-start: #f5ede4;
+    --afternoon-bg-end: #ebe3d8;
+    --evening-bg-start: #2a2521;
+    --evening-bg-end: #1e1b18;
+    --not-sunday-bg-start: #f5ede4;
+    --not-sunday-bg-end: #ebe3d8;
+    --heading-color: #2c2521;
+    --answer-color: #3d3833;
+    --vibe-color: #5c554e;
+    --countdown-bg: rgba(245, 237, 228, 0.8);
+    --countdown-text: #5c554e;
+    --evening-heading: #e8e2db;
+    --evening-vibe: #c5bdb3;
+    --evening-countdown-bg: rgba(30, 27, 24, 0.6);
+    --evening-countdown-text: #e8e2db;
+    --shadow-text: #9a4a35;
+    --link-color: #1a7a72;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --morning-bg-start: #2a5a58;
-        --morning-bg-end: #4a2a38;
-        --afternoon-bg-start: #4a3a28;
-        --afternoon-bg-end: #5a2a2a;
-        --evening-bg-start: #1a2530;
-        --evening-bg-end: #2a3540;
-        --not-sunday-bg-start: #2a2d32;
-        --not-sunday-bg-end: #22252a;
-        --heading-color: #c8b898;
-        --answer-color: #b89878;
-        --vibe-color: #c0a080;
-        --countdown-bg: rgba(0, 0, 0, 0.4);
-        --countdown-text: #aaa;
-        --evening-heading: #a8b8c8;
-        --evening-vibe: #8898a8;
-        --evening-countdown-bg: rgba(0, 0, 0, 0.5);
-        --evening-countdown-text: #c8d8e8;
-        --shadow-text: #ff5252;
+        --morning-bg-start: #1a2a28;
+        --morning-bg-end: #2a2521;
+        --afternoon-bg-start: #2a2521;
+        --afternoon-bg-end: #1e1b18;
+        --evening-bg-start: #1a1815;
+        --evening-bg-end: #12100e;
+        --not-sunday-bg-start: #2a2521;
+        --not-sunday-bg-end: #1e1b18;
+        --heading-color: #e8e2db;
+        --answer-color: #c5bdb3;
+        --vibe-color: #9a928a;
+        --countdown-bg: rgba(42, 37, 33, 0.7);
+        --countdown-text: #9a928a;
+        --evening-heading: #e8e2db;
+        --evening-vibe: #9a928a;
+        --evening-countdown-bg: rgba(18, 16, 14, 0.6);
+        --evening-countdown-text: #c5bdb3;
+        --shadow-text: #d4856e;
+        --link-color: #3ab5aa;
     }
 }
 
 body {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Playfair Display', Georgia, serif;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -64,8 +67,10 @@ body {
 
 h1 {
     font-size: 3rem;
+    font-weight: 700;
     color: var(--heading-color);
     margin-bottom: 20px;
+    letter-spacing: -0.02em;
 }
 
 #answer {
@@ -75,11 +80,12 @@ h1 {
 }
 
 #vibe {
-    font-size: 1.3rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.2rem;
     color: var(--vibe-color);
     font-style: italic;
     margin: 20px 0;
-    line-height: 1.6;
+    line-height: 1.65;
 }
 
 #clock-container {
@@ -87,11 +93,12 @@ h1 {
 }
 
 #countdown {
-    font-size: 1.1rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
     color: var(--countdown-text);
-    padding: 15px;
+    padding: 15px 20px;
     background: var(--countdown-bg);
-    border-radius: 10px;
+    border-radius: 12px;
     display: inline-block;
 }
 
@@ -101,9 +108,9 @@ h1 {
     left: 0;
     width: 100%;
     padding: 20px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    background: linear-gradient(transparent, rgba(30, 27, 24, 0.85));
     color: var(--shadow-text);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     text-align: center;
     opacity: 0;
     transition: opacity 1s ease;
@@ -121,22 +128,25 @@ h1 {
     position: fixed;
     top: 20px;
     left: 20px;
-    color: var(--countdown-text);
+    color: var(--link-color);
     text-decoration: none;
+    font-family: 'DM Sans', sans-serif;
     font-size: 0.9rem;
-    padding: 8px 12px;
+    padding: 10px 14px;
     background: var(--countdown-bg);
-    border-radius: 5px;
-    transition: opacity 0.3s;
+    border-radius: 8px;
+    transition: all 0.2s ease;
 }
 
 .home-link:hover {
-    opacity: 0.8;
+    color: #c9942c;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
 }
 
 .home-link:focus-visible {
-    outline: 2px solid var(--heading-color);
-    outline-offset: 2px;
+    outline: 2px solid var(--link-color);
+    outline-offset: 3px;
 }
 
 /* Sunday morning bliss */
