@@ -9,6 +9,7 @@ Personal website hosted at https://lucasban.github.io
 ├── index.html              # Landing page (bio + links)
 ├── style.css               # Mid-Century Modern design system
 ├── theme-toggle.js         # Theme switcher (light/dark/auto)
+├── VERSIONS.md             # Cache busting version tracking
 ├── photos/
 │   ├── index.html          # Photo gallery
 │   └── gallery.js          # Bluesky API + lightbox
@@ -86,7 +87,10 @@ Each detector is a standalone mini-app with a unique theme:
 - No build process - plain HTML/CSS/JS
 - All pages include inline HTML navigation
 - Day detection uses `new Date().getDay()` (0=Sunday, 6=Saturday)
-- **Cache busting**: CSS/JS files use `?v=N` query strings. Bump the version number when making changes to ensure browsers fetch fresh files.
+- **Cache busting**: CSS/JS files use `?v=N` query strings
+  - Global resources (style.css, theme-toggle.js) share a version number - update everywhere when changed
+  - Page-specific resources use independent versions - update only where used
+  - See `VERSIONS.md` for current versions and update procedures
 
 ## Deployment
 

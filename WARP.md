@@ -10,7 +10,10 @@ Personal static website hosted at https://lucasban.github.io. No build process �
 
 - **Local preview**: Open any `.html` file directly in browser, or use `python3 -m http.server` for proper routing
 - **Deploy**: Push to `main` — GitHub Pages deploys automatically
-- **Cache busting**: CSS/JS files use `?v=N` query strings. Bump version number when making changes (e.g., `style.css?v=5` → `style.css?v=6`)
+- **Cache busting**: CSS/JS files use `?v=N` query strings
+  - Global resources (style.css, theme-toggle.js) use shared version — update everywhere
+  - Page-specific resources use independent versions — update only where used
+  - See `VERSIONS.md` for current versions and bash commands to bump versions site-wide
 
 ## Architecture
 
