@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=VT323&family=DM+Sans:wght@400;500&display=swap');
 
 :root {
-    /* Dark warm wood tones for Monday's existential theme */
+    /* Light mode - warm wood tones */
+    color-scheme: light;
     --bg-primary: #1e1b18;
     --bg-glitch-1: #2a1f1f;
     --bg-glitch-2: #1a2020;
@@ -14,8 +15,10 @@
     --link-color: #3ab5aa;
 }
 
+/* Dark mode - via OS preference or explicit toggle */
 @media (prefers-color-scheme: dark) {
-    :root {
+    :root:not([data-theme="light"]) {
+        color-scheme: dark;
         --bg-primary: #12100e;
         --bg-glitch-1: #1a1210;
         --bg-glitch-2: #101515;
@@ -26,6 +29,20 @@
         --answer-color: #3ab5aa;
         --monday-answer: #e0ac3e;
     }
+}
+
+/* Explicit dark mode override */
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg-primary: #12100e;
+    --bg-glitch-1: #1a1210;
+    --bg-glitch-2: #101515;
+    --text-primary: #c5bdb3;
+    --text-shadow: #0a0908;
+    --peaceful-bg-start: #15635c;
+    --peaceful-bg-end: #1f4a46;
+    --answer-color: #3ab5aa;
+    --monday-answer: #e0ac3e;
 }
 
 body {
@@ -148,4 +165,41 @@ body.peaceful-mode #answer {
 .home-link:focus-visible {
     outline: 2px solid var(--text-primary);
     outline-offset: 3px;
+}
+
+/* Theme toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: inline-flex;
+    border: 1.5px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-toggle button {
+    padding: 0.5em 0.7em;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+    transition: background 0.2s;
+    color: var(--text-primary);
+}
+
+.theme-toggle button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.theme-toggle button[aria-pressed="true"] {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.theme-toggle button:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
 }

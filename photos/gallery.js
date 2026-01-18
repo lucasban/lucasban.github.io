@@ -11,11 +11,13 @@
     const prevBtn = document.getElementById('lightbox-prev');
     const nextBtn = document.getElementById('lightbox-next');
     const emptyMessage = document.getElementById('empty-message');
+    const errorMessage = document.getElementById('error-message');
     const loadingMessage = document.getElementById('loading-message');
 
     let images = [];
     let currentIndex = 0;
     let lastFocusedElement = null;
+    let hadError = false;
 
     // Fetch photos from Bluesky
     async function fetchBlueskyPhotos() {
@@ -25,6 +27,7 @@
         try {
             if (loadingMessage) loadingMessage.style.display = 'block';
             if (emptyMessage) emptyMessage.style.display = 'none';
+            if (errorMessage) errorMessage.style.display = 'none';
 
             const response = await fetch(API_URL, { signal: controller.signal });
             clearTimeout(timeoutId);
@@ -70,6 +73,7 @@
             return photos;
         } catch (error) {
             clearTimeout(timeoutId);
+            hadError = true;
             if (error.name === 'AbortError') {
                 console.error('Request timed out while fetching Bluesky photos');
             } else {
@@ -84,7 +88,11 @@
         if (loadingMessage) loadingMessage.style.display = 'none';
 
         if (photos.length === 0) {
-            if (emptyMessage) emptyMessage.style.display = 'block';
+            if (hadError) {
+                if (errorMessage) errorMessage.style.display = 'block';
+            } else {
+                if (emptyMessage) emptyMessage.style.display = 'block';
+            }
             return;
         }
 

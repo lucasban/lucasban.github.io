@@ -7,7 +7,8 @@ Personal website hosted at https://lucasban.github.io
 ```
 /
 ├── index.html              # Landing page (bio + links)
-├── style.css               # Solarized sepia design system
+├── style.css               # Mid-Century Modern design system
+├── theme-toggle.js         # Theme switcher (light/dark/auto)
 ├── photos/
 │   ├── index.html          # Photo gallery
 │   └── gallery.js          # Bluesky API + lightbox
@@ -26,11 +27,23 @@ Personal website hosted at https://lucasban.github.io
 
 ## Design System
 
-**Style**: Warm sepia, Solarized Light/Dark
-- **Colors**: Sepia bg (#fdf6e3), muted text (#657b83), blue links (#268bd2)
-- **Dark mode**: Automatic via `prefers-color-scheme`, uses Solarized Dark (#002b36)
-- **Typography**: Helvetica throughout, Courier for code
-- **Layout**: Max 750px container, rounded corners, warm color palette
+**Style**: Mid-Century Modern - "Sunlit Den" (light) / "Evening Greenhouse" (dark)
+- **Light mode colors**:
+  - Background: #f0e9df (warm beige)
+  - Text: #3d3632 (dark brown)
+  - Links: #2d6a4f (deep green)
+  - Accents: Greenery palette with sage, wood, and rust tones
+- **Dark mode**: Automatic via `prefers-color-scheme` or manual toggle
+  - Background: #1a1f1c (deep forest)
+  - Text: #e8e2db (warm white)
+  - Links: #52b788 (bright green)
+  - Accents: Brightened greenery palette
+- **Theme toggle**: Sun/moon/auto icons in top-right corner, persists via localStorage
+- **Typography**:
+  - Body: DM Sans
+  - Headings: Playfair Display
+  - Code: JetBrains Mono
+- **Layout**: Max 750px container, rounded corners, warm botanical color palette
 
 ## Day Detectors
 
