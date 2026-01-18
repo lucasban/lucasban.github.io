@@ -13,6 +13,12 @@
     const plantNameInput = document.getElementById('plant-name-input');
     const moodMessageEl = document.getElementById('mood-message');
     const streakDisplay = document.getElementById('streak-display');
+    
+    // Journal Elements
+    const journalBtn = document.getElementById('journal-btn');
+    const journalModal = document.getElementById('journal-modal');
+    const closeJournalBtn = document.getElementById('close-journal');
+    const journalEntriesEl = document.getElementById('journal-entries');
 
     // Constants
     const MAX_HEALTH = 100;
@@ -21,6 +27,25 @@
     const MAX_STAGE = 12; // Max recursion depth
     const CRITTER_EVENT_MIN_MS = 120000; // 2 minutes
     const CRITTER_EVENT_MAX_MS = 180000; // 3 minutes
+
+    // Plant Wisdom
+    const WISDOM_QUOTES = [
+        "Grow at your own pace.",
+        "Even tall trees started as seeds.",
+        "Drink plenty of water.",
+        "Turn your face toward the sun.",
+        "It's okay to lose a few leaves.",
+        "Roots run deep before branches climb high.",
+        "Storms make trees take deeper roots.",
+        "Rest is part of growth.",
+        "Bloom where you are planted.",
+        "Patience is the secret of nature.",
+        "Every season has its purpose.",
+        "Breathe in, breathe out.",
+        "Stand tall and proud.",
+        "Bending in the wind prevents breaking.",
+        "Your potential is infinite."
+    ];
 
     // Seasonal color palettes
     const SEASONS = {
@@ -67,7 +92,9 @@
         waterStreakDays: 0,
         lastWaterDate: null, // ISO date string (YYYY-MM-DD)
         lastStage: 4, // Track for milestone detection
-        celebratedMilestones: [] // Track which milestones have been celebrated
+        celebratedMilestones: [], // Track which milestones have been celebrated
+        journal: [], // Array of {date: timestamp, text: string}
+        lastWisdomDate: null // Timestamp of last unlocked wisdom
     };
 
     let animationFrame;
@@ -91,140 +118,7 @@
         rainDrops: []
     };
 
-    // ... (Seasonal Logic omitted) ...
-
-    function loadState() {
-        // ... (existing loadState logic) ...
-        
-        // Initialize weather
-        changeWeather();
-        setInterval(changeWeather, 300000); // Change weather every 5 minutes
-    }
-
-    function changeWeather() {
-        const rand = Math.random();
-        if (rand < 0.5) weather.type = 'clear';
-        else if (rand < 0.7) weather.type = 'cloudy';
-        else if (rand < 0.9) weather.type = 'rain';
-        else weather.type = 'storm';
-
-        weather.intensity = Math.random();
-        weather.windSpeed = (weather.type === 'storm') ? 2 + Math.random() * 2 : 0.5 + Math.random();
-        
-        // Reset rain particles if raining
-        if (weather.type === 'rain' || weather.type === 'storm') {
-            weather.rainDrops = [];
-            for(let i=0; i<100; i++) {
-                weather.rainDrops.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    speed: 5 + Math.random() * 5,
-                    length: 10 + Math.random() * 10
-                });
-            }
-        }
-    }
-
-    function updateWeather() {
-        // Rain logic
-        if (weather.type === 'rain' || weather.type === 'storm') {
-            // Natural watering
-            if (getHealth() < 100 && Math.random() < 0.01) {
-                state.lastWatered = Math.min(Date.now(), state.lastWatered + 1000 * 60); // +1 min worth of water
-            }
-
-            weather.rainDrops.forEach(drop => {
-                drop.y += drop.speed;
-                drop.x += (weather.windSpeed - 1); // Wind blows rain
-                if (drop.y > canvas.height) {
-                    drop.y = -drop.length;
-                    drop.x = Math.random() * canvas.width;
-                }
-                if (drop.x > canvas.width) drop.x = 0;
-                else if (drop.x < 0) drop.x = canvas.width;
-            });
-        }
-        
-        // Cloud movement
-        weather.cloudOffset += 0.2 * weather.windSpeed;
-    }
-
-    function renderWeather() {
-        // Clouds
-        if (weather.type !== 'clear') {
-            ctx.save();
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-            const cloudCount = (weather.type === 'cloudy') ? 5 : 8;
-            
-            for(let i=0; i<cloudCount; i++) {
-                const x = ((i * 150) + weather.cloudOffset) % (canvas.width + 200) - 100;
-                const y = 50 + Math.sin(i * 132) * 30;
-                const size = 40 + Math.cos(i * 23) * 10;
-                
-                ctx.beginPath();
-                ctx.arc(x, y, size, 0, Math.PI * 2);
-                ctx.arc(x + size*0.8, y - size*0.2, size*0.9, 0, Math.PI * 2);
-                ctx.arc(x + size*1.5, y + size*0.1, size*0.8, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.restore();
-        }
-
-        // Rain
-        if (weather.type === 'rain' || weather.type === 'storm') {
-            ctx.strokeStyle = 'rgba(174, 194, 224, 0.6)';
-            ctx.lineWidth = 1.5;
-            ctx.beginPath();
-            weather.rainDrops.forEach(drop => {
-                ctx.moveTo(drop.x, drop.y);
-                ctx.lineTo(drop.x + (weather.windSpeed - 1) * 2, drop.y + drop.length);
-            });
-            ctx.stroke();
-        }
-    }
-
-    // ... (rest of the file, ensure drawTree uses weather.windSpeed for sway) ...
-
-    function drawTree(startX, startY, len, angle, branchWidth, depth) {
-        // ... (setup) ...
-
-        // Wind sway modified by weather
-        const sway = Math.sin(time * 0.003 + depth) * (depth * 0.5) * weather.windSpeed;
-        
-        // ... (rest of drawTree) ...
-    }
-
-    function render() {
-        // ... (clear canvas) ...
-        
-        updateWeather(); // Update physics
-        
-        // ... (sky gradient) ...
-        
-        renderWeather(); // Draw clouds/rain BEHIND tree? Or in front?
-        // Let's draw clouds behind, rain in front.
-        
-        // ... (draw sun/moon) ...
-        // ... (fireflies) ...
-        // ... (tree rendering) ...
-        
-        // Re-call renderWeather for rain (on top) if needed, 
-        // but for simplicity let's put it all before tree or split it.
-        // Actually, rain should be in front.
-        
-        if (weather.type === 'rain' || weather.type === 'storm') {
-             ctx.strokeStyle = 'rgba(174, 194, 224, 0.6)';
-             ctx.lineWidth = 1.5;
-             ctx.beginPath();
-             weather.rainDrops.forEach(drop => {
-                 ctx.moveTo(drop.x, drop.y);
-                 ctx.lineTo(drop.x + (weather.windSpeed - 1) * 2, drop.y + drop.length);
-             });
-             ctx.stroke();
-        }
-        
-        animationFrame = requestAnimationFrame(render);
-    }
+    // --- Seasonal Logic ---
 
     function getSeason() {
         const month = new Date().getMonth();
@@ -271,6 +165,10 @@
 
         // Start critter event timer
         scheduleCritterEvent();
+        
+        // Initialize weather
+        changeWeather();
+        setInterval(changeWeather, 300000); // Change weather every 5 minutes
     }
 
     function saveState() {
@@ -287,7 +185,9 @@
             waterStreakDays: 0,
             lastWaterDate: null,
             lastStage: 4,
-            celebratedMilestones: []
+            celebratedMilestones: [],
+            journal: [],
+            lastWisdomDate: null
         };
         saveState();
         updateUI();
@@ -360,6 +260,91 @@
         }
         plantNameInput.style.display = 'none';
         plantNameEl.style.display = 'inline-block';
+    }
+
+    function changeWeather() {
+        const rand = Math.random();
+        if (rand < 0.5) weather.type = 'clear';
+        else if (rand < 0.7) weather.type = 'cloudy';
+        else if (rand < 0.9) weather.type = 'rain';
+        else weather.type = 'storm';
+
+        weather.intensity = Math.random();
+        weather.windSpeed = (weather.type === 'storm') ? 2 + Math.random() * 2 : 0.5 + Math.random();
+        
+        // Reset rain particles if raining
+        if (weather.type === 'rain' || weather.type === 'storm') {
+            weather.rainDrops = [];
+            for(let i=0; i<100; i++) {
+                weather.rainDrops.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    speed: 5 + Math.random() * 5,
+                    length: 10 + Math.random() * 10
+                });
+            }
+        }
+    }
+
+    function updateWeather() {
+        // Rain logic
+        if (weather.type === 'rain' || weather.type === 'storm') {
+            // Natural watering
+            if (getHealth() < 100 && Math.random() < 0.01) {
+                state.lastWatered = Math.min(Date.now(), state.lastWatered + 1000 * 60); // +1 min worth of water
+            }
+
+            weather.rainDrops.forEach(drop => {
+                drop.y += drop.speed;
+                drop.x += (weather.windSpeed - 1); // Wind blows rain
+                if (drop.y > canvas.height) {
+                    drop.y = -drop.length;
+                    drop.x = Math.random() * canvas.width;
+                }
+                if (drop.x > canvas.width) drop.x = 0;
+                else if (drop.x < 0) drop.x = canvas.width;
+            });
+        }
+        
+        // Cloud movement
+        weather.cloudOffset += 0.2 * weather.windSpeed;
+    }
+
+    function unlockWisdom() {
+        const now = new Date();
+        const today = now.toDateString();
+        const lastUnlock = state.lastWisdomDate ? new Date(state.lastWisdomDate).toDateString() : null;
+
+        if (today !== lastUnlock) {
+            // Unlock new wisdom
+            const quote = WISDOM_QUOTES[Math.floor(Math.random() * WISDOM_QUOTES.length)];
+            state.journal.unshift({ date: Date.now(), text: quote });
+            state.lastWisdomDate = Date.now();
+            saveState();
+            
+            showMilestoneMessage("New Wisdom Unlocked! 📖");
+            triggerCelebration('golden', "Leaf Journal Updated");
+            
+            // Pulse the journal button
+            journalBtn.style.animation = 'pulse 1s infinite';
+            setTimeout(() => journalBtn.style.animation = '', 3000);
+        } else {
+            showMilestoneMessage("Come back tomorrow for more wisdom.");
+        }
+    }
+
+    function renderJournal() {
+        if (!state.journal || state.journal.length === 0) {
+            journalEntriesEl.innerHTML = '<div class="empty-journal">No wisdom collected yet.<br>Click your plant daily to unlock thoughts.</div>';
+            return;
+        }
+
+        journalEntriesEl.innerHTML = state.journal.map(entry => `
+            <div class="journal-entry">
+                <div class="journal-date">${new Date(entry.date).toLocaleDateString()}</div>
+                <div class="journal-text">"${entry.text}"</div>
+            </div>
+        `).join('');
     }
 
     // --- Logic ---
@@ -656,6 +641,19 @@
         return false;
     }
 
+    function handleFaceClick(mouseX, mouseY, startX, faceY) {
+        // Simple bounding box for face
+        const dx = mouseX - startX;
+        const dy = mouseY - faceY;
+        if (Math.sqrt(dx*dx + dy*dy) < 30) {
+            if (getHealth() > 0) {
+                unlockWisdom();
+                return true;
+            }
+        }
+        return false;
+    }
+
     function updateCritterEvent() {
         if (!activeCritterEvent) return;
 
@@ -783,7 +781,314 @@
         ctx.restore();
     }
 
-    // ... (helper draw functions) ...
+    function drawLadybug(len) {
+        const bugY = -len * (0.5 + Math.sin(time * 0.002) * 0.4);
+        ctx.save();
+        ctx.translate(0, bugY);
+        if (Math.cos(time * 0.002) > 0) ctx.scale(-1, 1);
+
+        ctx.fillStyle = '#d44';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(3, 0, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(-1, -1, 1, 0, Math.PI * 2);
+        ctx.arc(-1, 1, 1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawLeaf(health) {
+        ctx.beginPath();
+        // Heart-shaped leaf
+        ctx.moveTo(0,0);
+        ctx.bezierCurveTo(-5, -5, -10, -15, 0, -20);
+        ctx.bezierCurveTo(10, -15, 5, -5, 0, 0);
+        ctx.fillStyle = getLeafColor(health);
+        ctx.fill();
+    }
+
+    function drawFlower() {
+        const colors = getSeasonalColors();
+        ctx.beginPath();
+        ctx.fillStyle = colors.flower;
+        for(let i=0; i<5; i++) {
+            ctx.rotate((Math.PI * 2) / 5);
+            ctx.ellipse(0, 5, 3, 6, 0, 0, Math.PI * 2);
+        }
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = '#fff';
+        ctx.arc(0,0,2,0, Math.PI*2);
+        ctx.fill();
+    }
+
+    function drawFruit() {
+        const colors = getSeasonalColors();
+        ctx.beginPath();
+        ctx.fillStyle = colors.fruit;
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+        // Shine
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(-1, -1, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function drawPlantFace(x, y, health) {
+        ctx.save();
+        ctx.translate(x, y);
+
+        const isBlinking = blinkTimer > 0 && blinkTimer < 8;
+        const isSad = health < 40;
+        const isDead = health <= 0;
+
+        // Face background (slightly lighter wood)
+        ctx.fillStyle = isDead ? '#5c524a' : '#4a4038';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 18, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Blush (when healthy)
+        if (health > 70 && !isDead) {
+            ctx.fillStyle = 'rgba(255, 150, 150, 0.3)';
+            ctx.beginPath();
+            ctx.ellipse(-12, 4, 5, 3, 0, 0, Math.PI * 2);
+            ctx.ellipse(12, 4, 5, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Eyes
+        ctx.fillStyle = isDead ? '#888' : '#fff';
+        if (isBlinking && !isDead) {
+            // Blinking - draw lines
+            ctx.strokeStyle = '#2a2520';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-8, -2);
+            ctx.lineTo(-4, -2);
+            ctx.moveTo(4, -2);
+            ctx.lineTo(8, -2);
+            ctx.stroke();
+        } else if (isDead) {
+            // X eyes
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-8, -5); ctx.lineTo(-4, 1);
+            ctx.moveTo(-4, -5); ctx.lineTo(-8, 1);
+            ctx.moveTo(4, -5); ctx.lineTo(8, 1);
+            ctx.moveTo(8, -5); ctx.lineTo(4, 1);
+            ctx.stroke();
+        } else {
+            // Normal eyes
+            ctx.beginPath();
+            ctx.ellipse(-6, -2, 4, isSad ? 3 : 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(6, -2, 4, isSad ? 3 : 4, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Pupils
+            ctx.fillStyle = '#2a2520';
+            const pupilOffset = Math.sin(time * 0.001) * 1; // Gentle looking around
+            ctx.beginPath();
+            ctx.arc(-6 + pupilOffset, -2, 2, 0, Math.PI * 2);
+            ctx.arc(6 + pupilOffset, -2, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eye shine
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(-7, -3, 1, 0, Math.PI * 2);
+            ctx.arc(5, -3, 1, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Mouth
+        ctx.strokeStyle = isDead ? '#666' : '#2a2520';
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        if (isDead) {
+            // Wavy dead mouth
+            ctx.moveTo(-5, 6);
+            ctx.lineTo(-2, 4);
+            ctx.lineTo(2, 6);
+            ctx.lineTo(5, 4);
+        } else if (isSad) {
+            // Sad mouth
+            ctx.arc(0, 10, 5, Math.PI * 1.2, Math.PI * 1.8);
+        } else if (health > 90) {
+            // Big happy smile
+            ctx.arc(0, 2, 7, 0.1 * Math.PI, 0.9 * Math.PI);
+        } else {
+            // Small smile
+            ctx.arc(0, 3, 5, 0.15 * Math.PI, 0.85 * Math.PI);
+        }
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawSunOrMoon(hour) {
+        const isDay = hour >= 6 && hour < 18;
+        const x = 50;
+        const y = 50;
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        if (isDay) {
+            // Sun rays
+            ctx.strokeStyle = 'rgba(255, 220, 100, 0.5)';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2 + time * 0.0005;
+                const innerR = 22;
+                const outerR = 30 + Math.sin(time * 0.003 + i) * 3;
+                ctx.beginPath();
+                ctx.moveTo(Math.cos(angle) * innerR, Math.sin(angle) * innerR);
+                ctx.lineTo(Math.cos(angle) * outerR, Math.sin(angle) * outerR);
+                ctx.stroke();
+            }
+
+            // Sun body
+            ctx.fillStyle = '#ffd93d';
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Happy face
+            ctx.fillStyle = '#d4a012';
+            ctx.beginPath();
+            ctx.arc(-6, -3, 2, 0, Math.PI * 2);
+            ctx.arc(6, -3, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#d4a012';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 2, 8, 0.1 * Math.PI, 0.9 * Math.PI);
+            ctx.stroke();
+        } else {
+            // Moon
+            ctx.fillStyle = '#f5f5dc';
+            ctx.beginPath();
+            ctx.arc(0, 0, 18, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Moon shadow (crescent effect)
+            ctx.fillStyle = getSeason() === 'winter' ? '#d8dce0' : '#242a26';
+            ctx.beginPath();
+            ctx.arc(6, -2, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Sleepy face
+            ctx.fillStyle = '#c0c0a0';
+            // Closed eyes (sleeping)
+            ctx.strokeStyle = '#a0a080';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(-5, -2, 3, 0, Math.PI);
+            ctx.stroke();
+
+            // Sleepy mouth
+            ctx.beginPath();
+            ctx.arc(0, 5, 3, 0, Math.PI);
+            ctx.stroke();
+
+            // Zzz
+            ctx.font = '10px sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            const zzOffset = Math.sin(time * 0.002) * 3;
+            ctx.fillText('z', 20, -5 + zzOffset);
+            ctx.fillText('z', 26, -12 + zzOffset);
+            ctx.fillText('Z', 33, -20 + zzOffset);
+        }
+
+        ctx.restore();
+    }
+
+    function updateAndRenderHearts() {
+        for (let i = hearts.length - 1; i >= 0; i--) {
+            const h = hearts[i];
+            h.x += h.vx;
+            h.y += h.vy;
+            h.vy += 0.05; // Slight gravity
+            h.life--;
+            h.rotation += 0.02;
+
+            if (h.life <= 0) {
+                hearts.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.translate(h.x, h.y);
+            ctx.rotate(h.rotation);
+            ctx.globalAlpha = Math.min(1, h.life / 20);
+
+            // Draw heart
+            ctx.fillStyle = '#ff6b8a';
+            ctx.beginPath();
+            const s = h.size / 10;
+            ctx.moveTo(0, s * 3);
+            ctx.bezierCurveTo(-s * 5, -s * 2, -s * 3, -s * 5, 0, -s * 2);
+            ctx.bezierCurveTo(s * 3, -s * 5, s * 5, -s * 2, 0, s * 3);
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
+
+    function updateAndRenderSparkles() {
+        const health = getHealth();
+
+        // Spawn sparkles occasionally for healthy plants
+        if (health > 80 && Math.random() < 0.03) {
+            const stage = getGrowthStage();
+            sparkles.push({
+                x: canvas.width / 2 + (Math.random() - 0.5) * (50 + stage * 15),
+                y: canvas.height - 80 - Math.random() * (stage * 20),
+                size: 3 + Math.random() * 4,
+                life: 30 + Math.random() * 20,
+                twinkle: Math.random() * Math.PI * 2
+            });
+        }
+
+        for (let i = sparkles.length - 1; i >= 0; i--) {
+            const s = sparkles[i];
+            s.life--;
+            s.twinkle += 0.3;
+
+            if (s.life <= 0) {
+                sparkles.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.translate(s.x, s.y);
+            ctx.globalAlpha = Math.min(1, s.life / 15) * (0.5 + Math.sin(s.twinkle) * 0.5);
+
+            // Draw 4-point star
+            ctx.fillStyle = '#fff8b8';
+            ctx.beginPath();
+            for (let j = 0; j < 4; j++) {
+                const angle = (j / 4) * Math.PI * 2 - Math.PI / 4;
+                const r = j % 2 === 0 ? s.size : s.size * 0.3;
+                if (j === 0) ctx.moveTo(Math.cos(angle) * r, Math.sin(angle) * r);
+                else ctx.lineTo(Math.cos(angle) * r, Math.sin(angle) * r);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.restore();
+        }
+    }
 
     function renderClouds() {
         if (weather.type !== 'clear') {
@@ -933,7 +1238,7 @@
     waterBtn.addEventListener('click', waterPlant);
     resetBtn.addEventListener('click', resetPlant);
 
-    // Canvas click for critter events
+    // Canvas click for critter events AND face click
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -941,7 +1246,15 @@
         const mouseX = (e.clientX - rect.left) * scaleX;
         const mouseY = (e.clientY - rect.top) * scaleY;
 
-        handleCritterClick(mouseX, mouseY);
+        if (handleCritterClick(mouseX, mouseY)) return;
+        
+        // Calculate face position
+        const stage = getGrowthStage();
+        const startX = canvas.width / 2;
+        const startY = canvas.height - 20;
+        const faceY = startY - 60 - (stage * 3);
+        
+        handleFaceClick(mouseX, mouseY, startX, faceY);
     });
 
     // Naming interaction
@@ -975,5 +1288,19 @@
     });
 
     setInterval(updateUI, 60000);
+
+    // Journal Modal
+    journalBtn.addEventListener('click', () => {
+        renderJournal();
+        journalModal.style.display = 'flex';
+    });
+
+    closeJournalBtn.addEventListener('click', () => {
+        journalModal.style.display = 'none';
+    });
+
+    journalModal.addEventListener('click', (e) => {
+        if (e.target === journalModal) journalModal.style.display = 'none';
+    });
 
 })();

@@ -14,184 +14,147 @@
     <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
     <link rel="stylesheet" href="../../../style.css?v=8">
     <style>
-        .demo-canvas {
-            display: block;
-            margin: 0 auto;
-            border-bottom: 2px solid var(--border-color);
-            background: linear-gradient(to bottom, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        /* ... existing styles ... */
+        
+        .journal-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1.5px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
         }
         
-        .plant-status {
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-            margin-bottom: 1em;
-            padding: 1.5em;
+        .journal-btn:hover {
+            transform: scale(1.1);
+            background: #fff;
+        }
+
+        .journal-modal {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 20;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .journal-content {
             background: var(--bg-primary);
-            border: 1.5px solid var(--border-color);
+            width: 90%;
+            max-width: 400px;
+            max-height: 80%;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1.5px solid var(--border-color);
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            overflow-y: auto;
+            position: relative;
         }
 
-        .status-header {
+        .journal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
+            margin-bottom: 1em;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5em;
         }
 
-        .plant-name-group {
-            display: flex;
-            align-items: baseline;
-            gap: 0.5em;
-        }
-
-        .plant-name {
+        .journal-title {
             font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--text-heading);
-            cursor: pointer;
-            border-bottom: 1px dashed var(--text-subtle);
+            margin: 0;
         }
 
-        .plant-name:hover {
-            color: var(--leaf-deep);
-            border-bottom-style: solid;
-        }
-
-        .plant-name-input {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.8rem;
-            font-weight: 700;
+        .close-journal {
+            background: none;
             border: none;
-            background: transparent;
-            color: var(--text-heading);
-            width: 200px;
-            max-width: 100%;
-            border-bottom: 2px solid var(--leaf-deep);
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-subtle);
         }
 
-        .plant-name-input:invalid {
-            border-bottom-color: #8a4030;
+        .journal-entry {
+            background: var(--bg-secondary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--leaf-deep);
         }
 
-        .plant-name-input:focus {
-            outline: none;
-        }
-
-        .mood-message {
-            font-style: italic;
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-top: 0.5em;
-        }
-
-        .status-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .status-label {
+        .journal-date {
             font-size: 0.75rem;
+            color: var(--text-subtle);
+            margin-bottom: 4px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            color: var(--text-subtle);
-            margin-bottom: 0.2em;
         }
 
-        .status-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.1rem;
-            font-weight: 500;
+        .journal-text {
+            font-family: 'DM Sans', sans-serif;
+            font-style: italic;
             color: var(--text-primary);
+            line-height: 1.4;
         }
-
-        .water-btn {
-            background: var(--leaf-deep);
-            color: #fff;
-            border: none;
-            padding: 0.8em 2em;
-            font-size: 1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            align-items: center;
-            gap: 0.5em;
-            box-shadow: 0 4px 6px rgba(45, 106, 79, 0.2);
-        }
-
-        .water-btn:hover {
-            background: var(--leaf-bright);
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 6px 12px rgba(45, 106, 79, 0.3);
-        }
-
-        .water-btn:active {
-            transform: translateY(0) scale(0.95);
+        
+        .empty-journal {
+            text-align: center;
+            color: var(--text-subtle);
+            padding: 2em 0;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
-        <button data-theme="light" aria-pressed="false">☀️</button>
-        <button data-theme="dark" aria-pressed="false">🌙</button>
-        <button data-theme="auto" aria-pressed="true">💻</button>
-    </div>
+    <!-- ... nav ... -->
+
     <div class="container">
-        <nav>
-            <a href="/">&larr; Home</a>
-        </nav>
-
-        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Digital Plant</p>
-
-        <header>
-            <h1>Digital Plant</h1>
-            <p class="subtitle">A persistent little friend that grows in real-time.</p>
-        </header>
+        <!-- ... header ... -->
 
         <div class="demo-container">
             <div class="plant-status">
-                <div class="status-header">
-                    <div class="plant-name-group">
-                        <span id="plant-name" class="plant-name" title="Click to rename">Sprout</span>
-                        <input type="text" id="plant-name-input" class="plant-name-input" style="display: none;" maxlength="15" pattern="\S.*" required title="Plant name cannot be empty">
-                    </div>
-                    <div id="mood-message" class="mood-message">Feeling sunny!</div>
-                </div>
+                <!-- ... status header ... -->
                 
                 <div class="stats-row">
-                    <div class="status-item">
-                        <span class="status-label">Age</span>
-                        <span class="status-value" id="age-display">0 Days</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Health</span>
-                        <span class="status-value" id="health-display">100%</span>
-                    </div>
-                    <div class="status-item">
-                        <span class="status-label">Streak</span>
-                        <span class="status-value" id="streak-display" title="Water daily to build a streak!">—</span>
-                    </div>
-                    <button class="water-btn" id="water-btn">
-                        💧 Water
-                    </button>
+                    <!-- ... stats ... -->
                 </div>
             </div>
 
-            <canvas id="canvas" class="demo-canvas" width="600" height="500"></canvas>
-            
-            <div style="text-align: center;">
-                <a class="reset-link" id="reset-btn">Plant a new seed (Reset)</a>
+            <div style="position: relative;">
+                <button class="journal-btn" id="journal-btn" title="Open Leaf Journal">📖</button>
+                <canvas id="canvas" class="demo-canvas" width="600" height="500"></canvas>
+                
+                <div id="journal-modal" class="journal-modal">
+                    <div class="journal-content">
+                        <div class="journal-header">
+                            <h2 class="journal-title">Leaf Journal</h2>
+                            <button class="close-journal" id="close-journal">&times;</button>
+                        </div>
+                        <div id="journal-entries">
+                            <!-- Entries will be injected here -->
+                        </div>
+                    </div>
+                </div>
             </div>
+            
+            <!-- ... reset btn ... -->
         </div>
 
         <section>
