@@ -9,6 +9,9 @@
     const healthDisplay = document.getElementById('health-display');
     const waterBtn = document.getElementById('water-btn');
     const resetBtn = document.getElementById('reset-btn');
+    const plantNameEl = document.getElementById('plant-name');
+    const plantNameInput = document.getElementById('plant-name-input');
+    const moodMessageEl = document.getElementById('mood-message');
 
     // Constants
     const MAX_HEALTH = 100;
@@ -19,6 +22,7 @@
 
     // State
     let state = {
+        name: "Sprout",
         birthDate: Date.now(),
         lastWatered: Date.now(),
         seed: Math.random()
@@ -26,13 +30,14 @@
 
     let animationFrame;
     let time = 0;
+    let bug = { x: 0, y: 0, branchIndex: 0, speed: 0.5, dir: 1 }; // Simple critter state
 
     // --- State Management ---
 
     function loadState() {
         const saved = localStorage.getItem('digital_plant_state');
         if (saved) {
-            state = JSON.parse(saved);
+            state = { ...state, ...JSON.parse(saved) }; // Merge defaults
         } else {
             saveState(); // Init new
         }
@@ -45,6 +50,7 @@
     function resetPlant() {
         if (!confirm("Are you sure you want to plant a new seed? The current plant will be lost.")) return;
         state = {
+            name: "Sprout",
             birthDate: Date.now(),
             lastWatered: Date.now(),
             seed: Math.random()
@@ -62,11 +68,24 @@
         // Visual feedback
         waterBtn.textContent = "💧 Watered!";
         waterBtn.disabled = true;
+        
+        // Trigger bloom animation via state (simplified for now)
+        
         setTimeout(() => {
             waterBtn.textContent = "💧 Water";
             waterBtn.disabled = false;
             updateUI();
         }, 1000);
+    }
+
+    function updateName(newName) {
+        if (newName && newName.trim() !== "") {
+            state.name = newName.trim();
+            saveState();
+            updateUI();
+        }
+        plantNameInput.style.display = 'none';
+        plantNameEl.style.display = 'inline-block';
     }
 
     // --- Logic ---
@@ -94,8 +113,18 @@
         const days = Math.floor(getAgeInDays());
         const health = Math.floor(getHealth());
 
+        plantNameEl.textContent = state.name;
         ageDisplay.textContent = `${days} Day${days !== 1 ? 's' : ''}`;
         healthDisplay.textContent = `${health}%`;
+
+        // Update Mood Message
+        let mood = "";
+        if (health <= 0) mood = `${state.name} has withered...`;
+        else if (health < 30) mood = `${state.name} is looking very thirsty.`;
+        else if (health < 60) mood = `${state.name} needs some water.`;
+        else if (health < 90) mood = `${state.name} is doing okay.`;
+        else mood = `${state.name} is feeling sunny and happy!`;
+        moodMessageEl.textContent = mood;
 
         // Color code health
         if (health > 70) healthDisplay.style.color = 'var(--leaf-deep)';
@@ -121,8 +150,10 @@
         ctx.moveTo(0, 0);
         ctx.lineTo(0, -len);
         
-        // Branch Style
+        // Branch Style (Softer round caps)
+        ctx.lineCap = 'round';
         const health = getHealth();
+        
         if (health <= 0) ctx.strokeStyle = '#5c524a'; // Dead wood
         else if (health < 30) ctx.strokeStyle = '#8a6a4b'; // Dry wood
         else ctx.strokeStyle = '#3d3632'; // Healthy wood
@@ -130,36 +161,89 @@
         ctx.lineWidth = branchWidth;
         ctx.stroke();
 
+        // Draw Critter (Ladybug)
+        // Simplified: Draw on the main trunk occasionally
+        if (depth === getGrowthStage() && health > 0) {
+            const bugY = -len * (0.5 + Math.sin(time * 0.002) * 0.4);
+            ctx.save();
+            ctx.translate(0, bugY);
+            if (Math.cos(time * 0.002) > 0) ctx.scale(-1, 1); // Flip direction
+            
+            // Body
+            ctx.fillStyle = '#d44';
+            ctx.beginPath();
+            ctx.arc(0, 0, 4, 0, Math.PI * 2);
+            ctx.fill();
+            // Head
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(3, 0, 2, 0, Math.PI * 2);
+            ctx.fill();
+            // Spots
+            ctx.beginPath();
+            ctx.arc(-1, -1, 1, 0, Math.PI * 2);
+            ctx.arc(-1, 1, 1, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
         if (!len || depth <= 0) {
-            // Draw Leaf
+            // Draw Leaf or Flower
             if (depth <= 0) {
-                ctx.beginPath();
-                ctx.arc(0, -len, 5, 0, Math.PI/2);
-                ctx.fillStyle = getLeafColor(health);
-                ctx.fill();
+                if (health > 90 && Math.random() > 0.8) { // Chance of flower when healthy
+                    drawFlower();
+                } else {
+                    drawLeaf(health);
+                }
             }
             ctx.restore();
             return;
         }
 
-        // Randomness seeded by the plant's unique seed + depth for consistency
-        // pseudo-random but deterministic based on state.seed
+        // Randomness seeded by the plant's unique seed + depth
         const r1 = Math.sin(state.seed * depth * 123); 
         const r2 = Math.cos(state.seed * depth * 456);
 
         // Wind sway
         const sway = Math.sin(time * 0.003 + depth) * (depth * 0.5);
         
-        // Droop factor (if thirsty, branches sag)
+        // Droop factor
         const droop = Math.max(0, (100 - health) * 0.5);
 
         const subBranch = len * 0.75;
         
         // Recursive calls
-        drawTree(0, -len, subBranch, -15 + (r1 * 10) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
-        drawTree(0, -len, subBranch, 15 + (r2 * 10) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
+        drawTree(0, -len, subBranch, -20 + (r1 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
+        drawTree(0, -len, subBranch, 20 + (r2 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
 
         ctx.restore();
+    }
+
+    function drawLeaf(health) {
+        ctx.beginPath();
+        // Heart-shaped leaf
+        ctx.scale(1, 1);
+        ctx.moveTo(0,0);
+        ctx.bezierCurveTo(-5, -5, -10, -15, 0, -20);
+        ctx.bezierCurveTo(10, -15, 5, -5, 0, 0);
+        
+        ctx.fillStyle = getLeafColor(health);
+        ctx.fill();
+    }
+
+    function drawFlower() {
+        ctx.beginPath();
+        ctx.fillStyle = '#ffb7b2'; // Pinkish
+        for(let i=0; i<5; i++) {
+            ctx.rotate((Math.PI * 2) / 5);
+            ctx.ellipse(0, 5, 3, 6, 0, 0, Math.PI * 2);
+        }
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = '#fff';
+        ctx.arc(0,0,2,0, Math.PI*2);
+        ctx.fill();
     }
 
     function getLeafColor(health) {
@@ -172,18 +256,49 @@
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        time += 16; // Approx ms per frame
+        time += 16; 
+
+        // Sky Gradient (Day/Night cycle based on real time)
+        const hour = new Date().getHours();
+        let skyGradient;
+        
+        if (hour >= 6 && hour < 18) {
+            // Day
+            skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, '#f0e9df'); // Warm beige
+            skyGradient.addColorStop(1, '#e8dfd3');
+        } else {
+            // Night
+            skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGradient.addColorStop(0, '#1a1f1c'); // Deep forest
+            skyGradient.addColorStop(1, '#242a26');
+        }
+        
+        // Only apply if we are not in canvas demo container which overrides bg? 
+        // Actually, let's just fill rect
+        ctx.fillStyle = skyGradient;
+        ctx.fillRect(0,0, canvas.width, canvas.height);
 
         const startX = canvas.width / 2;
         const startY = canvas.height - 20;
-        const baseLen = 100 + (getGrowthStage() * 5); // Grow taller with age
+        const baseLen = 100 + (getGrowthStage() * 5); 
         const stage = getGrowthStage();
 
-        drawTree(startX, startY, baseLen, 0, 10, stage);
+        drawTree(startX, startY, baseLen, 0, 12, stage);
 
         // Ground
-        ctx.fillStyle = '#e8dfd3';
+        ctx.fillStyle = '#8a6a4b'; // Dirt color
         ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+        
+        // Grass tufts
+        ctx.strokeStyle = '#2d6a4f';
+        ctx.lineWidth = 2;
+        for(let i=0; i<canvas.width; i+=15) {
+            ctx.beginPath();
+            ctx.moveTo(i, canvas.height-20);
+            ctx.lineTo(i+5, canvas.height-25 - Math.sin(i)*5);
+            ctx.stroke();
+        }
 
         animationFrame = requestAnimationFrame(render);
     }
@@ -196,8 +311,25 @@
     // Event Listeners
     waterBtn.addEventListener('click', waterPlant);
     resetBtn.addEventListener('click', resetPlant);
+    
+    // Naming interaction
+    plantNameEl.addEventListener('click', () => {
+        plantNameEl.style.display = 'none';
+        plantNameInput.style.display = 'inline-block';
+        plantNameInput.value = state.name;
+        plantNameInput.focus();
+    });
 
-    // Update UI occasionally (every min) without interaction
+    plantNameInput.addEventListener('blur', () => {
+        updateName(plantNameInput.value);
+    });
+
+    plantNameInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            updateName(plantNameInput.value);
+        }
+    });
+
     setInterval(updateUI, 60000);
 
 })();

@@ -23,13 +23,70 @@
         
         .plant-status {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 1em;
             margin-bottom: 1em;
-            padding: 1em;
+            padding: 1.5em;
             background: var(--bg-primary);
             border: 1.5px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .plant-name-group {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5em;
+        }
+
+        .plant-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-heading);
+            cursor: pointer;
+            border-bottom: 1px dashed var(--text-subtle);
+        }
+
+        .plant-name:hover {
+            color: var(--leaf-deep);
+            border-bottom-style: solid;
+        }
+
+        .plant-name-input {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            border: none;
+            background: transparent;
+            color: var(--text-heading);
+            width: 200px;
+            border-bottom: 2px solid var(--leaf-deep);
+        }
+
+        .plant-name-input:focus {
+            outline: none;
+        }
+
+        .mood-message {
+            font-style: italic;
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-top: 0.5em;
         }
 
         .status-item {
@@ -38,56 +95,43 @@
         }
 
         .status-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             color: var(--text-subtle);
+            margin-bottom: 0.2em;
         }
 
         .status-value {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-heading);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
         .water-btn {
             background: var(--leaf-deep);
             color: #fff;
             border: none;
-            padding: 0.8em 1.5em;
+            padding: 0.8em 2em;
             font-size: 1rem;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: flex;
             align-items: center;
             gap: 0.5em;
+            box-shadow: 0 4px 6px rgba(45, 106, 79, 0.2);
         }
 
         .water-btn:hover {
             background: var(--leaf-bright);
-            transform: scale(1.05);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 12px rgba(45, 106, 79, 0.3);
         }
 
         .water-btn:active {
-            transform: scale(0.95);
-        }
-
-        .water-btn:disabled {
-            background: var(--text-muted);
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .reset-link {
-            font-size: 0.85rem;
-            color: var(--text-subtle);
-            text-decoration: underline;
-            cursor: pointer;
-            margin-top: 1em;
-            display: inline-block;
+            transform: translateY(0) scale(0.95);
         }
     </style>
 </head>
@@ -106,22 +150,32 @@
 
         <header>
             <h1>Digital Plant</h1>
-            <p class="subtitle">A little persistent friend. It grows in real-time.</p>
+            <p class="subtitle">A persistent little friend that grows in real-time.</p>
         </header>
 
         <div class="demo-container">
             <div class="plant-status">
-                <div class="status-item">
-                    <span class="status-label">Age</span>
-                    <span class="status-value" id="age-display">0 Days</span>
+                <div class="status-header">
+                    <div class="plant-name-group">
+                        <span id="plant-name" class="plant-name" title="Click to rename">Sprout</span>
+                        <input type="text" id="plant-name-input" class="plant-name-input" style="display: none;" maxlength="15">
+                    </div>
+                    <div id="mood-message" class="mood-message">Feeling sunny!</div>
                 </div>
-                <div class="status-item">
-                    <span class="status-label">Health</span>
-                    <span class="status-value" id="health-display">100%</span>
+                
+                <div class="stats-row">
+                    <div class="status-item">
+                        <span class="status-label">Age</span>
+                        <span class="status-value" id="age-display">0 Days</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Health</span>
+                        <span class="status-value" id="health-display">100%</span>
+                    </div>
+                    <button class="water-btn" id="water-btn">
+                        💧 Water
+                    </button>
                 </div>
-                <button class="water-btn" id="water-btn">
-                    💧 Water
-                </button>
             </div>
 
             <canvas id="canvas" class="demo-canvas" width="600" height="500"></canvas>
