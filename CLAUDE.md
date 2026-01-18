@@ -10,6 +10,9 @@ Personal website hosted at https://lucasban.github.io
 ├── style.css               # Mid-Century Modern design system
 ├── theme-toggle.js         # Theme switcher (light/dark/auto)
 ├── VERSIONS.md             # Cache busting version tracking
+├── shared/
+│   ├── detector-base.css   # Base styles for day detectors (optional)
+│   └── README.md           # Shared styles documentation
 ├── photos/
 │   ├── index.html          # Photo gallery
 │   └── gallery.js          # Bluesky API + lightbox
@@ -57,6 +60,8 @@ Each detector is a standalone mini-app with a unique theme:
 - **Thursday**: Button reveal with countdown to Thursday
 - **Friday**: Satirical "premium plan" uncertainty
 - **Saturday**: Party mode with confetti and disco effects
+
+**Optional**: New detectors can use `shared/detector-base.css` for consistent navigation and theme toggle structure while maintaining unique styling. See `shared/README.md` for details.
 
 ## Demos
 

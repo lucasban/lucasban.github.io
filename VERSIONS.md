@@ -24,6 +24,9 @@ These use **independent version numbers**. Only bump when that specific file cha
 - `style.css` → **v=8**
 - `theme-toggle.js` → **v=3**
 
+### Shared Resources (optional)
+- `shared/detector-base.css` → **v=1** (optional base styles for day detectors)
+
 ### Day Detector Resources
 - All detector `style.css` files → **v=6**
 - All detector `script.js` files → **v=3**
