@@ -30,7 +30,7 @@
 
     let animationFrame;
     let time = 0;
-    let bug = { x: 0, y: 0, branchIndex: 0, speed: 0.5, dir: 1 }; // Simple critter state
+    let fireflies = []; // Particle system for night
 
     // --- State Management ---
 
@@ -40,6 +40,16 @@
             state = { ...state, ...JSON.parse(saved) }; // Merge defaults
         } else {
             saveState(); // Init new
+        }
+
+        // Initialize fireflies
+        for (let i = 0; i < 15; i++) {
+            fireflies.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * (canvas.height - 100),
+                s: Math.random() * 2 + 1,
+                offset: Math.random() * 100
+            });
         }
     }
 
@@ -68,8 +78,6 @@
         // Visual feedback
         waterBtn.textContent = "💧 Watered!";
         waterBtn.disabled = true;
-        
-        // Trigger bloom animation via state (simplified for now)
         
         setTimeout(() => {
             waterBtn.textContent = "💧 Water";
@@ -153,6 +161,7 @@
         // Branch Style (Softer round caps)
         ctx.lineCap = 'round';
         const health = getHealth();
+        const age = getAgeInDays();
         
         if (health <= 0) ctx.strokeStyle = '#5c524a'; // Dead wood
         else if (health < 30) ctx.strokeStyle = '#8a6a4b'; // Dry wood
@@ -161,38 +170,22 @@
         ctx.lineWidth = branchWidth;
         ctx.stroke();
 
-        // Draw Critter (Ladybug)
-        // Simplified: Draw on the main trunk occasionally
+        // Draw Ladybug on trunk
         if (depth === getGrowthStage() && health > 0) {
-            const bugY = -len * (0.5 + Math.sin(time * 0.002) * 0.4);
-            ctx.save();
-            ctx.translate(0, bugY);
-            if (Math.cos(time * 0.002) > 0) ctx.scale(-1, 1); // Flip direction
-            
-            // Body
-            ctx.fillStyle = '#d44';
-            ctx.beginPath();
-            ctx.arc(0, 0, 4, 0, Math.PI * 2);
-            ctx.fill();
-            // Head
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(3, 0, 2, 0, Math.PI * 2);
-            ctx.fill();
-            // Spots
-            ctx.beginPath();
-            ctx.arc(-1, -1, 1, 0, Math.PI * 2);
-            ctx.arc(-1, 1, 1, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.restore();
+            drawLadybug(len);
         }
 
         if (!len || depth <= 0) {
-            // Draw Leaf or Flower
+            // Draw Leaf, Flower, or Fruit
             if (depth <= 0) {
-                if (health > 90 && Math.random() > 0.8) { // Chance of flower when healthy
+                // Seeded randomness for decorations
+                const hasFlower = Math.abs(Math.sin(state.seed * depth * 789)) > 0.85;
+                const hasFruit = age > 3 && Math.abs(Math.cos(state.seed * depth * 456)) > 0.9;
+
+                if (health > 90 && hasFlower) { 
                     drawFlower();
+                } else if (health > 70 && hasFruit) {
+                    drawFruit();
                 } else {
                     drawLeaf(health);
                 }
@@ -213,22 +206,69 @@
 
         const subBranch = len * 0.75;
         
-        // Pseudo-random check for flowers (stable per frame)
-        // Use sin/cos of seed + depth to determine if this specific branch tip gets a flower
-        const hasFlower = Math.abs(Math.sin(state.seed * depth * 789)) > 0.8;
+        // Recursive calls
+        drawTree(0, -len, subBranch, -20 + (r1 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
+        drawTree(0, -len, subBranch, 20 + (r2 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
 
-        if (!len || depth <= 0) {
-            // Draw Leaf or Flower
-            if (depth <= 0) {
-                if (health > 90 && hasFlower) { 
-                    drawFlower();
-                } else {
-                    drawLeaf(health);
-                }
-            }
-            ctx.restore();
-            return;
+        ctx.restore();
+    }
+
+    function drawLadybug(len) {
+        const bugY = -len * (0.5 + Math.sin(time * 0.002) * 0.4);
+        ctx.save();
+        ctx.translate(0, bugY);
+        if (Math.cos(time * 0.002) > 0) ctx.scale(-1, 1);
+        
+        ctx.fillStyle = '#d44';
+        ctx.beginPath();
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(3, 0, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(-1, -1, 1, 0, Math.PI * 2);
+        ctx.arc(-1, 1, 1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawLeaf(health) {
+        ctx.beginPath();
+        // Heart-shaped leaf
+        ctx.moveTo(0,0);
+        ctx.bezierCurveTo(-5, -5, -10, -15, 0, -20);
+        ctx.bezierCurveTo(10, -15, 5, -5, 0, 0);
+        ctx.fillStyle = getLeafColor(health);
+        ctx.fill();
+    }
+
+    function drawFlower() {
+        ctx.beginPath();
+        ctx.fillStyle = '#ffb7b2'; // Pinkish
+        for(let i=0; i<5; i++) {
+            ctx.rotate((Math.PI * 2) / 5);
+            ctx.ellipse(0, 5, 3, 6, 0, 0, Math.PI * 2);
         }
+        ctx.fill();
+        ctx.beginPath();
+        ctx.fillStyle = '#fff';
+        ctx.arc(0,0,2,0, Math.PI*2);
+        ctx.fill();
+    }
+
+    function drawFruit() {
+        ctx.beginPath();
+        ctx.fillStyle = '#e07a5f'; // Terracotta orange
+        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.fill();
+        // Shine
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.beginPath();
+        ctx.arc(-1, -1, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
 
     function getLeafColor(health) {
         if (health <= 0) return '#8a4030'; // Dead brown
@@ -237,31 +277,42 @@
         return '#2d6a4f'; // Vibrant green
     }
 
+    function renderFireflies(hour) {
+        if (hour < 6 || hour >= 18) {
+            fireflies.forEach(f => {
+                const x = f.x + Math.sin(time * 0.001 + f.offset) * 20;
+                const y = f.y + Math.cos(time * 0.001 + f.offset) * 20;
+                const opacity = (Math.sin(time * 0.005 + f.offset) + 1) / 2;
+                
+                ctx.fillStyle = `rgba(255, 255, 150, ${opacity * 0.6})`;
+                ctx.beginPath();
+                ctx.arc(x, y, f.s, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+    }
+
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
         time += 16; 
 
-        // Sky Gradient (Day/Night cycle based on real time)
+        // Sky Gradient (Day/Night cycle)
         const hour = new Date().getHours();
         let skyGradient;
-        
         if (hour >= 6 && hour < 18) {
-            // Day
             skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGradient.addColorStop(0, '#f0e9df'); // Warm beige
+            skyGradient.addColorStop(0, '#f0e9df'); 
             skyGradient.addColorStop(1, '#e8dfd3');
         } else {
-            // Night
             skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGradient.addColorStop(0, '#1a1f1c'); // Deep forest
+            skyGradient.addColorStop(0, '#1a1f1c'); 
             skyGradient.addColorStop(1, '#242a26');
         }
         
-        // Only apply if we are not in canvas demo container which overrides bg? 
-        // Actually, let's just fill rect
         ctx.fillStyle = skyGradient;
         ctx.fillRect(0,0, canvas.width, canvas.height);
+
+        renderFireflies(hour);
 
         const startX = canvas.width / 2;
         const startY = canvas.height - 20;
