@@ -129,12 +129,31 @@
         <!-- ... header ... -->
 
         <div class="demo-container">
-            <div class="plant-status">
-                <!-- ... status header ... -->
-                
-                <div class="stats-row">
-                    <!-- ... stats ... -->
+            <div class="plant-status" style="margin-bottom: 20px; padding: 20px; background: var(--bg-secondary); border-radius: 12px;">
+                <div class="status-header" style="margin-bottom: 15px;">
+                    <h2 style="margin: 0; display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif;">
+                        <span id="plant-name" style="cursor: pointer; border-bottom: 1px dashed var(--text-subtle);" title="Click to rename">Sprout</span>
+                        <input type="text" id="plant-name-input" style="display: none; font-size: inherit; font-family: inherit; padding: 5px; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);" maxlength="20">
+                    </h2>
+                    <div id="mood-message" style="margin-top: 5px; color: var(--text-subtle); font-style: italic;"></div>
                 </div>
+                
+                <div class="stats-row" style="display: flex; gap: 20px; margin-bottom: 15px;">
+                    <div class="stat-item">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-subtle);">Age</div>
+                        <div id="age-display" style="font-weight: bold; font-size: 1.2rem;">0 Days</div>
+                    </div>
+                    <div class="stat-item">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-subtle);">Health</div>
+                        <div id="health-display" style="font-weight: bold; font-size: 1.2rem;">100%</div>
+                    </div>
+                    <div class="stat-item">
+                        <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-subtle);">Streak</div>
+                        <div id="streak-display" style="font-weight: bold; font-size: 1.2rem;">—</div>
+                    </div>
+                </div>
+
+                <button id="water-btn" style="background: var(--link-color); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: 500; font-family: 'DM Sans', sans-serif; transition: transform 0.1s;">💧 Water</button>
             </div>
 
             <div style="position: relative;">
@@ -154,7 +173,9 @@
                 </div>
             </div>
             
-            <!-- ... reset btn ... -->
+            <div style="text-align: center; margin-top: 15px;">
+                <button id="reset-btn" style="background: none; border: none; color: var(--text-subtle); text-decoration: underline; cursor: pointer; font-size: 0.9rem; font-family: inherit;">Plant a new seed</button>
+            </div>
         </div>
 
         <section>
