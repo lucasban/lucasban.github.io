@@ -103,6 +103,7 @@
     let snowflakes = []; // Particle system for winter
     let sparkles = []; // Sparkles for healthy plants
     let hearts = []; // Hearts when watering
+    let fallingFruits = []; // Autumn harvest mini-game
     let critterEventTimeout = null;
     let activeCritterEvent = null;
     let celebrationParticles = [];
@@ -130,6 +131,40 @@
 
     function getSeasonalColors() {
         return SEASONS[getSeason()];
+    }
+
+    /**
+     * Get seasonal gameplay modifiers
+     * Spring: Growth spurt (+50% growth rate)
+     * Summer: Heat wave (1.5x thirst rate)
+     * Autumn: Harvest time (falling fruits mini-game)
+     * Winter: Hibernation (0.5x thirst rate, plant rests)
+     */
+    function getSeasonalModifier() {
+        const season = getSeason();
+        switch (season) {
+            case 'spring':
+                return { thirstMultiplier: 1.0, growthMultiplier: 1.5, label: '🌱 Growth Spurt' };
+            case 'summer':
+                return { thirstMultiplier: 1.5, growthMultiplier: 1.0, label: '☀️ Heat Wave' };
+            case 'autumn':
+                return { thirstMultiplier: 1.0, growthMultiplier: 1.0, label: '🍂 Harvest Time' };
+            case 'winter':
+                return { thirstMultiplier: 0.5, growthMultiplier: 0.75, label: '❄️ Hibernation' };
+            default:
+                return { thirstMultiplier: 1.0, growthMultiplier: 1.0, label: '' };
+        }
+    }
+
+    function getSeasonalTooltip() {
+        const season = getSeason();
+        switch (season) {
+            case 'spring': return 'Spring: +50% growth rate!';
+            case 'summer': return 'Summer: Water more often (1.5x thirst)';
+            case 'autumn': return 'Autumn: Tap falling fruits for bonuses!';
+            case 'winter': return 'Winter: Plant rests (slower thirst & growth)';
+            default: return '';
+        }
     }
 
     // --- State Management ---
@@ -366,14 +401,18 @@
     function getHealth() {
         const now = Date.now();
         const hoursSinceWater = (now - state.lastWatered) / (1000 * 60 * 60);
-        const healthLost = hoursSinceWater * THIRST_RATE_PER_HOUR;
+        const modifier = getSeasonalModifier();
+        const effectiveThirstRate = THIRST_RATE_PER_HOUR * modifier.thirstMultiplier;
+        const healthLost = hoursSinceWater * effectiveThirstRate;
         return Math.max(0, Math.min(MAX_HEALTH, MAX_HEALTH - healthLost));
     }
 
     function getGrowthStage() {
         const days = getAgeInDays();
-        // Start at stage 4, grow 1 stage per day, max out
-        return Math.min(MAX_STAGE, Math.floor(4 + (days * GROWTH_RATE_PER_DAY)));
+        const modifier = getSeasonalModifier();
+        const effectiveGrowthRate = GROWTH_RATE_PER_DAY * modifier.growthMultiplier;
+        // Start at stage 4, grow at seasonal rate per day, max out
+        return Math.min(MAX_STAGE, Math.floor(4 + (days * effectiveGrowthRate)));
     }
 
     function checkMilestones() {
@@ -406,10 +445,18 @@
     function updateUI() {
         const days = Math.floor(getAgeInDays());
         const health = Math.floor(getHealth());
+        const modifier = getSeasonalModifier();
 
         plantNameEl.textContent = state.name;
         ageDisplay.textContent = `${days} Day${days !== 1 ? 's' : ''}`;
         healthDisplay.textContent = `${health}%`;
+
+        // Update seasonal indicator
+        const seasonDisplay = document.getElementById('season-display');
+        if (seasonDisplay) {
+            seasonDisplay.textContent = modifier.label;
+            seasonDisplay.title = getSeasonalTooltip();
+        }
 
         // Update streak display
         if (streakDisplay) {
@@ -725,14 +772,43 @@
 
     // --- Rendering (Fractal Tree) ---
 
+    function drawTreeShadow(startX, startY, stage) {
+        ctx.save();
+
+        // Shadow size grows with plant
+        const shadowWidth = 30 + (stage * 8);
+        const shadowHeight = 8 + (stage * 1.5);
+
+        // Create radial gradient for soft shadow
+        const shadowGrad = ctx.createRadialGradient(
+            startX, startY + 5,
+            0,
+            startX, startY + 5,
+            shadowWidth
+        );
+        shadowGrad.addColorStop(0, 'rgba(0,0,0,0.2)');
+        shadowGrad.addColorStop(0.5, 'rgba(0,0,0,0.1)');
+        shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        ctx.fillStyle = shadowGrad;
+        ctx.beginPath();
+        ctx.ellipse(startX, startY + 5, shadowWidth, shadowHeight, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
     function drawTree(startX, startY, len, angle, branchWidth, depth) {
         ctx.beginPath();
         ctx.save();
 
         ctx.translate(startX, startY);
-        ctx.rotate(angle * Math.PI/180);
+        ctx.rotate(angle * Math.PI / 180);
+
+        // Use quadratic bezier for natural curves on branches
+        const curveFactor = depth > 1 ? (Math.sin(state.seed * depth * 7) * len * 0.08) : 0;
         ctx.moveTo(0, 0);
-        ctx.lineTo(0, -len);
+        ctx.quadraticCurveTo(curveFactor, -len * 0.5, 0, -len);
 
         // Branch Style (Softer round caps)
         ctx.lineCap = 'round';
@@ -745,6 +821,21 @@
 
         ctx.lineWidth = branchWidth;
         ctx.stroke();
+
+        // Add bark texture on thicker branches
+        if (branchWidth > 5 && health > 0) {
+            ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+            ctx.lineWidth = 0.5;
+            // Vertical bark lines with slight waviness
+            for (let i = -branchWidth / 3; i < branchWidth / 3; i += 2.5) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                // Slight sine wave for natural bark texture
+                const waviness = Math.sin(state.seed * i * 5) * 1.5;
+                ctx.lineTo(i + waviness, -len * 0.9);
+                ctx.stroke();
+            }
+        }
 
         // Draw Ladybug on trunk
         if (depth === getGrowthStage() && health > 0) {
@@ -763,7 +854,9 @@
                 } else if (health > 70 && hasFruit) {
                     drawFruit();
                 } else {
-                    drawLeaf(health);
+                    // Varied leaf sizes based on seed and depth
+                    const leafSize = 12 + Math.abs(Math.sin(state.seed * depth * 321)) * 10;
+                    drawLeaf(health, leafSize);
                 }
             }
             ctx.restore();
@@ -790,10 +883,12 @@
     }
 
     function drawLadybug(len) {
-        const bugY = -len * (0.5 + Math.sin(time * 0.002) * 0.4);
+        // Fixed position based on seed - no more constant oscillation
+        const bugY = -len * (0.4 + (state.seed * 0.3));
         ctx.save();
         ctx.translate(0, bugY);
-        if (Math.cos(time * 0.002) > 0) ctx.scale(-1, 1);
+        // Face a fixed direction based on seed (no flip animation)
+        if (state.seed > 0.5) ctx.scale(-1, 1);
 
         ctx.fillStyle = '#d44';
         ctx.beginPath();
@@ -816,42 +911,159 @@
         return getSeasonalColors().leafBase;
     }
 
-    function drawLeaf(health) {
+    function lightenColor(hex, percent) {
+        const num = parseInt(hex.slice(1), 16);
+        const r = Math.min(255, (num >> 16) + Math.round(255 * percent / 100));
+        const g = Math.min(255, ((num >> 8) & 0x00FF) + Math.round(255 * percent / 100));
+        const b = Math.min(255, (num & 0x0000FF) + Math.round(255 * percent / 100));
+        return `rgb(${r},${g},${b})`;
+    }
+
+    function drawLeaf(health, sizeVariation) {
+        // Varied sizes based on position
+        const size = sizeVariation || (15 + (state.seed * 8));
+        const baseColor = getLeafColor(health);
+
+        ctx.save();
+
+        // Scale for size variation
+        const scale = size / 20;
+        ctx.scale(scale, scale);
+
+        // Gradient fill for depth
+        const grad = ctx.createLinearGradient(0, 0, 0, -20);
+        grad.addColorStop(0, baseColor);
+        grad.addColorStop(0.5, lightenColor(baseColor, 10));
+        grad.addColorStop(1, lightenColor(baseColor, 20));
+
+        // Main leaf shape (heart)
         ctx.beginPath();
-        // Heart-shaped leaf
-        ctx.moveTo(0,0);
-        ctx.bezierCurveTo(-5, -5, -10, -15, 0, -20);
-        ctx.bezierCurveTo(10, -15, 5, -5, 0, 0);
-        ctx.fillStyle = getLeafColor(health);
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-6, -6, -12, -16, 0, -22);
+        ctx.bezierCurveTo(12, -16, 6, -6, 0, 0);
+        ctx.fillStyle = grad;
         ctx.fill();
+
+        // Center vein
+        ctx.strokeStyle = health > 30 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, -2);
+        ctx.lineTo(0, -18);
+        ctx.stroke();
+
+        // Side veins
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0, -6);
+        ctx.lineTo(-4, -10);
+        ctx.moveTo(0, -10);
+        ctx.lineTo(-5, -15);
+        ctx.moveTo(0, -6);
+        ctx.lineTo(4, -10);
+        ctx.moveTo(0, -10);
+        ctx.lineTo(5, -15);
+        ctx.stroke();
+
+        ctx.restore();
     }
 
     function drawFlower() {
         const colors = getSeasonalColors();
-        ctx.beginPath();
-        ctx.fillStyle = colors.flower;
-        for(let i=0; i<5; i++) {
-            ctx.rotate((Math.PI * 2) / 5);
-            ctx.ellipse(0, 5, 3, 6, 0, 0, Math.PI * 2);
+
+        ctx.save();
+
+        // Draw 5 gradient petals
+        for (let i = 0; i < 5; i++) {
+            ctx.save();
+            ctx.rotate((i / 5) * Math.PI * 2);
+
+            // Petal gradient (lighter at tip)
+            const petalGrad = ctx.createRadialGradient(0, 6, 0, 0, 6, 8);
+            petalGrad.addColorStop(0, lightenColor(colors.flower, 20));
+            petalGrad.addColorStop(0.6, colors.flower);
+            petalGrad.addColorStop(1, lightenColor(colors.flower, -10));
+
+            ctx.beginPath();
+            ctx.ellipse(0, 6, 3.5, 7, 0, 0, Math.PI * 2);
+            ctx.fillStyle = petalGrad;
+            ctx.fill();
+
+            // Subtle petal edge
+            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+
+            ctx.restore();
         }
-        ctx.fill();
+
+        // Center (pistil) with gradient
+        const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 3);
+        centerGrad.addColorStop(0, '#fff8dc');
+        centerGrad.addColorStop(0.5, '#ffd700');
+        centerGrad.addColorStop(1, '#daa520');
+
         ctx.beginPath();
-        ctx.fillStyle = '#fff';
-        ctx.arc(0,0,2,0, Math.PI*2);
+        ctx.arc(0, 0, 3, 0, Math.PI * 2);
+        ctx.fillStyle = centerGrad;
         ctx.fill();
+
+        // Stamen dots around center
+        ctx.fillStyle = '#b8860b';
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2;
+            ctx.beginPath();
+            ctx.arc(Math.cos(angle) * 1.5, Math.sin(angle) * 1.5, 0.6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
     }
 
     function drawFruit() {
         const colors = getSeasonalColors();
+
+        ctx.save();
+
+        // Soft shadow beneath fruit
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.beginPath();
-        ctx.fillStyle = colors.fruit;
-        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.ellipse(1, 2, 4, 2, 0, 0, Math.PI * 2);
         ctx.fill();
-        // Shine
+
+        // Fruit body with radial gradient
+        const fruitGrad = ctx.createRadialGradient(-1.5, -1.5, 0, 0, 0, 5);
+        fruitGrad.addColorStop(0, lightenColor(colors.fruit, 30));
+        fruitGrad.addColorStop(0.4, colors.fruit);
+        fruitGrad.addColorStop(1, lightenColor(colors.fruit, -20));
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.fillStyle = fruitGrad;
+        ctx.fill();
+
+        // Main highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath();
+        ctx.ellipse(-1.5, -1.5, 2, 1.5, Math.PI / 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Small secondary highlight
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.beginPath();
-        ctx.arc(-1, -1, 1.5, 0, Math.PI * 2);
+        ctx.arc(-2.5, 0, 0.8, 0, Math.PI * 2);
         ctx.fill();
+
+        // Tiny stem at top
+        ctx.strokeStyle = '#5a4a3a';
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, -5);
+        ctx.lineTo(1, -7);
+        ctx.stroke();
+
+        ctx.restore();
     }
 
     function drawPlantFace(x, y, health) {
@@ -1059,6 +1271,127 @@
         }
     }
 
+    // --- Autumn Harvest Mini-Game ---
+
+    function spawnFallingFruit() {
+        if (getSeason() !== 'autumn') return;
+        if (getHealth() <= 50) return; // Only healthy plants produce fruit
+        if (fallingFruits.length >= 5) return; // Limit active fruits
+
+        const stage = getGrowthStage();
+        if (stage < 6) return; // Need some growth for fruits
+
+        // Random spawn near the tree canopy
+        fallingFruits.push({
+            x: canvas.width / 2 + (Math.random() - 0.5) * (stage * 20),
+            y: canvas.height - 100 - (stage * 15) + Math.random() * 30,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: 0,
+            rotation: Math.random() * Math.PI * 2,
+            rotationSpeed: (Math.random() - 0.5) * 0.1,
+            size: 6 + Math.random() * 3,
+            caught: false,
+            life: 300 // 5 seconds to catch
+        });
+    }
+
+    function updateFallingFruits() {
+        for (let i = fallingFruits.length - 1; i >= 0; i--) {
+            const fruit = fallingFruits[i];
+
+            if (fruit.caught) {
+                // Float up and fade when caught
+                fruit.y -= 2;
+                fruit.life -= 5;
+            } else {
+                // Fall with slight sway
+                fruit.vy += 0.08; // Gravity
+                fruit.y += fruit.vy;
+                fruit.x += fruit.vx + Math.sin(time * 0.01 + i) * 0.3;
+                fruit.rotation += fruit.rotationSpeed;
+                fruit.life--;
+            }
+
+            // Remove if off screen, expired, or caught and faded
+            if (fruit.y > canvas.height || fruit.life <= 0) {
+                fallingFruits.splice(i, 1);
+            }
+        }
+    }
+
+    function renderFallingFruits() {
+        const colors = getSeasonalColors();
+
+        for (const fruit of fallingFruits) {
+            ctx.save();
+            ctx.translate(fruit.x, fruit.y);
+            ctx.rotate(fruit.rotation);
+
+            const alpha = fruit.caught ? Math.min(1, fruit.life / 30) : 1;
+            ctx.globalAlpha = alpha;
+
+            // Fruit glow when active
+            if (!fruit.caught) {
+                ctx.fillStyle = 'rgba(255, 200, 100, 0.3)';
+                ctx.beginPath();
+                ctx.arc(0, 0, fruit.size + 5 + Math.sin(time * 0.1) * 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Fruit body with gradient
+            const fruitGrad = ctx.createRadialGradient(-1, -1, 0, 0, 0, fruit.size);
+            fruitGrad.addColorStop(0, lightenColor(colors.fruit, 30));
+            fruitGrad.addColorStop(0.5, colors.fruit);
+            fruitGrad.addColorStop(1, lightenColor(colors.fruit, -15));
+
+            ctx.beginPath();
+            ctx.arc(0, 0, fruit.size, 0, Math.PI * 2);
+            ctx.fillStyle = fruitGrad;
+            ctx.fill();
+
+            // Highlight
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.beginPath();
+            ctx.ellipse(-fruit.size * 0.3, -fruit.size * 0.3, fruit.size * 0.35, fruit.size * 0.25, Math.PI / 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Caught effect - show bonus
+            if (fruit.caught && fruit.life > 20) {
+                ctx.font = 'bold 14px "DM Sans", sans-serif';
+                ctx.fillStyle = '#ffd700';
+                ctx.textAlign = 'center';
+                ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                ctx.shadowBlur = 3;
+                ctx.fillText('+1%', 0, -fruit.size - 8);
+            }
+
+            ctx.restore();
+        }
+    }
+
+    function handleFruitClick(mouseX, mouseY) {
+        for (const fruit of fallingFruits) {
+            if (fruit.caught) continue;
+
+            const dx = mouseX - fruit.x;
+            const dy = mouseY - fruit.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            if (dist < fruit.size + 10) {
+                fruit.caught = true;
+                fruit.vy = -3; // Pop up effect
+
+                // Add health bonus
+                const bonusMs = (1 / THIRST_RATE_PER_HOUR) * (1000 * 60 * 60);
+                state.lastWatered = Math.min(Date.now(), state.lastWatered + bonusMs);
+                saveState();
+
+                return true;
+            }
+        }
+        return false;
+    }
+
     function updateAndRenderSparkles() {
         const health = getHealth();
 
@@ -1247,6 +1580,9 @@
         const baseLen = 100 + (getGrowthStage() * 5);
         const stage = getGrowthStage();
 
+        // Draw soft shadow under tree
+        drawTreeShadow(startX, startY, stage);
+
         drawTree(startX, startY, baseLen, 0, 12, stage);
 
         // Cute face on trunk
@@ -1261,24 +1597,59 @@
             ctx.restore();
         }
 
-        // Ground (seasonal)
+        // Ground (seasonal) with gradient
         const season = getSeason();
-        let groundColor = '#8a6a4b'; // Default dirt
-        if (season === 'winter') groundColor = '#a0a8b0'; // Frosty
-        else if (season === 'autumn') groundColor = '#7a5a3b'; // Rich brown
+        let groundColorTop = '#8a6a4b';
+        let groundColorBottom = '#6a4a2b';
+        if (season === 'winter') {
+            groundColorTop = '#a0a8b0';
+            groundColorBottom = '#808890';
+        } else if (season === 'autumn') {
+            groundColorTop = '#7a5a3b';
+            groundColorBottom = '#5a3a1b';
+        } else if (season === 'spring') {
+            groundColorTop = '#7a6a4b';
+            groundColorBottom = '#5a4a3b';
+        }
 
-        ctx.fillStyle = groundColor;
+        // Ground gradient
+        const groundGrad = ctx.createLinearGradient(0, canvas.height - 20, 0, canvas.height);
+        groundGrad.addColorStop(0, groundColorTop);
+        groundGrad.addColorStop(1, groundColorBottom);
+        ctx.fillStyle = groundGrad;
         ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+
+        // Small rocks/pebbles (deterministic based on seed)
+        ctx.fillStyle = season === 'winter' ? 'rgba(180, 185, 195, 0.6)' : 'rgba(90, 70, 50, 0.5)';
+        for (let i = 0; i < 8; i++) {
+            const rockX = (state.seed * 1000 + i * 73) % canvas.width;
+            const rockY = canvas.height - 15 + Math.sin(state.seed * i * 5) * 4;
+            const rockSize = 2 + Math.abs(Math.sin(state.seed * i * 12)) * 3;
+            ctx.beginPath();
+            ctx.ellipse(rockX, rockY, rockSize, rockSize * 0.6, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Dirt patches/texture
+        ctx.fillStyle = season === 'winter' ? 'rgba(160, 165, 175, 0.3)' : 'rgba(60, 40, 20, 0.2)';
+        for (let i = 0; i < 5; i++) {
+            const patchX = (state.seed * 500 + i * 120) % canvas.width;
+            const patchY = canvas.height - 12 + Math.cos(state.seed * i * 8) * 3;
+            const patchW = 15 + Math.abs(Math.cos(state.seed * i * 3)) * 20;
+            ctx.beginPath();
+            ctx.ellipse(patchX, patchY, patchW, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         // Grass tufts (sparser in winter)
         const grassColor = season === 'autumn' ? '#8a7a4b' : colors.leafBase;
         const grassSpacing = season === 'winter' ? 30 : 15; // Fewer tufts in winter
         ctx.strokeStyle = grassColor;
         ctx.lineWidth = 2;
-        for(let i=0; i<canvas.width; i+=grassSpacing) {
+        for (let i = 0; i < canvas.width; i += grassSpacing) {
             ctx.beginPath();
-            ctx.moveTo(i, canvas.height-20);
-            ctx.lineTo(i+5, canvas.height-25 - Math.sin(i)*5);
+            ctx.moveTo(i, canvas.height - 20);
+            ctx.lineTo(i + 5, canvas.height - 25 - Math.sin(i) * 5);
             ctx.stroke();
         }
 
@@ -1289,6 +1660,13 @@
         updateAndRenderHearts();
         updateCelebrationParticles();
         renderCelebrationParticles();
+
+        // Autumn harvest mini-game
+        if (getSeason() === 'autumn' && Math.random() < 0.008) {
+            spawnFallingFruit();
+        }
+        updateFallingFruits();
+        renderFallingFruits();
 
         animationFrame = requestAnimationFrame(render);
     }
@@ -1302,13 +1680,16 @@
     waterBtn.addEventListener('click', waterPlant);
     resetBtn.addEventListener('click', resetPlant);
 
-    // Canvas click for critter events AND face click
+    // Canvas click for critter events, face click, AND autumn fruits
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
         const mouseX = (e.clientX - rect.left) * scaleX;
         const mouseY = (e.clientY - rect.top) * scaleY;
+
+        // Check falling fruits first (autumn mini-game)
+        if (handleFruitClick(mouseX, mouseY)) return;
 
         if (handleCritterClick(mouseX, mouseY)) return;
         
