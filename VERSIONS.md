@@ -34,7 +34,7 @@ These use **independent version numbers**. Only bump when that specific file cha
 - `sunday-detector/script.js` → **v=5** (Fix countdown bug)
 
 ### Demo Resources
-- `demos/canvas/plant/plant.js` → **v=6** (Visual overhaul, seasonal events, autumn harvest)
+- `demos/canvas/plant/plant.js` → **v=7** (Seasonal weather: no rain in winter)
 - `demos/canvas/gravity/gravity.js` → v=6
 - `demos/canvas/game-of-life/game-of-life.js` → v=4
 - `demos/api/weather-haiku/weather-haiku.js` → **v=4** (Regenerate button + new poems)

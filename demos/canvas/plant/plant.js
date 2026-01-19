@@ -306,19 +306,29 @@
     }
 
     function changeWeather() {
+        const season = getSeason();
         const rand = Math.random();
-        if (rand < 0.5) weather.type = 'clear';
-        else if (rand < 0.7) weather.type = 'cloudy';
-        else if (rand < 0.9) weather.type = 'rain';
-        else weather.type = 'storm';
+
+        // Winter: no rain/storms (snow handles precipitation)
+        if (season === 'winter') {
+            if (rand < 0.6) weather.type = 'clear';
+            else weather.type = 'cloudy';
+            weather.windSpeed = 0.3 + Math.random() * 0.5; // Calmer winter winds
+        } else {
+            // Spring/Summer/Autumn: normal weather patterns
+            if (rand < 0.5) weather.type = 'clear';
+            else if (rand < 0.7) weather.type = 'cloudy';
+            else if (rand < 0.9) weather.type = 'rain';
+            else weather.type = 'storm';
+            weather.windSpeed = (weather.type === 'storm') ? 2 + Math.random() * 2 : 0.5 + Math.random();
+        }
 
         weather.intensity = Math.random();
-        weather.windSpeed = (weather.type === 'storm') ? 2 + Math.random() * 2 : 0.5 + Math.random();
-        
-        // Reset rain particles if raining
+
+        // Reset rain particles if raining (non-winter only)
         if (weather.type === 'rain' || weather.type === 'storm') {
             weather.rainDrops = [];
-            for(let i=0; i<100; i++) {
+            for (let i = 0; i < 100; i++) {
                 weather.rainDrops.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
@@ -330,9 +340,9 @@
     }
 
     function updateWeather() {
-        // Rain logic
-        if (weather.type === 'rain' || weather.type === 'storm') {
-            // Natural watering
+        // Rain logic (not in winter - snow doesn't water plants the same way)
+        if ((weather.type === 'rain' || weather.type === 'storm') && getSeason() !== 'winter') {
+            // Natural watering from rain
             if (getHealth() < 100 && Math.random() < 0.01) {
                 state.lastWatered = Math.min(Date.now(), state.lastWatered + 1000 * 60); // +1 min worth of water
             }
@@ -1509,6 +1519,8 @@
     }
 
     function renderRain() {
+        // No rain in winter (snow only)
+        if (getSeason() === 'winter') return;
         if (weather.type === 'rain' || weather.type === 'storm') {
             ctx.save();
             ctx.strokeStyle = 'rgba(174, 194, 224, 0.6)';
