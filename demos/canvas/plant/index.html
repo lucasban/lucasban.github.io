@@ -14,18 +14,20 @@
     <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
     <link rel="stylesheet" href="../../../style.css?v=8">
     <style>
-        .plant-status {
-            margin-bottom: 20px;
-            padding: 20px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-        }
-
-        .status-header {
+        .plant-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .plant-identity {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .plant-identity h2 {
@@ -51,57 +53,39 @@
         }
 
         #mood-message {
-            margin-top: 5px;
             color: var(--text-subtle);
             font-style: italic;
+            font-size: 0.9rem;
         }
 
-        .journal-btn {
-            background: var(--bg-primary);
-            border: 1.5px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 1rem;
-            cursor: pointer;
+        .stats-inline {
             display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-            color: var(--text-primary);
-            flex-shrink: 0;
-        }
-
-        .journal-btn:hover {
-            background: var(--bg-secondary);
-            border-color: var(--link-color);
-        }
-
-        .journal-btn-label {
-            font-size: 0.85rem;
-        }
-
-        .stats-row {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .stat-item .stat-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            gap: 15px;
+            font-size: 0.9rem;
             color: var(--text-subtle);
         }
 
-        .stat-item .stat-value {
-            font-weight: bold;
-            font-size: 1.2rem;
+        .stats-inline .stat {
+            white-space: nowrap;
         }
 
-        .action-row {
+        .canvas-wrapper {
+            position: relative;
+        }
+
+        .demo-canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 6 / 5;
+            border-radius: 8px;
+            border: 1.5px solid var(--border-color);
+        }
+
+        .plant-controls {
             display: flex;
             gap: 10px;
+            margin-top: 15px;
             flex-wrap: wrap;
         }
 
@@ -143,17 +127,28 @@
             color: var(--text-primary);
         }
 
-        .canvas-wrapper {
-            position: relative;
+        .journal-btn {
+            background: var(--bg-primary);
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            color: var(--text-primary);
+            margin-left: auto;
         }
 
-        .demo-canvas {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            border: 1.5px solid var(--border-color);
-            margin: 0 auto;
+        .journal-btn:hover {
+            background: var(--bg-secondary);
+            border-color: var(--link-color);
+        }
+
+        .journal-btn-label {
+            font-size: 0.85rem;
         }
 
         .journal-modal {
@@ -244,17 +239,22 @@
         }
 
         @media (max-width: 480px) {
-            .status-header {
+            .plant-header {
                 flex-direction: column;
-                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .plant-identity {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .stats-inline {
+                gap: 12px;
             }
 
             .journal-btn {
-                align-self: flex-start;
-            }
-
-            .stats-row {
-                gap: 15px;
+                margin-left: 0;
             }
         }
     </style>
@@ -279,43 +279,31 @@
         </header>
 
         <div class="demo-container">
-            <div class="plant-status">
-                <div class="status-header">
-                    <div class="plant-identity">
-                        <h2>
-                            <span id="plant-name" title="Click to rename">Sprout</span>
-                            <input type="text" id="plant-name-input" maxlength="20" pattern="[A-Za-z0-9 ]{1,20}">
-                        </h2>
-                        <div id="mood-message"></div>
-                    </div>
-                    <button class="journal-btn" id="journal-btn" title="Open Leaf Journal">
-                        📖 <span class="journal-btn-label">Journal</span>
-                    </button>
+            <div class="plant-header">
+                <div class="plant-identity">
+                    <h2>
+                        <span id="plant-name" title="Click to rename">Sprout</span>
+                        <input type="text" id="plant-name-input" maxlength="20" pattern="[A-Za-z0-9 ]{1,20}">
+                    </h2>
+                    <span id="mood-message"></span>
                 </div>
-
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <div class="stat-label">Age</div>
-                        <div class="stat-value" id="age-display">0 Days</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Health</div>
-                        <div class="stat-value" id="health-display">100%</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Streak</div>
-                        <div class="stat-value" id="streak-display">—</div>
-                    </div>
-                </div>
-
-                <div class="action-row">
-                    <button id="water-btn">💧 Water</button>
-                    <button id="reset-btn">🌱 New Seed</button>
+                <div class="stats-inline">
+                    <span class="stat">🌱 <span id="age-display">0 days</span></span>
+                    <span class="stat">💚 <span id="health-display">100%</span></span>
+                    <span class="stat">🔥 <span id="streak-display">—</span></span>
                 </div>
             </div>
 
             <div class="canvas-wrapper">
                 <canvas id="canvas" class="demo-canvas" width="600" height="500"></canvas>
+            </div>
+
+            <div class="plant-controls">
+                <button id="water-btn">💧 Water</button>
+                <button id="reset-btn">🌱 New Seed</button>
+                <button class="journal-btn" id="journal-btn" title="Open Leaf Journal">
+                    📖 <span class="journal-btn-label">Journal</span>
+                </button>
             </div>
         </div>
 
