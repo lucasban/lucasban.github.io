@@ -193,29 +193,37 @@
         updateUI();
     }
 
+    function getLocalDateString(date = new Date()) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
     function waterPlant() {
         if (getHealth() <= 0) return; // Can't water a dead plant
 
-        const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        const today = getLocalDateString();
 
         // Update streak
-        if (state.lastWaterDate) {
-            const lastDate = new Date(state.lastWaterDate);
-            const todayDate = new Date(today);
-            const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+        if (state.lastWaterDate && state.lastWaterDate !== today) {
+            // Check if yesterday
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = getLocalDateString(yesterday);
 
-            if (diffDays === 1) {
+            if (state.lastWaterDate === yesterdayStr) {
                 // Consecutive day - increment streak
                 state.waterStreakDays++;
-            } else if (diffDays > 1) {
+            } else {
                 // Missed days - reset streak
                 state.waterStreakDays = 1;
             }
-            // diffDays === 0 means already watered today, keep streak
-        } else {
+        } else if (!state.lastWaterDate) {
             // First watering ever
             state.waterStreakDays = 1;
         }
+        // If lastWaterDate === today, keep streak unchanged
 
         state.lastWaterDate = today;
         state.lastWatered = Date.now();
