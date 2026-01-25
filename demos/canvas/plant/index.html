@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,14 @@
     <meta name="description" content="A persistent digital plant that grows over time. Don't forget to water it!">
     <meta property="og:title" content="Digital Plant">
     <meta property="og:description" content="A persistent digital plant that grows over time.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <script>(function () { var t = localStorage.getItem('theme'); if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t) })();</script>
     <link rel="stylesheet" href="../../../style.css?v=8">
     <style>
         .plant-header {
@@ -173,7 +177,7 @@
             border-radius: 8px;
             border: 1.5px solid var(--border-color);
             padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             overflow-y: auto;
         }
 
@@ -332,6 +336,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
         <button data-theme="light" aria-pressed="false">☀️</button>
@@ -378,6 +383,8 @@
                 <button class="journal-btn" id="journal-btn" title="Open Leaf Journal">
                     📖 <span class="journal-btn-label">Journal</span>
                 </button>
+                <button id="sound-btn" title="Toggle Sound"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0 8px;">🔇</button>
             </div>
 
             <div class="achievement-panel" id="achievement-panel">
@@ -392,9 +399,11 @@
         <section>
             <h2>Care Instructions</h2>
             <ul>
-                <li><strong>Watering:</strong> Water your plant when the health drops. It gets thirsty over time (even when you're gone).</li>
+                <li><strong>Watering:</strong> Water your plant when the health drops. It gets thirsty over time (even
+                    when you're gone).</li>
                 <li><strong>Growth:</strong> The plant grows slowly. Come back tomorrow to see new branches.</li>
-                <li><strong>Wisdom:</strong> Click your plant's face daily to collect thoughts in your Leaf Journal.</li>
+                <li><strong>Wisdom:</strong> Click your plant's face daily to collect thoughts in your Leaf Journal.
+                </li>
                 <li><strong>Affection:</strong> Click the trunk to pet your plant! It loves the attention.</li>
                 <li><strong>Visitors:</strong> Watch for ladybugs, butterflies, and bees. Tap them for bonuses!</li>
                 <li><strong>Badges:</strong> Earn achievements by caring for your plant over time.</li>
@@ -419,4 +428,5 @@
     <script src="../../../theme-toggle.js?v=3"></script>
     <script src="plant.js?v=12"></script>
 </body>
+
 </html>

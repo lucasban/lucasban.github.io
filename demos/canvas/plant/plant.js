@@ -2,7 +2,7 @@
  * Digital Plant - "Plantagotchi"
  * A persistent fractal tree that requires care.
  */
-(function() {
+(function () {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const ageDisplay = document.getElementById('age-display');
@@ -13,12 +13,13 @@
     const plantNameInput = document.getElementById('plant-name-input');
     const moodMessageEl = document.getElementById('mood-message');
     const streakDisplay = document.getElementById('streak-display');
-    
+
     // Journal Elements
     const journalBtn = document.getElementById('journal-btn');
     const journalModal = document.getElementById('journal-modal');
     const closeJournalBtn = document.getElementById('close-journal');
     const journalEntriesEl = document.getElementById('journal-entries');
+    const soundBtn = document.getElementById('sound-btn');
 
     // Constants
     const MAX_HEALTH = 100;
@@ -27,6 +28,120 @@
     const MAX_STAGE = 12; // Max recursion depth
     const CRITTER_EVENT_MIN_MS = 120000; // 2 minutes
     const CRITTER_EVENT_MAX_MS = 180000; // 3 minutes
+
+    // --- Sound System (KAWAII EDITION) ---
+    const SoundManager = {
+        ctx: null,
+        enabled: false,
+
+        init: function () {
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.ctx = new AudioContext();
+
+            // Resume context on interaction (browser policy)
+            document.addEventListener('click', () => {
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }, { once: true });
+
+            // Restore mute state
+            const savedVol = localStorage.getItem('plant_sound_enabled');
+            this.enabled = savedVol === 'true';
+            this.updateButton();
+
+            // Bind click
+            soundBtn.addEventListener('click', () => {
+                this.enabled = !this.enabled;
+                localStorage.setItem('plant_sound_enabled', this.enabled);
+                this.updateButton();
+                if (this.enabled) this.play('pop');
+            });
+        },
+
+        updateButton: function () {
+            soundBtn.textContent = this.enabled ? '🔊' : '🔇';
+            soundBtn.style.opacity = this.enabled ? 1 : 0.5;
+        },
+
+        play: function (type) {
+            if (!this.enabled || !this.ctx) return;
+            if (this.ctx.state === 'suspended') this.ctx.resume();
+
+            const t = this.ctx.currentTime;
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            switch (type) {
+                case 'pop': // Cute UI click
+                    // High pitch sine blip
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, t);
+                    osc.frequency.exponentialRampToValueAtTime(1200, t + 0.1);
+                    gain.gain.setValueAtTime(0.1, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+                    osc.start(t);
+                    osc.stop(t + 0.1);
+                    break;
+
+                case 'happy': // Petting / Good interaction
+                    // Maj7 Arpeggio (C6, E6, G6)
+                    this.playNote(1046.50, t, 0.1); // C6
+                    this.playNote(1318.51, t + 0.05, 0.1); // E6
+                    this.playNote(1567.98, t + 0.1, 0.2); // G6
+                    break;
+
+                case 'water': // Watering
+                    // Bubbling effect
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, t);
+                    osc.frequency.linearRampToValueAtTime(600, t + 0.2);
+                    osc.frequency.linearRampToValueAtTime(400, t + 0.4);
+                    gain.gain.setValueAtTime(0.1, t);
+                    gain.gain.linearRampToValueAtTime(0.01, t + 0.4);
+                    osc.start(t);
+                    osc.stop(t + 0.4);
+                    break;
+
+                case 'achievement': // Milestone
+                    // Victory chime
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => { // C Major
+                        this.playNote(freq, t + i * 0.1, 0.4, 'triangle');
+                    });
+                    break;
+
+                case 'wilting': // Sad sound
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, t);
+                    osc.frequency.linearRampToValueAtTime(300, t + 0.5);
+                    gain.gain.setValueAtTime(0.1, t);
+                    gain.gain.linearRampToValueAtTime(0.01, t + 0.5);
+                    osc.start(t);
+                    osc.stop(t + 0.5);
+                    break;
+            }
+        },
+
+        playNote: function (freq, time, duration, type = 'sine') {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, time);
+
+            gain.gain.setValueAtTime(0.05, time);
+            gain.gain.exponentialRampToValueAtTime(0.001, time + duration);
+
+            osc.start(time);
+            osc.stop(time + duration);
+        }
+    };
+
 
     // Plant Wisdom
     const WISDOM_QUOTES = [
@@ -208,7 +323,7 @@
     let celebrationParticles = [];
     let milestoneMessage = null;
     let blinkTimer = 0;
-    
+
     // Weather System
     let weather = {
         type: 'clear', // clear, rain, cloudy, storm
@@ -231,6 +346,69 @@
     function getSeasonalColors() {
         return SEASONS[getSeason()];
     }
+
+    // --- Sky Drawing (New) ---
+    function drawSky() {
+        // Calculate sky based on time of day (fake 24h cycle or real time)
+        // We use real time for immersion
+        const now = new Date();
+        const hour = now.getHours() + now.getMinutes() / 60;
+
+        const colors = getSeasonalColors();
+        const dayColorTop = colors.skyDay[0];
+        const dayColorBot = colors.skyDay[1];
+        const nightColorTop = colors.skyNight[0];
+        const nightColorBot = colors.skyNight[1];
+
+        let topColor, botColor;
+
+        // Dawn: 5-7, Day: 7-17, Dusk: 17-19, Night: 19-5
+        if (hour >= 5 && hour < 7) {
+            // Dawn transition (Night -> Day)
+            const t = (hour - 5) / 2;
+            topColor = interpolateColor(nightColorTop, dayColorTop, t);
+            botColor = interpolateColor(nightColorBot, dayColorBot, t);
+        } else if (hour >= 7 && hour < 17) {
+            // Day
+            topColor = dayColorTop;
+            botColor = dayColorBot;
+        } else if (hour >= 17 && hour < 19) {
+            // Dusk transition (Day -> Night)
+            const t = (hour - 17) / 2;
+            topColor = interpolateColor(dayColorTop, nightColorTop, t);
+            botColor = interpolateColor(dayColorBot, nightColorBot, t);
+        } else {
+            // Night
+            topColor = nightColorTop;
+            botColor = nightColorBot;
+        }
+
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        grad.addColorStop(0, topColor);
+        grad.addColorStop(1, botColor);
+
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function interpolateColor(color1, color2, factor) {
+        // Simple hex interpolation helper
+        // (Assuming standard hex6 format for simplicity, handled in lightenColor helper mostly but valid here too)
+        // Re-using lightenColor logic would be messy, let's just make a quick parse
+        const parse = (c) => {
+            const num = parseInt(c.slice(1), 16);
+            return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+        };
+        const c1 = parse(color1);
+        const c2 = parse(color2);
+
+        const r = Math.round(c1[0] + (c2[0] - c1[0]) * factor);
+        const g = Math.round(c1[1] + (c2[1] - c1[1]) * factor);
+        const b = Math.round(c1[2] + (c2[2] - c1[2]) * factor);
+
+        return `rgb(${r},${g},${b})`;
+    }
+
 
     /**
      * Get seasonal gameplay modifiers
@@ -314,6 +492,9 @@
         // Initialize achievements display and check first_sprout
         renderAchievements();
         checkAchievements();
+
+        // Initialize Sound
+        SoundManager.init();
     }
 
     function saveState() {
@@ -436,7 +617,12 @@
             waterBtn.textContent = "💧 Water";
             waterBtn.disabled = false;
             updateUI();
+            waterBtn.textContent = "💧 Water";
+            waterBtn.disabled = false;
+            updateUI();
         }, 1000);
+
+        SoundManager.play('water');
     }
 
     function updateName(newName) {
@@ -503,7 +689,7 @@
                 else if (drop.x < 0) drop.x = canvas.width;
             });
         }
-        
+
         // Cloud movement
         weather.cloudOffset += 0.2 * weather.windSpeed;
     }
@@ -715,6 +901,8 @@
                 showRandomSpeech(SPEECH_PET);
             }
 
+            SoundManager.play('happy');
+
             // Check affection achievement
             checkAchievements();
 
@@ -742,6 +930,8 @@
 
         // Update achievement panel
         renderAchievements();
+
+        SoundManager.play('achievement');
 
         return true;
     }
@@ -1220,6 +1410,8 @@
             // Check achievements
             checkAchievements();
 
+            SoundManager.play('pop'); // Cute catch sound
+
             setTimeout(() => {
                 activeCritterEvent = null;
             }, 400);
@@ -1233,7 +1425,7 @@
         // Simple bounding box for face
         const dx = mouseX - startX;
         const dy = mouseY - faceY;
-        if (Math.sqrt(dx*dx + dy*dy) < 30) {
+        if (Math.sqrt(dx * dx + dy * dy) < 30) {
             if (getHealth() > 0) {
                 unlockWisdom();
                 return true;
@@ -1607,7 +1799,7 @@
         // Calculate control point for curve
         const midX = (x1 + x2) / 2;
         const midY = (y1 + y2) / 2;
-        const len = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+        const len = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
         const perpX = -(y2 - y1) / len;
         const perpY = (x2 - x1) / len;
         const curve = seededRandom(seed * 7.3) * len * 0.15 - len * 0.075;
@@ -1624,23 +1816,23 @@
         const angle2 = Math.atan2(y2 - ctrlY, x2 - ctrlX);
 
         // Left side of branch
-        ctx.moveTo(x1 + Math.cos(angle1 + Math.PI/2) * width1/2,
-                   y1 + Math.sin(angle1 + Math.PI/2) * width1/2);
+        ctx.moveTo(x1 + Math.cos(angle1 + Math.PI / 2) * width1 / 2,
+            y1 + Math.sin(angle1 + Math.PI / 2) * width1 / 2);
         ctx.quadraticCurveTo(
-            ctrlX + Math.cos((angle1+angle2)/2 + Math.PI/2) * (width1+width2)/4,
-            ctrlY + Math.sin((angle1+angle2)/2 + Math.PI/2) * (width1+width2)/4,
-            x2 + Math.cos(angle2 + Math.PI/2) * width2/2,
-            y2 + Math.sin(angle2 + Math.PI/2) * width2/2
+            ctrlX + Math.cos((angle1 + angle2) / 2 + Math.PI / 2) * (width1 + width2) / 4,
+            ctrlY + Math.sin((angle1 + angle2) / 2 + Math.PI / 2) * (width1 + width2) / 4,
+            x2 + Math.cos(angle2 + Math.PI / 2) * width2 / 2,
+            y2 + Math.sin(angle2 + Math.PI / 2) * width2 / 2
         );
 
         // Right side of branch (reverse)
-        ctx.lineTo(x2 + Math.cos(angle2 - Math.PI/2) * width2/2,
-                   y2 + Math.sin(angle2 - Math.PI/2) * width2/2);
+        ctx.lineTo(x2 + Math.cos(angle2 - Math.PI / 2) * width2 / 2,
+            y2 + Math.sin(angle2 - Math.PI / 2) * width2 / 2);
         ctx.quadraticCurveTo(
-            ctrlX + Math.cos((angle1+angle2)/2 - Math.PI/2) * (width1+width2)/4,
-            ctrlY + Math.sin((angle1+angle2)/2 - Math.PI/2) * (width1+width2)/4,
-            x1 + Math.cos(angle1 - Math.PI/2) * width1/2,
-            y1 + Math.sin(angle1 - Math.PI/2) * width1/2
+            ctrlX + Math.cos((angle1 + angle2) / 2 - Math.PI / 2) * (width1 + width2) / 4,
+            ctrlY + Math.sin((angle1 + angle2) / 2 - Math.PI / 2) * (width1 + width2) / 4,
+            x1 + Math.cos(angle1 - Math.PI / 2) * width1 / 2,
+            y1 + Math.sin(angle1 - Math.PI / 2) * width1 / 2
         );
         ctx.closePath();
         ctx.fill();
@@ -1655,7 +1847,7 @@
                 const offsetX = (t - 0.5) * width1 * 0.6;
                 ctx.beginPath();
                 ctx.moveTo(x1 + offsetX + seededRandom(seed + i) * 2, y1);
-                ctx.quadraticCurveTo(ctrlX + offsetX, ctrlY, x2 + offsetX * (width2/width1), y2);
+                ctx.quadraticCurveTo(ctrlX + offsetX, ctrlY, x2 + offsetX * (width2 / width1), y2);
                 ctx.stroke();
             }
         }
@@ -1944,7 +2136,7 @@
         ctx.save();
 
         // Pot body - terracotta style
-        const potGrad = ctx.createLinearGradient(x - width/2, 0, x + width/2, 0);
+        const potGrad = ctx.createLinearGradient(x - width / 2, 0, x + width / 2, 0);
         potGrad.addColorStop(0, '#a0522d');
         potGrad.addColorStop(0.3, '#cd853f');
         potGrad.addColorStop(0.7, '#cd853f');
@@ -1955,29 +2147,29 @@
         // Tapered pot shape
         const topWidth = width;
         const bottomWidth = width * 0.75;
-        ctx.moveTo(x - topWidth/2, y);
-        ctx.lineTo(x - bottomWidth/2, y + height);
-        ctx.lineTo(x + bottomWidth/2, y + height);
-        ctx.lineTo(x + topWidth/2, y);
+        ctx.moveTo(x - topWidth / 2, y);
+        ctx.lineTo(x - bottomWidth / 2, y + height);
+        ctx.lineTo(x + bottomWidth / 2, y + height);
+        ctx.lineTo(x + topWidth / 2, y);
         ctx.closePath();
         ctx.fill();
 
         // Rim
         ctx.fillStyle = '#b8643a';
         ctx.beginPath();
-        ctx.ellipse(x, y, topWidth/2, topWidth * 0.12, 0, 0, Math.PI * 2);
+        ctx.ellipse(x, y, topWidth / 2, topWidth * 0.12, 0, 0, Math.PI * 2);
         ctx.fill();
 
         // Rim highlight
         ctx.fillStyle = '#d4956a';
         ctx.beginPath();
-        ctx.ellipse(x, y - 2, topWidth/2 - 2, topWidth * 0.08, 0, Math.PI, Math.PI * 2);
+        ctx.ellipse(x, y - 2, topWidth / 2 - 2, topWidth * 0.08, 0, Math.PI, Math.PI * 2);
         ctx.fill();
 
         // Soil
         ctx.fillStyle = '#3d2817';
         ctx.beginPath();
-        ctx.ellipse(x, y + 2, topWidth/2 - 3, topWidth * 0.1, 0, 0, Math.PI);
+        ctx.ellipse(x, y + 2, topWidth / 2 - 3, topWidth * 0.1, 0, 0, Math.PI);
         ctx.fill();
 
         ctx.restore();
@@ -2473,16 +2665,16 @@
             ctx.save();
             ctx.fillStyle = weather.type === 'storm' ? 'rgba(80, 80, 90, 0.4)' : 'rgba(255, 255, 255, 0.4)';
             const cloudCount = (weather.type === 'cloudy' || weather.type === 'storm') ? 8 : 3;
-            
-            for(let i=0; i<cloudCount; i++) {
+
+            for (let i = 0; i < cloudCount; i++) {
                 const x = ((i * 150) + weather.cloudOffset) % (canvas.width + 200) - 100;
                 const y = 50 + Math.sin(i * 132) * 30;
                 const size = 40 + Math.cos(i * 23) * 10;
-                
+
                 ctx.beginPath();
                 ctx.arc(x, y, size, 0, Math.PI * 2);
-                ctx.arc(x + size*0.8, y - size*0.2, size*0.9, 0, Math.PI * 2);
-                ctx.arc(x + size*1.5, y + size*0.1, size*0.8, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.8, y - size * 0.2, size * 0.9, 0, Math.PI * 2);
+                ctx.arc(x + size * 1.5, y + size * 0.1, size * 0.8, 0, Math.PI * 2);
                 ctx.fill();
             }
             ctx.restore();
@@ -2502,10 +2694,10 @@
             // Gentle hovering movement
             const hoverY = Math.sin(time * 0.002 + fly.offset) * 5;
             const hoverX = Math.cos(time * 0.0015 + fly.offset) * 5;
-            
+
             // Blink effect
             const opacity = 0.3 + (Math.sin(time * 0.003 + fly.offset) + 1) / 2 * 0.7;
-            
+
             ctx.globalAlpha = opacity;
             ctx.beginPath();
             ctx.arc(fly.x + hoverX, fly.y + hoverY, fly.s, 0, Math.PI * 2);
@@ -2574,27 +2766,16 @@
         }
 
         // Sky Gradient (Day/Night cycle with seasonal colors)
-        const hour = new Date().getHours();
-        const colors = getSeasonalColors();
-        let skyGradient;
+        drawSky();
 
-        // Darker sky for storms
+        // Darker overlay for storms
         if (weather.type === 'storm') {
-            skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGradient.addColorStop(0, '#2c3e50');
-            skyGradient.addColorStop(1, '#4b6cb7');
-        } else if (hour >= 6 && hour < 18) {
-            skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGradient.addColorStop(0, colors.skyDay[0]);
-            skyGradient.addColorStop(1, colors.skyDay[1]);
-        } else {
-            skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            skyGradient.addColorStop(0, colors.skyNight[0]);
-            skyGradient.addColorStop(1, colors.skyNight[1]);
+            ctx.fillStyle = 'rgba(20, 30, 40, 0.4)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
-        ctx.fillStyle = skyGradient;
-        ctx.fillRect(0,0, canvas.width, canvas.height);
+        const hour = new Date().getHours();
+
 
         // Background Elements
         drawSunOrMoon(hour);

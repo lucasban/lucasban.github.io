@@ -76,6 +76,20 @@ Each detector is a standalone mini-app with a unique theme:
 
 ...
 
+## Recent Activity (2026-01-25)
+
+- **Digital Plant (Kawaii Update)**:
+    - **Dynamic Sky**: Implemented a real-time day/night cycle (Dawn/Day/Dusk/Night) with seasonal color palettes.
+    - **Sound System**: Added a cute `SoundManager` using the Web Audio API for synthesized SFX (happy chirps, water bubbles, pop sounds).
+    - **UI**: Added a mute toggle button.
+- **UX Improvements**:
+    - **Shared Navigation**: Refactored site-wide navigation into `shared/nav.js` for consistent Header, Breadcrumbs, and Footer injection.
+    - **Detector Navigation**: Added "Week Cycle" links (← Yesterday | Tomorrow →) to all 7 day detectors for easier browsing.
+    - **Games Section**: Split "Games & Simulations" into their own section in the Demos hub.
+- **Codebase Cleanup**:
+    - Removed duplicate header/footer code from `index.html`, `demos/index.html`, and `photos/index.html`.
+    - Centralized theme toggle injection in `shared/nav.js`.
+
 ## Recent Activity (2026-01-18)
 
 - **Digital Plant v3**:

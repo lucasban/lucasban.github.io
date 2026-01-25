@@ -3,7 +3,7 @@
  * Shared logic for day detector mini-apps.
  */
 
-(function() {
+(function () {
     const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     /**
@@ -25,8 +25,12 @@
             // Handle History
             handleHistory(dayIndex, container);
 
+            // Inject Week Navigation
+            injectWeekNav(dayIndex, container);
+
             // Initialize decoration easter egg
             initDecoration(container);
+
 
             if (isTargetDay) {
                 if (answerElement && !answerElement.textContent) {
@@ -53,7 +57,7 @@
         const STORAGE_KEY = `detector_last_visit_${dayIndex}`;
         const lastVisit = localStorage.getItem(STORAGE_KEY);
         const now = new Date();
-        
+
         // Save current visit
         localStorage.setItem(STORAGE_KEY, now.toISOString());
 
@@ -62,7 +66,7 @@
             const lastDate = new Date(lastVisit);
             const timeDiff = now - lastDate;
             const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            
+
             let message = "You last checked earlier today.";
             if (daysDiff === 1) message = "You last checked yesterday.";
             else if (daysDiff > 1) message = `You last checked ${daysDiff} days ago.`;
@@ -73,9 +77,40 @@
             historyEl.style.color = 'var(--text-subtle)';
             historyEl.style.fontStyle = 'italic';
             historyEl.textContent = message;
-            
+
+            container.appendChild(historyEl);
             container.appendChild(historyEl);
         }
+    }
+
+    /**
+     * Inject links to previous and next days
+     */
+    function injectWeekNav(currentDayIndex, container) {
+        if (!container) return;
+
+        const prevIndex = (currentDayIndex - 1 + 7) % 7;
+        const nextIndex = (currentDayIndex + 1) % 7;
+        const prevDayName = DAYS[prevIndex];
+        const nextDayName = DAYS[nextIndex];
+        const getPath = (name) => `/${name.toLowerCase()}-detector/`;
+
+        const nav = document.createElement('div');
+        nav.className = 'week-nav';
+        nav.style.marginTop = '1.5em';
+        nav.style.display = 'flex';
+        nav.style.justifyContent = 'space-between';
+        nav.style.fontSize = '0.9rem';
+        nav.style.borderTop = '1px solid var(--border-color)';
+        nav.style.paddingTop = '1em';
+
+        nav.innerHTML = `
+            <a href="${getPath(prevDayName)}" style="text-decoration: none;">&larr; ${prevDayName}</a>
+            <span style="color: var(--text-subtle);">Week Cycle</span>
+            <a href="${getPath(nextDayName)}" style="text-decoration: none;">${nextDayName} &rarr;</a>
+        `;
+
+        container.appendChild(nav);
     }
 
     /**
@@ -115,7 +150,7 @@
         tooltip.className = 'decoration-tooltip';
         decoration.appendChild(tooltip);
 
-        decoration.addEventListener('click', function(e) {
+        decoration.addEventListener('click', function (e) {
             clickCount++;
 
             // Always bounce

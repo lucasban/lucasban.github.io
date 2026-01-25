@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,27 +9,34 @@
     <meta property="og:title" content="Photos - Lucas Bannister">
     <meta property="og:description" content="Photo gallery from Bluesky.">
     <meta property="og:type" content="website">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <script>(function () { var t = localStorage.getItem('theme'); if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t) })();</script>
     <link rel="stylesheet" href="../style.css?v=8">
 </head>
+
 <body>
-    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
-        <button data-theme="light" aria-pressed="false">☀️</button>
-        <button data-theme="dark" aria-pressed="false">🌙</button>
-        <button data-theme="auto" aria-pressed="true">💻</button>
-    </div>
+    <script src="../shared/nav.js"></script>
+    <script>
+        Layout.init({
+            breadcrumbs: [
+                { label: "Home", url: "/" }
+            ]
+        });
+    </script>
+
     <div class="container">
-        <nav>
-            <a href="/">&larr; Home</a>
-        </nav>
+
 
         <header>
             <h1>Photos</h1>
-            <p class="subtitle">From my <a href="https://bsky.app/profile/lucasban.com">Bluesky</a>. Click to enlarge. Use arrow keys to navigate, Esc to close.</p>
+            <p class="subtitle">From my <a href="https://bsky.app/profile/lucasban.com">Bluesky</a>. Click to enlarge.
+                Use arrow keys to navigate, Esc to close.</p>
         </header>
 
         <p id="loading-message" class="loading">Loading photos from Bluesky...</p>
@@ -37,24 +45,26 @@
 
         <p id="empty-message" style="display: none;">No photos found.</p>
         <p id="error-message" style="display: none; color: var(--link-visited);">
-            Failed to load photos from Bluesky. 
-            <a href="#" id="retry-link" style="text-decoration: underline; cursor: pointer; color: var(--link-color);">Try again?</a>
+            Failed to load photos from Bluesky.
+            <a href="#" id="retry-link"
+                style="text-decoration: underline; cursor: pointer; color: var(--link-color);">Try again?</a>
         </p>
 
-        <footer>
-            <p><a href="/">&larr; Back to home</a></p>
-        </footer>
+
     </div>
 
     <!-- Lightbox -->
     <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Image viewer">
         <span class="lightbox-close" id="lightbox-close" tabindex="0" role="button" aria-label="Close">&times;</span>
-        <span class="lightbox-nav lightbox-prev" id="lightbox-prev" tabindex="0" role="button" aria-label="Previous image">&lsaquo;</span>
+        <span class="lightbox-nav lightbox-prev" id="lightbox-prev" tabindex="0" role="button"
+            aria-label="Previous image">&lsaquo;</span>
         <img src="" alt="" id="lightbox-img">
-        <span class="lightbox-nav lightbox-next" id="lightbox-next" tabindex="0" role="button" aria-label="Next image">&rsaquo;</span>
+        <span class="lightbox-nav lightbox-next" id="lightbox-next" tabindex="0" role="button"
+            aria-label="Next image">&rsaquo;</span>
     </div>
 
     <script src="../theme-toggle.js?v=3"></script>
     <script src="gallery.js?v=5"></script>
 </body>
+
 </html>
