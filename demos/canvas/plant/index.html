@@ -238,6 +238,79 @@
             font-style: italic;
         }
 
+        /* Achievement Panel */
+        .achievement-panel {
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .achievement-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .achievement-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin: 0;
+        }
+
+        .achievement-toggle {
+            font-size: 0.8rem;
+            color: var(--text-subtle);
+            transition: transform 0.2s;
+        }
+
+        .achievement-panel.collapsed .achievement-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .achievement-panel.collapsed .achievement-badges {
+            display: none;
+        }
+
+        .achievement-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            transition: all 0.2s ease;
+            cursor: help;
+        }
+
+        .badge.locked {
+            filter: grayscale(1) opacity(0.4);
+        }
+
+        .badge.unlocked {
+            border-color: var(--link-color);
+            box-shadow: 0 0 8px rgba(45, 106, 79, 0.3);
+        }
+
+        .badge.unlocked:hover {
+            transform: scale(1.1);
+        }
+
         @media (max-width: 480px) {
             .plant-header {
                 flex-direction: column;
@@ -306,6 +379,14 @@
                     📖 <span class="journal-btn-label">Journal</span>
                 </button>
             </div>
+
+            <div class="achievement-panel" id="achievement-panel">
+                <div class="achievement-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                    <h3 class="achievement-title">🏆 Badges</h3>
+                    <span class="achievement-toggle">▼</span>
+                </div>
+                <div class="achievement-badges" id="achievement-badges"></div>
+            </div>
         </div>
 
         <section>
@@ -314,7 +395,9 @@
                 <li><strong>Watering:</strong> Water your plant when the health drops. It gets thirsty over time (even when you're gone).</li>
                 <li><strong>Growth:</strong> The plant grows slowly. Come back tomorrow to see new branches.</li>
                 <li><strong>Wisdom:</strong> Click your plant's face daily to collect thoughts in your Leaf Journal.</li>
-                <li><strong>Neglect:</strong> If health reaches 0%, the plant will wither. You'll need to plant a new seed.</li>
+                <li><strong>Affection:</strong> Click the trunk to pet your plant! It loves the attention.</li>
+                <li><strong>Visitors:</strong> Watch for ladybugs, butterflies, and bees. Tap them for bonuses!</li>
+                <li><strong>Badges:</strong> Earn achievements by caring for your plant over time.</li>
             </ul>
         </section>
 
@@ -334,6 +417,6 @@
     </div>
 
     <script src="../../../theme-toggle.js?v=3"></script>
-    <script src="plant.js?v=7"></script>
+    <script src="plant.js?v=8"></script>
 </body>
 </html>

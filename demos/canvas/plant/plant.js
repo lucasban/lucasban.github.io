@@ -94,8 +94,107 @@
         lastStage: 4, // Track for milestone detection
         celebratedMilestones: [], // Track which milestones have been celebrated
         journal: [], // Array of {date: timestamp, text: string}
-        lastWisdomDate: null // Timestamp of last unlocked wisdom
+        lastWisdomDate: null, // Timestamp of last unlocked wisdom
+        affection: 0, // Cumulative pet/comfort stat
+        lastPetTime: 0, // Timestamp of last pet (for cooldown)
+        critterClicks: 0, // Track critter interactions for achievements
+        fruitsCaught: 0, // Track autumn fruits caught
+        achievements: [] // Unlocked achievement IDs
     };
+
+    // Face Reaction System
+    let faceReaction = {
+        type: null, // 'surprised', 'excited', 'sleepy', 'sparkle', 'pleased', 'thinking'
+        timer: 0,
+        intensity: 1
+    };
+
+    // Speech Bubble System
+    let speechBubble = {
+        text: null,
+        life: 0,
+        fadeIn: 0,
+        maxLife: 180
+    };
+
+    // Bounce/Wiggle Animation (Spring Physics)
+    let plantBounce = {
+        scale: 1,
+        target: 1,
+        velocity: 0,
+        rotation: 0,
+        rotationTarget: 0,
+        rotationVelocity: 0
+    };
+
+    // Idle timer for thought bubbles
+    let idleTimer = 0;
+    const IDLE_THRESHOLD = 1800; // 30 seconds at 60fps
+
+    // Speech messages
+    const SPEECH_IDLE = [
+        "It's so sunny today~",
+        "I'm a bit thirsty...",
+        "What a nice breeze!",
+        "*stretches leaves*",
+        "Growing is hard work...",
+        "Hmm hmm hmm~",
+        "I wonder what's up there?",
+        "*rustle rustle*"
+    ];
+
+    const SPEECH_WATER = [
+        "Thank you for the water! 💕",
+        "Ahhh, refreshing!",
+        "Glug glug glug~",
+        "I feel so hydrated!",
+        "You're the best! 💚",
+        "*happy wiggle*"
+    ];
+
+    const SPEECH_CRITTER = [
+        "Ooh, a ladybug!",
+        "Hello little friend~",
+        "What a cute visitor!",
+        "Come back anytime!",
+        "A butterfly! So pretty~"
+    ];
+
+    const SPEECH_NIGHT = [
+        "*yawn* Good night...",
+        "Time to rest...",
+        "Sweet dreams~",
+        "See you tomorrow...",
+        "*sleepy*"
+    ];
+
+    const SPEECH_PET = [
+        "That tickles! 💕",
+        "Hehe~",
+        "*happy rustling*",
+        "I love you too!",
+        "So cozy~"
+    ];
+
+    const SPEECH_ACHIEVEMENT = [
+        "I did it! 🎉",
+        "Woohoo!",
+        "Achievement unlocked!",
+        "I'm so proud!",
+        "Look what I earned!"
+    ];
+
+    // Achievement definitions
+    const ACHIEVEMENTS = [
+        { id: 'first_sprout', icon: '🌱', name: 'First Sprout', desc: 'Plant your first seed' },
+        { id: 'hydration_hero', icon: '💧', name: 'Hydration Hero', desc: '7-day watering streak' },
+        { id: 'critter_friend', icon: '🦋', name: 'Critter Friend', desc: 'Click 10 critters' },
+        { id: 'full_bloom', icon: '🌸', name: 'Full Bloom', desc: 'Reach 100% health with flowers' },
+        { id: 'wise_one', icon: '📖', name: 'Wise One', desc: 'Collect 10 wisdom quotes' },
+        { id: 'harvest_master', icon: '🍂', name: 'Harvest Master', desc: 'Catch 20 autumn fruits' },
+        { id: 'affection_ace', icon: '💕', name: 'Affection Ace', desc: 'Pet your plant 50 times' },
+        { id: 'mature_tree', icon: '🌳', name: 'Mature Tree', desc: 'Reach maximum growth stage' }
+    ];
 
     let animationFrame;
     let time = 0;
@@ -177,6 +276,13 @@
             saveState(); // Init new
         }
 
+        // Ensure new state properties exist (for existing saves)
+        if (!state.achievements) state.achievements = [];
+        if (!state.affection) state.affection = 0;
+        if (!state.lastPetTime) state.lastPetTime = 0;
+        if (!state.critterClicks) state.critterClicks = 0;
+        if (!state.fruitsCaught) state.fruitsCaught = 0;
+
         // Initialize fireflies
         for (let i = 0; i < 15; i++) {
             fireflies.push({
@@ -200,10 +306,14 @@
 
         // Start critter event timer
         scheduleCritterEvent();
-        
+
         // Initialize weather
         changeWeather();
         setInterval(changeWeather, 300000); // Change weather every 5 minutes
+
+        // Initialize achievements display and check first_sprout
+        renderAchievements();
+        checkAchievements();
     }
 
     function saveState() {
@@ -222,9 +332,16 @@
             lastStage: 4,
             celebratedMilestones: [],
             journal: [],
-            lastWisdomDate: null
+            lastWisdomDate: null,
+            affection: 0,
+            lastPetTime: 0,
+            critterClicks: 0,
+            fruitsCaught: 0,
+            achievements: []
         };
         saveState();
+        renderAchievements();
+        checkAchievements(); // Will unlock first_sprout
         updateUI();
     }
 
@@ -277,6 +394,12 @@
             });
         }
 
+        // Cute reactions
+        setFaceReaction('excited', 120);
+        triggerBounce(0.12);
+        showRandomSpeech(SPEECH_WATER);
+        idleTimer = 0;
+
         // Visual feedback
         waterBtn.textContent = "💧 Watered!";
         waterBtn.disabled = true;
@@ -286,6 +409,9 @@
         if (streakMilestones.includes(state.waterStreakDays)) {
             showMilestoneMessage(`🔥 ${state.waterStreakDays}-day streak!`);
         }
+
+        // Check achievements (hydration hero, etc.)
+        checkAchievements();
 
         setTimeout(() => {
             waterBtn.textContent = "💧 Water";
@@ -363,6 +489,300 @@
         weather.cloudOffset += 0.2 * weather.windSpeed;
     }
 
+    // --- Face Reaction System ---
+
+    function setFaceReaction(type, duration = 120) {
+        faceReaction.type = type;
+        faceReaction.timer = duration;
+        faceReaction.intensity = 1;
+    }
+
+    function updateFaceReaction() {
+        if (faceReaction.timer > 0) {
+            faceReaction.timer--;
+            // Fade out in last 30 frames
+            if (faceReaction.timer < 30) {
+                faceReaction.intensity = faceReaction.timer / 30;
+            }
+        } else {
+            faceReaction.type = null;
+            faceReaction.intensity = 1;
+        }
+
+        // Auto-set sleepy at night
+        const hour = new Date().getHours();
+        if ((hour < 6 || hour >= 22) && !faceReaction.type) {
+            faceReaction.type = 'sleepy';
+            faceReaction.intensity = 0.8;
+        }
+    }
+
+    // --- Speech Bubble System ---
+
+    function showSpeechBubble(text, duration = 180) {
+        speechBubble.text = text;
+        speechBubble.life = duration;
+        speechBubble.maxLife = duration;
+        speechBubble.fadeIn = 0;
+    }
+
+    function showRandomSpeech(messages) {
+        const msg = messages[Math.floor(Math.random() * messages.length)];
+        showSpeechBubble(msg);
+    }
+
+    function updateSpeechBubble() {
+        if (speechBubble.life > 0) {
+            speechBubble.life--;
+            if (speechBubble.fadeIn < 15) {
+                speechBubble.fadeIn++;
+            }
+        }
+
+        // Idle chatter
+        if (!speechBubble.life && getHealth() > 20) {
+            idleTimer++;
+            if (idleTimer > IDLE_THRESHOLD && Math.random() < 0.002) {
+                const hour = new Date().getHours();
+                if (hour < 6 || hour >= 22) {
+                    showRandomSpeech(SPEECH_NIGHT);
+                } else if (getHealth() < 50) {
+                    showSpeechBubble("I'm a bit thirsty...");
+                } else {
+                    showRandomSpeech(SPEECH_IDLE);
+                }
+                idleTimer = 0;
+            }
+        }
+    }
+
+    function renderSpeechBubble(x, y) {
+        if (!speechBubble.text || speechBubble.life <= 0) return;
+
+        ctx.save();
+
+        // Calculate alpha for fade in/out
+        let alpha = 1;
+        if (speechBubble.fadeIn < 15) {
+            alpha = speechBubble.fadeIn / 15;
+        } else if (speechBubble.life < 30) {
+            alpha = speechBubble.life / 30;
+        }
+        ctx.globalAlpha = alpha;
+
+        // Measure text
+        ctx.font = '14px "DM Sans", sans-serif';
+        const metrics = ctx.measureText(speechBubble.text);
+        const padding = 10;
+        const bubbleWidth = metrics.width + padding * 2;
+        const bubbleHeight = 28;
+        const bubbleX = x - bubbleWidth / 2;
+        const bubbleY = y - 70;
+
+        // Bubble background (compatible rounded rect)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.beginPath();
+        const r = 8;
+        ctx.moveTo(bubbleX + r, bubbleY);
+        ctx.lineTo(bubbleX + bubbleWidth - r, bubbleY);
+        ctx.quadraticCurveTo(bubbleX + bubbleWidth, bubbleY, bubbleX + bubbleWidth, bubbleY + r);
+        ctx.lineTo(bubbleX + bubbleWidth, bubbleY + bubbleHeight - r);
+        ctx.quadraticCurveTo(bubbleX + bubbleWidth, bubbleY + bubbleHeight, bubbleX + bubbleWidth - r, bubbleY + bubbleHeight);
+        ctx.lineTo(bubbleX + r, bubbleY + bubbleHeight);
+        ctx.quadraticCurveTo(bubbleX, bubbleY + bubbleHeight, bubbleX, bubbleY + bubbleHeight - r);
+        ctx.lineTo(bubbleX, bubbleY + r);
+        ctx.quadraticCurveTo(bubbleX, bubbleY, bubbleX + r, bubbleY);
+        ctx.closePath();
+        ctx.fill();
+
+        // Bubble border
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Tail pointing down
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.beginPath();
+        ctx.moveTo(x - 6, bubbleY + bubbleHeight);
+        ctx.lineTo(x, bubbleY + bubbleHeight + 8);
+        ctx.lineTo(x + 6, bubbleY + bubbleHeight);
+        ctx.fill();
+
+        // Text
+        ctx.fillStyle = '#3d3632';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(speechBubble.text, x, bubbleY + bubbleHeight / 2);
+
+        ctx.restore();
+    }
+
+    // --- Bounce/Wiggle Animation ---
+
+    function triggerBounce(intensity = 0.08) {
+        plantBounce.velocity = intensity;
+    }
+
+    function triggerWiggle(intensity = 0.05) {
+        plantBounce.rotationVelocity = intensity;
+    }
+
+    function updateBounce() {
+        // Spring physics for scale
+        const scaleForce = (plantBounce.target - plantBounce.scale) * 0.15;
+        plantBounce.velocity += scaleForce;
+        plantBounce.velocity *= 0.85; // Damping
+        plantBounce.scale += plantBounce.velocity;
+
+        // Spring physics for rotation
+        const rotForce = (plantBounce.rotationTarget - plantBounce.rotation) * 0.1;
+        plantBounce.rotationVelocity += rotForce;
+        plantBounce.rotationVelocity *= 0.9; // Damping
+        plantBounce.rotation += plantBounce.rotationVelocity;
+    }
+
+    // --- Pet/Comfort Mechanic ---
+
+    const PET_COOLDOWN = 30000; // 30 seconds
+    const PET_HEALTH_BONUS = 0.5;
+
+    function petPlant(mouseX, mouseY, startX, startY, stage) {
+        const now = Date.now();
+
+        // Check if click is on the tree trunk/branches area
+        const treeWidth = 50 + stage * 10;
+        const treeHeight = 100 + stage * 20;
+
+        if (mouseX > startX - treeWidth && mouseX < startX + treeWidth &&
+            mouseY > startY - treeHeight && mouseY < startY) {
+
+            // Reset idle timer on any tree interaction
+            idleTimer = 0;
+
+            // Check cooldown for health bonus
+            const canGetBonus = (now - state.lastPetTime) > PET_COOLDOWN;
+
+            // Always show affection
+            state.affection++;
+            saveState();
+
+            // Spawn heart particles
+            for (let i = 0; i < 5; i++) {
+                hearts.push({
+                    x: mouseX + (Math.random() - 0.5) * 30,
+                    y: mouseY,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: -2 - Math.random() * 2,
+                    size: 8 + Math.random() * 6,
+                    life: 40 + Math.random() * 20,
+                    rotation: (Math.random() - 0.5) * 0.5
+                });
+            }
+
+            // Set pleased face
+            setFaceReaction('pleased', 90);
+
+            // Small wiggle
+            triggerWiggle(0.03);
+
+            if (canGetBonus) {
+                // Give health bonus
+                const bonusMs = (PET_HEALTH_BONUS / THIRST_RATE_PER_HOUR) * (1000 * 60 * 60);
+                state.lastWatered = Math.min(Date.now(), state.lastWatered + bonusMs);
+                state.lastPetTime = now;
+                saveState();
+
+                showRandomSpeech(SPEECH_PET);
+            }
+
+            // Check affection achievement
+            checkAchievements();
+
+            return true;
+        }
+        return false;
+    }
+
+    // --- Achievement System ---
+
+    function unlockAchievement(id) {
+        if (state.achievements.includes(id)) return false;
+
+        const achievement = ACHIEVEMENTS.find(a => a.id === id);
+        if (!achievement) return false;
+
+        state.achievements.push(id);
+        saveState();
+
+        // Celebration
+        showSpeechBubble(`${achievement.icon} ${achievement.name}!`, 240);
+        triggerCelebration('golden', `Achievement: ${achievement.name}`);
+        triggerBounce(0.1);
+        setFaceReaction('excited', 120);
+
+        // Update achievement panel
+        renderAchievements();
+
+        return true;
+    }
+
+    function checkAchievements() {
+        const health = getHealth();
+        const stage = getGrowthStage();
+
+        // First Sprout - always unlocked on load if not already
+        if (!state.achievements.includes('first_sprout')) {
+            unlockAchievement('first_sprout');
+        }
+
+        // Hydration Hero - 7-day streak
+        if (state.waterStreakDays >= 7) {
+            unlockAchievement('hydration_hero');
+        }
+
+        // Critter Friend - click 10 critters
+        if (state.critterClicks >= 10) {
+            unlockAchievement('critter_friend');
+        }
+
+        // Full Bloom - 100% health with flowers
+        if (health >= 100 && stage >= 8) {
+            unlockAchievement('full_bloom');
+        }
+
+        // Wise One - 10 wisdom quotes
+        if (state.journal && state.journal.length >= 10) {
+            unlockAchievement('wise_one');
+        }
+
+        // Harvest Master - catch 20 fruits
+        if (state.fruitsCaught >= 20) {
+            unlockAchievement('harvest_master');
+        }
+
+        // Affection Ace - pet 50 times
+        if (state.affection >= 50) {
+            unlockAchievement('affection_ace');
+        }
+
+        // Mature Tree - max growth
+        if (stage >= MAX_STAGE) {
+            unlockAchievement('mature_tree');
+        }
+    }
+
+    function renderAchievements() {
+        const container = document.getElementById('achievement-badges');
+        if (!container) return;
+
+        container.innerHTML = ACHIEVEMENTS.map(a => {
+            const unlocked = state.achievements.includes(a.id);
+            return `<span class="badge ${unlocked ? 'unlocked' : 'locked'}" title="${a.name}: ${a.desc}">
+                ${a.icon}
+            </span>`;
+        }).join('');
+    }
+
     function unlockWisdom() {
         const now = new Date();
         const today = now.toDateString();
@@ -374,13 +794,18 @@
             state.journal.unshift({ date: Date.now(), text: quote });
             state.lastWisdomDate = Date.now();
             saveState();
-            
+
             showMilestoneMessage("New Wisdom Unlocked! 📖");
             triggerCelebration('golden', "Leaf Journal Updated");
-            
+            setFaceReaction('sparkle', 120);
+            triggerBounce(0.08);
+
             // Pulse the journal button
             journalBtn.style.animation = 'pulse 1s infinite';
             setTimeout(() => journalBtn.style.animation = '', 3000);
+
+            // Check for wise_one achievement
+            checkAchievements();
         } else {
             showMilestoneMessage("Come back tomorrow for more wisdom.");
         }
@@ -445,11 +870,16 @@
                 state.celebratedMilestones.push(stage);
                 saveState();
                 triggerCelebration(type, message);
+                triggerBounce(0.15);
+                setFaceReaction('excited', 150);
                 break; // Only one celebration at a time
             }
         }
 
         state.lastStage = currentStage;
+
+        // Check achievements (full_bloom, mature_tree, etc.)
+        checkAchievements();
     }
 
     function updateUI() {
@@ -675,6 +1105,9 @@
             clicked: false,
             size: 30
         };
+
+        // Plant notices the critter
+        setFaceReaction('surprised', 60);
     }
 
     function handleCritterClick(mouseX, mouseY) {
@@ -687,6 +1120,16 @@
         if (dist < activeCritterEvent.size) {
             activeCritterEvent.clicked = true;
 
+            // Track critter clicks for achievement
+            state.critterClicks = (state.critterClicks || 0) + 1;
+            saveState();
+
+            // Cute reactions
+            setFaceReaction('surprised', 60);
+            triggerWiggle(0.04);
+            showRandomSpeech(SPEECH_CRITTER);
+            idleTimer = 0;
+
             if (activeCritterEvent.healthBonus > 0) {
                 // Add health bonus by adjusting lastWatered
                 const bonusMs = (activeCritterEvent.healthBonus / THIRST_RATE_PER_HOUR) * (1000 * 60 * 60);
@@ -696,6 +1139,9 @@
             } else {
                 showMilestoneMessage('✨ Beautiful!');
             }
+
+            // Check achievements
+            checkAchievements();
 
             setTimeout(() => {
                 activeCritterEvent = null;
@@ -1083,6 +1529,8 @@
         const isBlinking = blinkTimer > 0 && blinkTimer < 8;
         const isSad = health < 40;
         const isDead = health <= 0;
+        const reaction = faceReaction.type;
+        const reactionIntensity = faceReaction.intensity;
 
         // Face background (slightly lighter wood)
         ctx.fillStyle = isDead ? '#5c524a' : '#4a4038';
@@ -1090,18 +1538,46 @@
         ctx.ellipse(0, 0, 18, 15, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Blush (when healthy)
-        if (health > 70 && !isDead) {
-            ctx.fillStyle = 'rgba(255, 150, 150, 0.3)';
+        // Blush - intensity varies with health and affection
+        if (!isDead) {
+            const blushBase = health > 70 ? 0.3 : health > 40 ? 0.15 : 0;
+            const affectionBonus = Math.min(0.3, (state.affection || 0) * 0.005);
+            const reactionBonus = (reaction === 'excited' || reaction === 'pleased') ? 0.2 * reactionIntensity : 0;
+            const blushAlpha = Math.min(0.6, blushBase + affectionBonus + reactionBonus);
+
+            if (blushAlpha > 0) {
+                ctx.fillStyle = `rgba(255, 150, 150, ${blushAlpha})`;
+                ctx.beginPath();
+                ctx.ellipse(-12, 4, 5, 3, 0, 0, Math.PI * 2);
+                ctx.ellipse(12, 4, 5, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Sweat drop when health is low
+        if (health < 25 && health > 0) {
+            ctx.fillStyle = 'rgba(100, 180, 255, 0.7)';
             ctx.beginPath();
-            ctx.ellipse(-12, 4, 5, 3, 0, 0, Math.PI * 2);
-            ctx.ellipse(12, 4, 5, 3, 0, 0, Math.PI * 2);
+            ctx.moveTo(14, -8);
+            ctx.quadraticCurveTo(18, -4, 16, 0);
+            ctx.quadraticCurveTo(12, -2, 14, -8);
             ctx.fill();
         }
 
         // Eyes
         ctx.fillStyle = isDead ? '#888' : '#fff';
-        if (isBlinking && !isDead) {
+
+        // Sleepy eyes (half-closed)
+        if (reaction === 'sleepy' && !isDead) {
+            ctx.strokeStyle = '#2a2520';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            // Draw curved half-closed lines
+            ctx.arc(-6, -1, 4, 0, Math.PI);
+            ctx.moveTo(10, -1);
+            ctx.arc(6, -1, 4, 0, Math.PI);
+            ctx.stroke();
+        } else if (isBlinking && !isDead && reaction !== 'surprised') {
             // Blinking - draw lines
             ctx.strokeStyle = '#2a2520';
             ctx.lineWidth = 2;
@@ -1122,18 +1598,32 @@
             ctx.moveTo(8, -5); ctx.lineTo(4, 1);
             ctx.stroke();
         } else {
+            // Eye size based on reaction
+            let eyeWidth = 4;
+            let eyeHeight = isSad ? 3 : 4;
+
+            if (reaction === 'surprised') {
+                eyeWidth = 5 * reactionIntensity + 4 * (1 - reactionIntensity);
+                eyeHeight = 6 * reactionIntensity + 4 * (1 - reactionIntensity);
+            } else if (reaction === 'excited') {
+                // Bouncy eyes effect
+                const bounce = Math.sin(time * 0.02) * 0.5 * reactionIntensity;
+                eyeHeight = 4 + bounce;
+            }
+
             // Normal eyes
             ctx.beginPath();
-            ctx.ellipse(-6, -2, 4, isSad ? 3 : 4, 0, 0, Math.PI * 2);
-            ctx.ellipse(6, -2, 4, isSad ? 3 : 4, 0, 0, Math.PI * 2);
+            ctx.ellipse(-6, -2, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
+            ctx.ellipse(6, -2, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
             ctx.fill();
 
             // Pupils
             ctx.fillStyle = '#2a2520';
             const pupilOffset = Math.sin(time * 0.001) * 1; // Gentle looking around
+            const pupilSize = reaction === 'surprised' ? 1.5 : 2;
             ctx.beginPath();
-            ctx.arc(-6 + pupilOffset, -2, 2, 0, Math.PI * 2);
-            ctx.arc(6 + pupilOffset, -2, 2, 0, Math.PI * 2);
+            ctx.arc(-6 + pupilOffset, -2, pupilSize, 0, Math.PI * 2);
+            ctx.arc(6 + pupilOffset, -2, pupilSize, 0, Math.PI * 2);
             ctx.fill();
 
             // Eye shine
@@ -1142,6 +1632,28 @@
             ctx.arc(-7, -3, 1, 0, Math.PI * 2);
             ctx.arc(5, -3, 1, 0, Math.PI * 2);
             ctx.fill();
+
+            // Sparkle eyes when health > 95%
+            if (health > 95 || reaction === 'sparkle') {
+                const sparkleIntensity = reaction === 'sparkle' ? reactionIntensity : 1;
+                ctx.fillStyle = `rgba(255, 255, 200, ${0.8 * sparkleIntensity})`;
+                // Draw small stars in eyes
+                const drawStar = (cx, cy, size) => {
+                    ctx.beginPath();
+                    for (let i = 0; i < 4; i++) {
+                        const angle = (i / 4) * Math.PI * 2 + time * 0.003;
+                        const r = i % 2 === 0 ? size : size * 0.4;
+                        const px = cx + Math.cos(angle) * r;
+                        const py = cy + Math.sin(angle) * r;
+                        if (i === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                };
+                drawStar(-5, -3, 2);
+                drawStar(7, -3, 2);
+            }
         }
 
         // Mouth
@@ -1149,12 +1661,28 @@
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.beginPath();
+
         if (isDead) {
             // Wavy dead mouth
             ctx.moveTo(-5, 6);
             ctx.lineTo(-2, 4);
             ctx.lineTo(2, 6);
             ctx.lineTo(5, 4);
+        } else if (reaction === 'surprised') {
+            // Small 'o' mouth
+            ctx.arc(0, 5, 3 * reactionIntensity + 2 * (1 - reactionIntensity), 0, Math.PI * 2);
+        } else if (reaction === 'excited') {
+            // Big open smile
+            ctx.arc(0, 2, 8, 0.05 * Math.PI, 0.95 * Math.PI);
+            // Add teeth line
+            ctx.moveTo(-5, 5);
+            ctx.lineTo(5, 5);
+        } else if (reaction === 'pleased') {
+            // Curved happy mouth with closed eyes vibe
+            ctx.arc(0, 1, 6, 0.1 * Math.PI, 0.9 * Math.PI);
+        } else if (reaction === 'sleepy') {
+            // Small sleepy mouth
+            ctx.ellipse(0, 5, 3, 2, 0, 0, Math.PI * 2);
         } else if (isSad) {
             // Sad mouth
             ctx.arc(0, 10, 5, Math.PI * 1.2, Math.PI * 1.8);
@@ -1166,6 +1694,26 @@
             ctx.arc(0, 3, 5, 0.15 * Math.PI, 0.85 * Math.PI);
         }
         ctx.stroke();
+
+        // Thought bubble when idle too long
+        if (idleTimer > IDLE_THRESHOLD * 0.8 && !speechBubble.life && health > 20) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            const bobble = Math.sin(time * 0.005) * 2;
+            // Three dots
+            ctx.beginPath();
+            ctx.arc(-20, -25 + bobble, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(-25, -35 + bobble, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(-32, -47 + bobble, 5, 0, Math.PI * 2);
+            ctx.fill();
+            // "..." text
+            ctx.font = '12px sans-serif';
+            ctx.fillStyle = '#666';
+            ctx.fillText('...', -37, -44 + bobble);
+        }
 
         ctx.restore();
     }
@@ -1394,7 +1942,18 @@
                 // Add health bonus
                 const bonusMs = (1 / THIRST_RATE_PER_HOUR) * (1000 * 60 * 60);
                 state.lastWatered = Math.min(Date.now(), state.lastWatered + bonusMs);
+
+                // Track fruits caught for achievement
+                state.fruitsCaught = (state.fruitsCaught || 0) + 1;
                 saveState();
+
+                // Cute reactions
+                setFaceReaction('pleased', 60);
+                triggerBounce(0.05);
+                idleTimer = 0;
+
+                // Check achievements
+                checkAchievements();
 
                 return true;
             }
@@ -1541,6 +2100,9 @@
 
         // Update physics
         updateWeather();
+        updateFaceReaction();
+        updateSpeechBubble();
+        updateBounce();
 
         // Blink timer (random blinks)
         if (blinkTimer > 0) {
@@ -1580,34 +2142,46 @@
 
         // Check for zoom effect
         const zoomEffect = celebrationParticles.find(p => p.type === 'zoom');
-        if (zoomEffect) {
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height - 20);
-            ctx.scale(zoomEffect.scale, zoomEffect.scale);
-            ctx.translate(-canvas.width / 2, -(canvas.height - 20));
-        }
 
         const startX = canvas.width / 2;
         const startY = canvas.height - 20;
         const baseLen = 100 + (getGrowthStage() * 5);
         const stage = getGrowthStage();
+        const health = getHealth();
 
-        // Draw soft shadow under tree
+        // Draw soft shadow under tree (not affected by bounce)
         drawTreeShadow(startX, startY, stage);
+
+        // Apply bounce/wiggle transform to tree
+        ctx.save();
+        ctx.translate(startX, startY);
+
+        // Apply zoom effect if active
+        if (zoomEffect) {
+            ctx.scale(zoomEffect.scale, zoomEffect.scale);
+        }
+
+        // Apply bounce scale (grows from bottom)
+        ctx.scale(1 + (plantBounce.scale - 1) * 0.5, plantBounce.scale);
+
+        // Apply wiggle rotation
+        ctx.rotate(plantBounce.rotation);
+
+        ctx.translate(-startX, -startY);
 
         drawTree(startX, startY, baseLen, 0, 12, stage);
 
         // Cute face on trunk
-        const health = getHealth();
         const faceY = startY - 60 - (stage * 3); // Move up as plant grows
         drawPlantFace(startX, faceY, health);
 
+        ctx.restore();
+
+        // Speech bubble (rendered outside transform so it stays stable)
+        renderSpeechBubble(startX, faceY);
+
         // Sparkles around healthy plants
         updateAndRenderSparkles();
-
-        if (zoomEffect) {
-            ctx.restore();
-        }
 
         // Ground (seasonal) with gradient
         const season = getSeason();
@@ -1692,7 +2266,7 @@
     waterBtn.addEventListener('click', waterPlant);
     resetBtn.addEventListener('click', resetPlant);
 
-    // Canvas click for critter events, face click, AND autumn fruits
+    // Canvas click for critter events, face click, pet mechanic, AND autumn fruits
     canvas.addEventListener('click', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -1704,14 +2278,20 @@
         if (handleFruitClick(mouseX, mouseY)) return;
 
         if (handleCritterClick(mouseX, mouseY)) return;
-        
+
         // Calculate face position
         const stage = getGrowthStage();
         const startX = canvas.width / 2;
         const startY = canvas.height - 20;
         const faceY = startY - 60 - (stage * 3);
-        
-        handleFaceClick(mouseX, mouseY, startX, faceY);
+
+        // Face click for wisdom
+        if (handleFaceClick(mouseX, mouseY, startX, faceY)) return;
+
+        // Pet mechanic - click anywhere on tree
+        if (getHealth() > 0) {
+            petPlant(mouseX, mouseY, startX, startY, stage);
+        }
     });
 
     // Naming interaction
