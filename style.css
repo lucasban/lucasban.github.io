@@ -380,6 +380,11 @@ textarea:focus-visible {
     margin: 1.5em 0;
 }
 
+.card-grid.dense {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1em;
+}
+
 .card {
     border: 1.5px solid var(--border-color);
     padding: 1.25em;
