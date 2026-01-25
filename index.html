@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lucas Bannister</title>
-    <meta name="description" content="Tinkerer, occasional photographer. Various experiments, photos, and other things I've made.">
+    <meta name="description"
+        content="Tinkerer, occasional photographer. Various experiments, photos, and other things I've made.">
     <meta property="og:title" content="Lucas Bannister">
-    <meta property="og:description" content="Tinkerer, occasional photographer. Various experiments, photos, and other things I've made.">
+    <meta property="og:description"
+        content="Tinkerer, occasional photographer. Various experiments, photos, and other things I've made.">
     <meta property="og:type" content="website">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <script>(function () { var t = localStorage.getItem('theme'); if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t) })();</script>
     <link rel="stylesheet" href="style.css?v=8">
 </head>
+
 <body>
     <script src="shared/nav.js"></script>
     <script>
@@ -29,39 +36,68 @@
 
         <section>
             <h2>About</h2>
-            <p>Welcome to my corner of the internet. This site is home to various experiments, photos, and other things I've made.</p>
+            <p>Welcome to my corner of the internet. This site is home to various experiments, photos, and other things
+                I've made.</p>
         </section>
 
         <section>
             <h2>Explore</h2>
-            <ul>
-                <li><a href="/photos/">Photos</a> &mdash; A collection of images from Bluesky</li>
-                <li><a href="/demos/">Demos</a> &mdash; Interactive experiments and visualizations
-                    <ul>
-                        <li><a href="/demos/canvas/plant/">Digital Plant</a> &mdash; Tamagotchi-style fractal tree</li>
-                        <li><a href="/demos/canvas/gravity/">Gravity</a> &mdash; Orbital simulator</li>
-                        <li><a href="/demos/canvas/game-of-life/">Game of Life</a> &mdash; Cellular automaton</li>
-                        <li><a href="/demos/api/weather-haiku/">Weather Haiku</a> &mdash; Poetry from weather</li>
-                        <li><a href="/demos/typing-test/">Typing Test</a> &mdash; Speed challenge</li>
-                        <li><a href="/demos/palette/">Color Palette</a> &mdash; Scheme generator</li>
-                        <li><a href="/demos/cost-per-wear/">Cost Per Wear</a> &mdash; Wardrobe calculator</li>
-                    </ul>
-                </li>
-            </ul>
+            <div class="card-grid">
+                <a href="/demos/canvas/plant/" class="card" style="border-color:var(--leaf-deep);">
+                    <h3>🌱 Digital Plant</h3>
+                    <p>A persistent fractal tree that grows over time. <br><span
+                            style="font-size:0.8em; color:var(--leaf-deep); font-weight:bold;">✨ Recently Updated</span>
+                    </p>
+                </a>
+                <a href="/demos/canvas/gravity/" class="card">
+                    <h3>🌌 Gravity</h3>
+                    <p>Interactive orbital physics simulator.</p>
+                </a>
+                <a href="/demos/canvas/game-of-life/" class="card">
+                    <h3>🦠 Game of Life</h3>
+                    <p>Conway's cellular automaton experiments.</p>
+                </a>
+                <a href="/demos/api/weather-haiku/" class="card">
+                    <h3>Weather Haiku</h3>
+                    <p>Local weather translated into poetry.</p>
+                </a>
+                <a href="/photos/" class="card">
+                    <h3>📷 Photos</h3>
+                    <p>A small collection of images from Bluesky.</p>
+                </a>
+            </div>
+
+            <details style="margin-top: 2em; color: var(--text-subtle);">
+                <summary style="cursor: pointer; font-size: 0.9rem;">More Experiments</summary>
+                <div class="card-grid" style="margin-top: 1em;">
+                    <a href="/demos/typing-test/" class="card">
+                        <h3>⌨️ Typing Test</h3>
+                        <p>Simple speed challenge.</p>
+                    </a>
+                    <a href="/demos/palette/" class="card">
+                        <h3>🎨 Palette</h3>
+                        <p>Color scheme generator.</p>
+                    </a>
+                    <a href="/demos/cost-per-wear/" class="card">
+                        <h3>👕 Cost Per Wear</h3>
+                        <p>Wardrobe value calculator.</p>
+                    </a>
+                </div>
+            </details>
         </section>
 
-        <section>
+        <section style="margin-top: 3em;">
             <h2>Day Detectors</h2>
-            <p>Single-purpose utilities for each day of the week, each with its own personality.</p>
-            <p>
-                <a href="/sunday-detector/">Sunday</a> ·
-                <a href="/monday-detector/">Monday</a> ·
-                <a href="/tuesday-detector/">Tuesday</a> ·
-                <a href="/wednesday-detector/">Wednesday</a> ·
-                <a href="/thursday-detector/">Thursday</a> ·
-                <a href="/friday-detector/">Friday</a> ·
+            <p>Single-purpose utilities for each day of the week.</p>
+            <nav style="border:none; margin:0; padding:0; font-size:0.95rem;">
+                <a href="/sunday-detector/">Sunday</a> <span class="separator">·</span>
+                <a href="/monday-detector/">Monday</a> <span class="separator">·</span>
+                <a href="/tuesday-detector/">Tuesday</a> <span class="separator">·</span>
+                <a href="/wednesday-detector/">Wednesday</a> <span class="separator">·</span>
+                <a href="/thursday-detector/">Thursday</a> <span class="separator">·</span>
+                <a href="/friday-detector/">Friday</a> <span class="separator">·</span>
                 <a href="/saturday-detector/">Saturday</a>
-            </p>
+            </nav>
         </section>
 
         <footer>
@@ -70,4 +106,5 @@
     </div>
     <script src="theme-toggle.js?v=3"></script>
 </body>
+
 </html>
