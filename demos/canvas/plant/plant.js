@@ -1993,146 +1993,144 @@
         const reaction = faceReaction.type;
         const reactionIntensity = faceReaction.intensity;
 
-        // Face background (slightly lighter wood, grayer when wilted)
-        ctx.fillStyle = isWilted ? '#5a5550' : '#4a4038';
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 18, 15, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Blush - intensity varies with health and affection (none when wilted)
+        // No background circle - face emerges from bark naturally
+        // Just subtle shading to suggest depth where eyes are
         if (!isWilted) {
-            const blushBase = health > 70 ? 0.3 : health > 40 ? 0.15 : 0;
-            const affectionBonus = Math.min(0.3, (state.affection || 0) * 0.005);
-            const reactionBonus = (reaction === 'excited' || reaction === 'pleased') ? 0.2 * reactionIntensity : 0;
-            const blushAlpha = Math.min(0.6, blushBase + affectionBonus + reactionBonus);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            ctx.beginPath();
+            ctx.ellipse(-7, -2, 6, 5, 0, 0, Math.PI * 2);
+            ctx.ellipse(7, -2, 6, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Rosy cheeks (soft pink glow on bark)
+        if (!isWilted) {
+            const blushBase = health > 70 ? 0.25 : health > 40 ? 0.12 : 0;
+            const affectionBonus = Math.min(0.25, (state.affection || 0) * 0.004);
+            const reactionBonus = (reaction === 'excited' || reaction === 'pleased') ? 0.15 * reactionIntensity : 0;
+            const blushAlpha = Math.min(0.5, blushBase + affectionBonus + reactionBonus);
 
             if (blushAlpha > 0) {
-                ctx.fillStyle = `rgba(255, 150, 150, ${blushAlpha})`;
+                ctx.fillStyle = `rgba(255, 130, 130, ${blushAlpha})`;
                 ctx.beginPath();
-                ctx.ellipse(-12, 4, 5, 3, 0, 0, Math.PI * 2);
-                ctx.ellipse(12, 4, 5, 3, 0, 0, Math.PI * 2);
+                ctx.ellipse(-14, 5, 6, 4, 0, 0, Math.PI * 2);
+                ctx.ellipse(14, 5, 6, 4, 0, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
-        // Sweat drop when health is low (including wilted)
-        if (health < 25) {
+        // Sweat drop when health is low
+        if (health < 25 && health > 0) {
             ctx.fillStyle = 'rgba(100, 180, 255, 0.7)';
             ctx.beginPath();
-            ctx.moveTo(14, -8);
-            ctx.quadraticCurveTo(18, -4, 16, 0);
-            ctx.quadraticCurveTo(12, -2, 14, -8);
+            ctx.moveTo(16, -10);
+            ctx.quadraticCurveTo(20, -5, 18, 0);
+            ctx.quadraticCurveTo(14, -3, 16, -10);
             ctx.fill();
         }
 
-        // Eyes
-        ctx.fillStyle = isWilted ? '#aaa' : '#fff';
+        // Eyes - drawn as dark knotholes with shine
+        const eyeColor = isWilted ? '#4a4540' : '#2d2420';
+        const eyeHighlight = isWilted ? '#5a5550' : '#fff';
 
-        // Sleepy eyes (half-closed)
         if (reaction === 'sleepy' && !isWilted) {
-            ctx.strokeStyle = '#2a2520';
-            ctx.lineWidth = 2;
+            // Sleepy - curved lines like ^  ^
+            ctx.strokeStyle = eyeColor;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.arc(-6, -1, 4, 0, Math.PI);
-            ctx.moveTo(10, -1);
-            ctx.arc(6, -1, 4, 0, Math.PI);
+            ctx.arc(-7, 0, 5, Math.PI * 1.15, Math.PI * 1.85);
+            ctx.moveTo(12, -2);
+            ctx.arc(7, 0, 5, Math.PI * 1.15, Math.PI * 1.85);
             ctx.stroke();
         } else if (isBlinking && !isWilted && reaction !== 'surprised') {
-            // Blinking - draw lines
-            ctx.strokeStyle = '#2a2520';
-            ctx.lineWidth = 2;
+            // Blinking - happy curved lines
+            ctx.strokeStyle = eyeColor;
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
             ctx.beginPath();
-            ctx.moveTo(-8, -2);
-            ctx.lineTo(-4, -2);
-            ctx.moveTo(4, -2);
-            ctx.lineTo(8, -2);
+            ctx.arc(-7, 0, 4, Math.PI * 1.2, Math.PI * 1.8);
+            ctx.moveTo(11, -1);
+            ctx.arc(7, 0, 4, Math.PI * 1.2, Math.PI * 1.8);
             ctx.stroke();
         } else if (isWilted) {
-            // Wilted - droopy spiral eyes (dizzy/faint)
-            ctx.strokeStyle = '#777';
-            ctx.lineWidth = 1.5;
+            // Wilted - droopy lines
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
             ctx.beginPath();
-            // Left spiral
-            ctx.arc(-6, -2, 3, 0, Math.PI * 1.5);
-            ctx.moveTo(-4, -2);
-            ctx.arc(-6, -2, 1.5, 0, Math.PI * 1.5);
-            // Right spiral
-            ctx.moveTo(9, -2);
-            ctx.arc(6, -2, 3, 0, Math.PI * 1.5);
-            ctx.moveTo(8, -2);
-            ctx.arc(6, -2, 1.5, 0, Math.PI * 1.5);
+            ctx.arc(-7, -4, 5, Math.PI * 0.2, Math.PI * 0.8);
+            ctx.moveTo(2, -2);
+            ctx.arc(7, -4, 5, Math.PI * 0.2, Math.PI * 0.8);
             ctx.stroke();
         } else {
-            // Eye size based on reaction
-            let eyeWidth = 4;
-            let eyeHeight = isSad ? 3 : 4;
-
+            // Normal eyes - like dark knotholes
+            let eyeSize = isSad ? 4 : 5;
             if (reaction === 'surprised') {
-                eyeWidth = 5 * reactionIntensity + 4 * (1 - reactionIntensity);
-                eyeHeight = 6 * reactionIntensity + 4 * (1 - reactionIntensity);
+                eyeSize = 6 * reactionIntensity + 5 * (1 - reactionIntensity);
             } else if (reaction === 'excited') {
-                // Bouncy eyes effect
-                const bounce = Math.sin(time * 0.02) * 0.5 * reactionIntensity;
-                eyeHeight = 4 + bounce;
+                eyeSize = 5 + Math.sin(time * 0.02) * 0.5 * reactionIntensity;
             }
 
-            // Normal eyes
+            // Dark eye holes
+            ctx.fillStyle = eyeColor;
             ctx.beginPath();
-            ctx.ellipse(-6, -2, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
-            ctx.ellipse(6, -2, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
+            ctx.arc(-7, -2, eyeSize, 0, Math.PI * 2);
+            ctx.arc(7, -2, eyeSize, 0, Math.PI * 2);
             ctx.fill();
 
-            // Pupils
-            ctx.fillStyle = '#2a2520';
-            const pupilOffset = Math.sin(time * 0.001) * 1; // Gentle looking around
-            const pupilSize = reaction === 'surprised' ? 1.5 : 2;
+            // Inner highlight (makes eyes look alive)
+            ctx.fillStyle = eyeHighlight;
+            const shineOffset = Math.sin(time * 0.001) * 0.8;
             ctx.beginPath();
-            ctx.arc(-6 + pupilOffset, -2, pupilSize, 0, Math.PI * 2);
-            ctx.arc(6 + pupilOffset, -2, pupilSize, 0, Math.PI * 2);
+            ctx.arc(-8 + shineOffset, -4, eyeSize * 0.35, 0, Math.PI * 2);
+            ctx.arc(6 + shineOffset, -4, eyeSize * 0.35, 0, Math.PI * 2);
             ctx.fill();
 
-            // Eye shine
-            ctx.fillStyle = '#fff';
+            // Second smaller shine
             ctx.beginPath();
-            ctx.arc(-7, -3, 1, 0, Math.PI * 2);
-            ctx.arc(5, -3, 1, 0, Math.PI * 2);
+            ctx.arc(-5 + shineOffset, -1, eyeSize * 0.2, 0, Math.PI * 2);
+            ctx.arc(9 + shineOffset, -1, eyeSize * 0.2, 0, Math.PI * 2);
             ctx.fill();
 
-            // Sparkle eyes when health > 95%
+            // Sparkle eyes when very healthy
             if (health > 95 || reaction === 'sparkle') {
-                const sparkleIntensity = reaction === 'sparkle' ? reactionIntensity : 1;
-                ctx.fillStyle = `rgba(255, 255, 200, ${0.8 * sparkleIntensity})`;
-                // Draw small stars in eyes
-                const drawStar = (cx, cy, size) => {
+                const sparkleAlpha = (reaction === 'sparkle' ? reactionIntensity : 1) * 0.9;
+                ctx.fillStyle = `rgba(255, 255, 220, ${sparkleAlpha})`;
+                const drawSparkle = (cx, cy) => {
+                    const t = time * 0.004;
                     ctx.beginPath();
-                    for (let i = 0; i < 4; i++) {
-                        const angle = (i / 4) * Math.PI * 2 + time * 0.003;
-                        const r = i % 2 === 0 ? size : size * 0.4;
-                        const px = cx + Math.cos(angle) * r;
-                        const py = cy + Math.sin(angle) * r;
-                        if (i === 0) ctx.moveTo(px, py);
-                        else ctx.lineTo(px, py);
-                    }
+                    ctx.moveTo(cx, cy - 3);
+                    ctx.lineTo(cx + 1, cy - 1);
+                    ctx.lineTo(cx + 3, cy);
+                    ctx.lineTo(cx + 1, cy + 1);
+                    ctx.lineTo(cx, cy + 3);
+                    ctx.lineTo(cx - 1, cy + 1);
+                    ctx.lineTo(cx - 3, cy);
+                    ctx.lineTo(cx - 1, cy - 1);
                     ctx.closePath();
                     ctx.fill();
                 };
-                drawStar(-5, -3, 2);
-                drawStar(7, -3, 2);
+                drawSparkle(-6, -3);
+                drawSparkle(8, -3);
             }
         }
 
-        // Mouth
-        ctx.strokeStyle = isWilted ? '#777' : '#2a2520';
-        ctx.lineWidth = 2;
+        // Mouth - carved into bark
+        ctx.strokeStyle = isWilted ? '#555' : eyeColor;
+        ctx.lineWidth = 2.5;
         ctx.lineCap = 'round';
         ctx.beginPath();
 
         if (isWilted) {
-            // Wobbly frown - wilted but alive
-            ctx.arc(0, 10, 6, Math.PI * 1.15, Math.PI * 1.85);
+            // Sad wobbly mouth
+            ctx.arc(0, 12, 5, Math.PI * 1.2, Math.PI * 1.8);
         } else if (reaction === 'surprised') {
-            // Small 'o' mouth
-            ctx.arc(0, 5, 3 * reactionIntensity + 2 * (1 - reactionIntensity), 0, Math.PI * 2);
+            // Little 'o'
+            ctx.fillStyle = eyeColor;
+            ctx.arc(0, 8, 3 * reactionIntensity + 2 * (1 - reactionIntensity), 0, Math.PI * 2);
+            ctx.fill();
+            return ctx.restore(); // Skip stroke for filled mouth
         } else if (reaction === 'excited') {
             // Big open smile
             ctx.arc(0, 2, 8, 0.05 * Math.PI, 0.95 * Math.PI);
