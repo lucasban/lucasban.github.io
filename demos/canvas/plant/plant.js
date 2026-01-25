@@ -2175,9 +2175,18 @@
         ctx.restore();
     }
 
-    function drawPlantFace(x, y, health) {
+    function drawPlantFace(x, y, health, trunkWidth) {
         ctx.save();
         ctx.translate(x, y);
+
+        // Scale face based on trunk width, but clamp it to reasonable limits
+        // Normal trunk width is ~12-25px. We want the face to fit comfortably.
+        // Base scale 1.0 is optimized for ~20px trunk.
+        // If trunk is 12px, scale should be ~0.6
+        const safeWidth = trunkWidth || 12; // Fallback
+        const scale = Math.min(1.2, Math.max(0.6, safeWidth / 22));
+
+        ctx.scale(scale, scale);
 
         const isBlinking = blinkTimer > 0 && blinkTimer < 8;
         const isSad = health < 40;
@@ -2826,7 +2835,7 @@
 
         // Cute face on trunk - position based on trunk length
         const faceY = startY - 10 - trunkLength * 0.35;
-        drawPlantFace(startX, faceY, health);
+        drawPlantFace(startX, faceY, health, trunkWidth);
 
         ctx.restore();
 
