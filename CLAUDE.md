@@ -81,7 +81,8 @@ Each detector is a standalone mini-app with a unique theme:
 - **Digital Plant (Kawaii Update)**:
     - **Dynamic Sky**: Implemented a real-time day/night cycle (Dawn/Day/Dusk/Night) with seasonal color palettes.
     - **Sound System**: Added a cute `SoundManager` using the Web Audio API for synthesized SFX (happy chirps, water bubbles, pop sounds).
-    - **UI**: Added a mute toggle button.
+    - **Customization**: Added a "Closet" system to equip accessories (Glasses, Bow, Crown, Scarf) unlocked via achievements.
+    - **UI**: Added a mute toggle and closet button.
 - **UX Improvements**:
     - **Shared Navigation**: Refactored site-wide navigation into `shared/nav.js` for consistent Header, Breadcrumbs, and Footer injection.
     - **Detector Navigation**: Added "Week Cycle" links (← Yesterday | Tomorrow →) to all 7 day detectors for easier browsing.

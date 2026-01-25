@@ -385,6 +385,8 @@
                 </button>
                 <button id="sound-btn" title="Toggle Sound"
                     style="background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0 8px;">🔇</button>
+                <button id="closet-btn" title="Open Closet"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer; padding:0 8px;">🎩</button>
             </div>
 
             <div class="achievement-panel" id="achievement-panel">
@@ -407,6 +409,7 @@
                 <li><strong>Affection:</strong> Click the trunk to pet your plant! It loves the attention.</li>
                 <li><strong>Visitors:</strong> Watch for ladybugs, butterflies, and bees. Tap them for bonuses!</li>
                 <li><strong>Badges:</strong> Earn achievements by caring for your plant over time.</li>
+                <li><strong>Fashion:</strong> Unlock accessories by earning badges to customize your plant!</li>
             </ul>
         </section>
 
@@ -422,6 +425,22 @@
                 <button class="close-journal" id="close-journal">&times;</button>
             </div>
             <div id="journal-entries"></div>
+        </div>
+    </div>
+
+    <div id="closet-modal" class="journal-modal">
+        <div class="journal-content" style="max-width: 350px;">
+            <div class="journal-header">
+                <h2 class="journal-title">Plant Closet</h2>
+                <button class="close-journal" id="close-closet">&times;</button>
+            </div>
+            <div id="closet-items" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <!-- Injected via JS -->
+            </div>
+            <p
+                style="text-align:center; font-style:italic; font-size:0.9rem; color:var(--text-subtle); margin-top:15px;">
+                Unlock more items by earning badges!
+            </p>
         </div>
     </div>
 

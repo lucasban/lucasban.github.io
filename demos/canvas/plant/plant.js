@@ -20,6 +20,10 @@
     const closeJournalBtn = document.getElementById('close-journal');
     const journalEntriesEl = document.getElementById('journal-entries');
     const soundBtn = document.getElementById('sound-btn');
+    const closetBtn = document.getElementById('closet-btn');
+    const closetModal = document.getElementById('closet-modal');
+    const closeClosetBtn = document.getElementById('close-closet');
+    const closetItemsEl = document.getElementById('closet-items');
 
     // Constants
     const MAX_HEALTH = 100;
@@ -214,7 +218,8 @@
         lastPetTime: 0, // Timestamp of last pet (for cooldown)
         critterClicks: 0, // Track critter interactions for achievements
         fruitsCaught: 0, // Track autumn fruits caught
-        achievements: [] // Unlocked achievement IDs
+        achievements: [], // Unlocked achievement IDs
+        equippedAccessories: [] // List of IDs
     };
 
     // Face Reaction System
@@ -310,6 +315,14 @@
         { id: 'affection_ace', icon: '💕', name: 'Affection Ace', desc: 'Pet your plant 50 times' },
         { id: 'mature_tree', icon: '🌳', name: 'Mature Tree', desc: 'Reach maximum growth stage' }
     ];
+
+    // Accessories definitions
+    const ACCESSORIES = {
+        glasses: { id: 'glasses', name: 'Smart Glasses', icon: '👓', unlockReq: 'wise_one' },
+        bow: { id: 'bow', name: 'Dapper Bow', icon: '🎀', unlockReq: 'affection_ace' },
+        crown: { id: 'crown', name: 'Flower Crown', icon: '🌸', unlockReq: 'full_bloom' },
+        scarf: { id: 'scarf', name: 'Cozy Scarf', icon: '🧣', unlockReq: 'harvest_master' }
+    };
 
     let animationFrame;
     let time = 0;
@@ -460,6 +473,7 @@
         if (!state.lastPetTime) state.lastPetTime = 0;
         if (!state.critterClicks) state.critterClicks = 0;
         if (!state.fruitsCaught) state.fruitsCaught = 0;
+        if (!state.equippedAccessories) state.equippedAccessories = [];
 
         // Initialize fireflies
         for (let i = 0; i < 15; i++) {
@@ -518,7 +532,8 @@
             lastPetTime: 0,
             critterClicks: 0,
             fruitsCaught: 0,
-            achievements: []
+            achievements: [],
+            equippedAccessories: []
         };
         saveState();
         renderAchievements();
@@ -2356,6 +2371,11 @@
         }
         ctx.stroke();
 
+        // Render Accessories
+        if (state.equippedAccessories && state.equippedAccessories.length > 0) {
+            renderAccessories(health);
+        }
+
         // Thought bubble when idle too long
         if (idleTimer > IDLE_THRESHOLD * 0.8 && !speechBubble.life && health > 20) {
             ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
@@ -3003,5 +3023,200 @@
     journalModal.addEventListener('click', (e) => {
         if (e.target === journalModal) journalModal.style.display = 'none';
     });
+
+    // Closet Modal
+    closetBtn.addEventListener('click', () => {
+        renderCloset();
+        closetModal.style.display = 'flex';
+    });
+
+    closeClosetBtn.addEventListener('click', () => {
+        closetModal.style.display = 'none';
+    });
+
+    closetModal.addEventListener('click', (e) => {
+        if (e.target === closetModal) closetModal.style.display = 'none';
+    });
+
+    function renderCloset() {
+        closetItemsEl.innerHTML = Object.values(ACCESSORIES).map(acc => {
+            const isUnlocked = state.achievements.includes(acc.unlockReq);
+            const isEquipped = state.equippedAccessories.includes(acc.id);
+            const achievementName = ACHIEVEMENTS.find(a => a.id === acc.unlockReq)?.name || 'Unknown';
+
+            if (!isUnlocked) {
+                return `
+                <div style="background:var(--bg-secondary); padding:10px; border-radius:8px; opacity:0.6; display:flex; gap:10px; align-items:center;">
+                    <div style="font-size:1.5rem; filter:grayscale(1);">🔒</div>
+                    <div>
+                        <div style="font-weight:bold; font-size:0.9rem;">Locked</div>
+                        <div style="font-size:0.75rem;">Unlock: ${achievementName}</div>
+                    </div>
+                </div>`;
+            }
+
+            return `
+            <div onclick="window.toggleAccessory('${acc.id}')" 
+                 style="background:var(--bg-secondary); padding:10px; border-radius:8px; display:flex; gap:10px; align-items:center; cursor:pointer; border:2px solid ${isEquipped ? 'var(--link-color)' : 'transparent'}; box-shadow:${isEquipped ? '0 0 8px rgba(45,106,79,0.2)' : 'none'}">
+                <div style="font-size:1.5rem;">${acc.icon}</div>
+                <div>
+                    <div style="font-weight:bold; font-size:0.9rem;">${acc.name}</div>
+                    <div style="font-size:0.75rem; color:var(--text-subtle);">${isEquipped ? 'Equipped' : 'Tap to wear'}</div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // Global for click handler
+    window.toggleAccessory = function (id) {
+        if (state.equippedAccessories.includes(id)) {
+            state.equippedAccessories = state.equippedAccessories.filter(a => a !== id);
+        } else {
+            // Logic: Can wear multiple generally, but maybe limit glasses/crown slots?
+            // For now, simple logic: Glasses and Sunnies mutually exclusive? (Only 1 type of each slot)
+            // Actually, keep it simple: Toggle.
+            state.equippedAccessories.push(id);
+            SoundManager.play('pop');
+        }
+        saveState();
+        renderCloset();
+    };
+
+    // --- Accessory Rendering ---
+
+    function renderAccessories(health) {
+        // Draw in order: Scarf (behind), Glasses (face), Bow (neck), Crown (top)
+
+        if (state.equippedAccessories.includes('scarf')) {
+            drawScarf();
+        }
+
+        if (state.equippedAccessories.includes('glasses')) {
+            drawGlasses();
+        }
+
+        if (state.equippedAccessories.includes('bow')) {
+            drawBow();
+        }
+
+        if (state.equippedAccessories.includes('crown')) {
+            drawCrown(health);
+        }
+    }
+
+    function drawGlasses() {
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.fillStyle = 'rgba(200, 230, 255, 0.3)'; // Glass tint
+
+        // Left lens
+        ctx.beginPath();
+        ctx.arc(-7, -2, 6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fill();
+
+        // Right lens
+        ctx.beginPath();
+        ctx.arc(7, -2, 6, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.fill();
+
+        // Bridge
+        ctx.beginPath();
+        ctx.moveTo(-1, -2);
+        ctx.lineTo(1, -2);
+        ctx.stroke();
+
+        // Shine
+        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-9, -4);
+        ctx.lineTo(-5, -4);
+        ctx.stroke();
+    }
+
+    function drawBow() {
+        ctx.fillStyle = '#ff6b6b';
+        ctx.save();
+        ctx.translate(0, 15); // Below mouth
+
+        // Left loop
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(-10, -5, -10, 0);
+        ctx.quadraticCurveTo(-10, 5, 0, 0);
+        ctx.fill();
+
+        // Right loop
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(10, -5, 10, 0);
+        ctx.quadraticCurveTo(10, 5, 0, 0);
+        ctx.fill();
+
+        // Center knot
+        ctx.fillStyle = '#ee5253';
+        ctx.beginPath();
+        ctx.arc(0, 0, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    function drawCrown(health) {
+        ctx.save();
+        ctx.translate(0, -12); // Above eyes
+
+        const colors = ['#FDA7DF', '#D980FA', '#B53471', '#FFC312'];
+
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 4) * Math.PI - Math.PI / 2;
+            const x = Math.sin(angle) * 12;
+            const y = Math.cos(angle) * 4; // Arch
+
+            ctx.fillStyle = colors[i % colors.length];
+            ctx.beginPath();
+            ctx.arc(x, -y - 3, 3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Flower center
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(x, -y - 3, 1, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
+    }
+
+    function drawScarf() {
+        ctx.fillStyle = '#54a0ff';
+        ctx.save();
+        ctx.translate(0, 18);
+
+        // Neck wrap
+        ctx.beginPath();
+        ctx.rect(-10, -3, 20, 6);
+        ctx.fill();
+
+        // Hanging part
+        ctx.fillStyle = '#2e86de';
+        ctx.beginPath();
+        ctx.rect(5, 0, 6, 15);
+        ctx.fill();
+
+        // Fringes
+        ctx.strokeStyle = '#2e86de';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.moveTo(6 + i * 2, 15);
+            ctx.lineTo(6 + i * 2, 18);
+            ctx.stroke();
+        }
+
+        ctx.restore();
+    }
 
 })();
