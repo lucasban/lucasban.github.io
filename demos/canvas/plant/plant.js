@@ -1110,26 +1110,62 @@
     }
 
     function spawnCritterEvent() {
-        const events = [
-            { type: 'ladybug', message: '🐞 Pet the ladybug!', healthBonus: 1 },
-            { type: 'butterfly', message: '🦋 A butterfly visits!', healthBonus: 0 },
-            { type: 'bee', message: '🐝 Help the bee pollinate!', healthBonus: 2 },
-            { type: 'aphid', message: '🐛 Tap to remove aphids!', healthBonus: 2 }
-        ];
+        const stage = getGrowthStage();
+        const health = getHealth();
+        const trunkLength = 50 + stage * 12;
 
-        const event = events[Math.floor(Math.random() * events.length)];
+        // Position critters on/near the tree
+        const treeCenter = canvas.width / 2;
+        const treeBase = canvas.height - 30;
+        const canopyTop = treeBase - trunkLength * 1.5;
+        const canopyWidth = 30 + stage * 12;
+
+        const types = ['ladybug', 'butterfly', 'bee', 'bird'];
+        const type = types[Math.floor(Math.random() * types.length)];
+
+        let x, y, behavior;
+
+        switch (type) {
+            case 'ladybug':
+                // Starts on trunk, crawls up
+                x = treeCenter + (Math.random() - 0.5) * 20;
+                y = treeBase - 30 - Math.random() * trunkLength * 0.5;
+                behavior = { crawlDir: -1, crawlSpeed: 0.3 };
+                break;
+            case 'butterfly':
+                // Flutters around canopy
+                x = treeCenter + (Math.random() - 0.5) * canopyWidth * 2;
+                y = canopyTop + Math.random() * trunkLength * 0.5;
+                behavior = { wingPhase: Math.random() * Math.PI * 2, driftX: (Math.random() - 0.5) * 0.5 };
+                break;
+            case 'bee':
+                // Buzzes near flowers (in canopy)
+                x = treeCenter + (Math.random() - 0.5) * canopyWidth * 1.5;
+                y = canopyTop + Math.random() * trunkLength * 0.4;
+                behavior = { buzzPhase: Math.random() * Math.PI * 2 };
+                break;
+            case 'bird':
+                // Perches on a branch
+                x = treeCenter + (Math.random() > 0.5 ? 1 : -1) * (canopyWidth * 0.5 + Math.random() * 20);
+                y = canopyTop + trunkLength * 0.2 + Math.random() * trunkLength * 0.3;
+                behavior = { facing: x > treeCenter ? -1 : 1, bobPhase: 0 };
+                break;
+        }
 
         activeCritterEvent = {
-            ...event,
-            x: 100 + Math.random() * (canvas.width - 200),
-            y: 100 + Math.random() * (canvas.height - 250),
-            life: 300, // 5 seconds at 60fps
+            type,
+            x, y,
+            startX: x,
+            startY: y,
+            life: 360, // 6 seconds
             clicked: false,
-            size: 30
+            size: type === 'bird' ? 18 : 12,
+            healthBonus: type === 'bee' ? 2 : (type === 'ladybug' ? 1 : 0),
+            behavior
         };
 
-        // Plant notices the critter
-        setFaceReaction('surprised', 60);
+        // Plant notices the critter with a brief surprised look
+        setFaceReaction('surprised', 40);
     }
 
     function handleCritterClick(mouseX, mouseY) {
@@ -1138,28 +1174,47 @@
         const dx = mouseX - activeCritterEvent.x;
         const dy = mouseY - activeCritterEvent.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
+        const clickRadius = activeCritterEvent.size * 2; // Generous click area
 
-        if (dist < activeCritterEvent.size) {
+        if (dist < clickRadius) {
             activeCritterEvent.clicked = true;
 
             // Track critter clicks for achievement
             state.critterClicks = (state.critterClicks || 0) + 1;
             saveState();
 
+            // Spawn little hearts at click location
+            for (let i = 0; i < 3; i++) {
+                hearts.push({
+                    x: activeCritterEvent.x + (Math.random() - 0.5) * 20,
+                    y: activeCritterEvent.y,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: -2 - Math.random() * 1.5,
+                    size: 6 + Math.random() * 4,
+                    life: 35 + Math.random() * 15,
+                    rotation: (Math.random() - 0.5) * 0.3
+                });
+            }
+
             // Cute reactions
-            setFaceReaction('surprised', 60);
-            triggerWiggle(0.04);
-            showRandomSpeech(SPEECH_CRITTER);
+            setFaceReaction('pleased', 60);
+            triggerWiggle(0.02);
             idleTimer = 0;
 
+            // Subtle messages based on critter type
+            const messages = {
+                ladybug: ['A friendly ladybug~', 'Good luck charm!'],
+                butterfly: ['So graceful~', 'What pretty wings!'],
+                bee: ['Buzz buzz!', 'Thanks for pollinating!'],
+                bird: ['Tweet tweet!', 'A little visitor~']
+            };
+            const typeMessages = messages[activeCritterEvent.type] || ['How cute!'];
+            showSpeechBubble(typeMessages[Math.floor(Math.random() * typeMessages.length)], 120);
+
             if (activeCritterEvent.healthBonus > 0) {
-                // Add health bonus by adjusting lastWatered
                 const bonusMs = (activeCritterEvent.healthBonus / THIRST_RATE_PER_HOUR) * (1000 * 60 * 60);
                 state.lastWatered = Math.min(Date.now(), state.lastWatered + bonusMs);
                 saveState();
-                showMilestoneMessage(`+${activeCritterEvent.healthBonus}% health!`);
-            } else {
-                showMilestoneMessage('✨ Beautiful!');
             }
 
             // Check achievements
@@ -1167,7 +1222,7 @@
 
             setTimeout(() => {
                 activeCritterEvent = null;
-            }, 500);
+            }, 400);
 
             return true;
         }
@@ -1191,14 +1246,31 @@
         if (!activeCritterEvent) return;
 
         activeCritterEvent.life--;
+        const b = activeCritterEvent.behavior;
 
-        // Animate based on type
-        if (activeCritterEvent.type === 'butterfly') {
-            activeCritterEvent.x += Math.sin(time * 0.02) * 1;
-            activeCritterEvent.y += Math.cos(time * 0.015) * 0.5;
-        } else if (activeCritterEvent.type === 'bee') {
-            activeCritterEvent.x += Math.sin(time * 0.03) * 0.8;
-            activeCritterEvent.y += Math.sin(time * 0.02) * 0.3;
+        switch (activeCritterEvent.type) {
+            case 'ladybug':
+                // Crawl slowly upward
+                activeCritterEvent.y += b.crawlDir * b.crawlSpeed;
+                activeCritterEvent.x += Math.sin(time * 0.01) * 0.2;
+                break;
+            case 'butterfly':
+                // Flutter in gentle figure-8
+                b.wingPhase += 0.15;
+                activeCritterEvent.x = activeCritterEvent.startX + Math.sin(time * 0.008) * 30 + b.driftX * (360 - activeCritterEvent.life);
+                activeCritterEvent.y = activeCritterEvent.startY + Math.sin(time * 0.012) * 15;
+                break;
+            case 'bee':
+                // Buzz around erratically
+                b.buzzPhase += 0.2;
+                activeCritterEvent.x = activeCritterEvent.startX + Math.sin(time * 0.02) * 20 + Math.sin(time * 0.05) * 8;
+                activeCritterEvent.y = activeCritterEvent.startY + Math.cos(time * 0.025) * 12;
+                break;
+            case 'bird':
+                // Gentle bob while perched
+                b.bobPhase += 0.05;
+                activeCritterEvent.y = activeCritterEvent.startY + Math.sin(b.bobPhase) * 2;
+                break;
         }
 
         if (activeCritterEvent.life <= 0 && !activeCritterEvent.clicked) {
@@ -1209,41 +1281,268 @@
     function renderCritterEvent() {
         if (!activeCritterEvent) return;
 
+        const c = activeCritterEvent;
         ctx.save();
-        const alpha = activeCritterEvent.clicked ?
-            Math.max(0, activeCritterEvent.life / 30) :
-            Math.min(1, (300 - activeCritterEvent.life) / 30);
+
+        // Fade in/out
+        const alpha = c.clicked ?
+            Math.max(0, c.life / 30) :
+            Math.min(1, (360 - c.life) / 20);
         ctx.globalAlpha = alpha;
 
-        // Draw glow/highlight
-        ctx.fillStyle = 'rgba(255, 255, 200, 0.3)';
+        ctx.translate(c.x, c.y);
+
+        switch (c.type) {
+            case 'ladybug':
+                drawLadybugCritter(c.size);
+                break;
+            case 'butterfly':
+                drawButterflyCritter(c.size, c.behavior.wingPhase);
+                break;
+            case 'bee':
+                drawBeeCritter(c.size, c.behavior.buzzPhase);
+                break;
+            case 'bird':
+                drawBirdCritter(c.size, c.behavior.facing, c.behavior.bobPhase);
+                break;
+        }
+
+        ctx.restore();
+    }
+
+    // --- Critter Drawing Functions ---
+
+    function drawLadybugCritter(size) {
+        const s = size / 10;
+        ctx.save();
+
+        // Body (red with black dots)
+        ctx.fillStyle = '#d63031';
         ctx.beginPath();
-        ctx.arc(activeCritterEvent.x, activeCritterEvent.y, activeCritterEvent.size + 10 + Math.sin(time * 0.1) * 3, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, s * 5, s * 4, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Draw critter emoji
-        ctx.font = `${activeCritterEvent.size}px serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+        // Shell line
+        ctx.strokeStyle = '#2d3436';
+        ctx.lineWidth = s * 0.8;
+        ctx.beginPath();
+        ctx.moveTo(0, -s * 4);
+        ctx.lineTo(0, s * 4);
+        ctx.stroke();
 
-        let emoji = '';
-        switch (activeCritterEvent.type) {
-            case 'ladybug': emoji = '🐞'; break;
-            case 'butterfly': emoji = '🦋'; break;
-            case 'bee': emoji = '🐝'; break;
-            case 'aphid': emoji = '🐛'; break;
+        // Spots
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.arc(-s * 2, -s * 1, s * 1.2, 0, Math.PI * 2);
+        ctx.arc(s * 2, -s * 1, s * 1.2, 0, Math.PI * 2);
+        ctx.arc(-s * 1.5, s * 2, s * 1, 0, Math.PI * 2);
+        ctx.arc(s * 1.5, s * 2, s * 1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Head
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.arc(0, -s * 4.5, s * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Antennae
+        ctx.strokeStyle = '#2d3436';
+        ctx.lineWidth = s * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(-s, -s * 5.5);
+        ctx.lineTo(-s * 2, -s * 7);
+        ctx.moveTo(s, -s * 5.5);
+        ctx.lineTo(s * 2, -s * 7);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawButterflyCritter(size, wingPhase) {
+        const s = size / 10;
+        const wingFlap = Math.sin(wingPhase) * 0.4;
+        ctx.save();
+
+        // Wings (with flap animation)
+        const wingColors = ['#a29bfe', '#74b9ff', '#fd79a8'];
+        const wingColor = wingColors[Math.floor(seededRandom(time * 0.0001) * 3)];
+
+        ctx.fillStyle = wingColor;
+
+        // Left wing
+        ctx.save();
+        ctx.scale(1 - wingFlap * 0.5, 1);
+        ctx.beginPath();
+        ctx.ellipse(-s * 4, -s * 1, s * 4, s * 5, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(-s * 3, s * 3, s * 2.5, s * 3, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Right wing
+        ctx.save();
+        ctx.scale(1 - wingFlap * 0.5, 1);
+        ctx.beginPath();
+        ctx.ellipse(s * 4, -s * 1, s * 4, s * 5, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(s * 3, s * 3, s * 2.5, s * 3, 0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Wing patterns
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.beginPath();
+        ctx.arc(-s * 4, -s * 1, s * 1.5, 0, Math.PI * 2);
+        ctx.arc(s * 4, -s * 1, s * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Body
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, s * 1, s * 5, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Head
+        ctx.beginPath();
+        ctx.arc(0, -s * 5.5, s * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Antennae
+        ctx.strokeStyle = '#2d3436';
+        ctx.lineWidth = s * 0.4;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-s * 0.5, -s * 6.5);
+        ctx.quadraticCurveTo(-s * 2, -s * 9, -s * 1, -s * 10);
+        ctx.moveTo(s * 0.5, -s * 6.5);
+        ctx.quadraticCurveTo(s * 2, -s * 9, s * 1, -s * 10);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    function drawBeeCritter(size, buzzPhase) {
+        const s = size / 10;
+        const buzz = Math.sin(buzzPhase) * 2;
+        ctx.save();
+        ctx.translate(buzz * 0.3, 0);
+
+        // Wings (blur effect from buzzing)
+        ctx.fillStyle = 'rgba(200, 220, 255, 0.5)';
+        ctx.beginPath();
+        ctx.ellipse(-s * 2.5, -s * 2, s * 3, s * 1.5, -0.5, 0, Math.PI * 2);
+        ctx.ellipse(s * 2.5, -s * 2, s * 3, s * 1.5, 0.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Body (striped)
+        ctx.fillStyle = '#fdcb6e';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, s * 3.5, s * 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Stripes
+        ctx.fillStyle = '#2d3436';
+        for (let i = -2; i <= 2; i += 2) {
+            ctx.beginPath();
+            ctx.ellipse(0, i * s, s * 3.2, s * 0.8, 0, 0, Math.PI * 2);
+            ctx.fill();
         }
 
-        ctx.fillText(emoji, activeCritterEvent.x, activeCritterEvent.y);
+        // Head
+        ctx.fillStyle = '#fdcb6e';
+        ctx.beginPath();
+        ctx.arc(0, -s * 4.5, s * 2, 0, Math.PI * 2);
+        ctx.fill();
 
-        // Draw message
-        if (!activeCritterEvent.clicked) {
-            ctx.font = '14px "DM Sans", sans-serif';
-            ctx.fillStyle = '#fff';
-            ctx.shadowColor = 'rgba(0,0,0,0.7)';
-            ctx.shadowBlur = 3;
-            ctx.fillText(activeCritterEvent.message, activeCritterEvent.x, activeCritterEvent.y - 35);
-        }
+        // Eyes
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.arc(-s * 0.8, -s * 4.5, s * 0.6, 0, Math.PI * 2);
+        ctx.arc(s * 0.8, -s * 4.5, s * 0.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Stinger
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.moveTo(0, s * 4);
+        ctx.lineTo(-s * 0.5, s * 5.5);
+        ctx.lineTo(s * 0.5, s * 5.5);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    function drawBirdCritter(size, facing, bobPhase) {
+        const s = size / 10;
+        ctx.save();
+        ctx.scale(facing, 1);
+
+        // Body
+        ctx.fillStyle = '#636e72';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, s * 5, s * 4, 0.1, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Belly
+        ctx.fillStyle = '#dfe6e9';
+        ctx.beginPath();
+        ctx.ellipse(s * 1, s * 1, s * 3, s * 2.5, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Wing
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.ellipse(-s * 1, -s * 0.5, s * 3, s * 2, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Head
+        ctx.fillStyle = '#636e72';
+        ctx.beginPath();
+        ctx.arc(s * 4, -s * 2, s * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eye
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.arc(s * 5, -s * 2.2, s * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(s * 5.2, -s * 2.4, s * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Beak
+        ctx.fillStyle = '#e17055';
+        ctx.beginPath();
+        ctx.moveTo(s * 6, -s * 2);
+        ctx.lineTo(s * 8.5, -s * 1.5);
+        ctx.lineTo(s * 6, -s * 1);
+        ctx.closePath();
+        ctx.fill();
+
+        // Tail
+        ctx.fillStyle = '#2d3436';
+        ctx.beginPath();
+        ctx.moveTo(-s * 4, 0);
+        ctx.lineTo(-s * 8, -s * 1);
+        ctx.lineTo(-s * 7, s * 0.5);
+        ctx.lineTo(-s * 8, s * 2);
+        ctx.lineTo(-s * 4, s * 1);
+        ctx.closePath();
+        ctx.fill();
+
+        // Legs
+        ctx.strokeStyle = '#e17055';
+        ctx.lineWidth = s * 0.6;
+        ctx.beginPath();
+        ctx.moveTo(s * 1, s * 3.5);
+        ctx.lineTo(s * 1, s * 6);
+        ctx.moveTo(s * 2.5, s * 3.5);
+        ctx.lineTo(s * 2.5, s * 6);
+        ctx.stroke();
 
         ctx.restore();
     }
@@ -1434,55 +1733,63 @@
         ctx.translate(x, y);
 
         // Number of leaves in cluster
-        const leafCount = Math.floor(4 + seededRandom(seed) * 4);
+        const leafCount = Math.floor(5 + seededRandom(seed) * 4);
 
-        // First pass: draw all the small twigs connecting to leaves
-        ctx.strokeStyle = branchColor.main;
-        ctx.lineCap = 'round';
-
+        // Generate leaf positions - spread upward and outward like a real canopy
+        const leaves = [];
         for (let i = 0; i < leafCount; i++) {
             const leafSeed = seed * 100 + i;
-            const angle = seededRandom(leafSeed) * Math.PI * 2;
-            const dist = size * 0.3 + seededRandom(leafSeed * 1.5) * size * 0.4;
-            const leafX = Math.cos(angle) * dist;
-            const leafY = Math.sin(angle) * dist;
+            // Bias toward upper hemisphere (more leaves pointing up)
+            const spreadAngle = (seededRandom(leafSeed) - 0.5) * Math.PI * 1.4; // -126° to +126°
+            const angle = -Math.PI / 2 + spreadAngle; // Center on "up"
+            const dist = size * 0.25 + seededRandom(leafSeed * 1.5) * size * 0.45;
+            leaves.push({
+                seed: leafSeed,
+                angle,
+                dist,
+                x: Math.cos(angle) * dist,
+                y: Math.sin(angle) * dist,
+                size: size * 0.3 + seededRandom(leafSeed * 2) * size * 0.25
+            });
+        }
 
-            // Draw twig from center to leaf position
-            ctx.lineWidth = Math.max(1, size * 0.08 - i * 0.1);
+        // Sort by Y so lower leaves are drawn first (back to front)
+        leaves.sort((a, b) => a.y - b.y);
+
+        // First pass: draw twigs
+        ctx.strokeStyle = branchColor.main;
+        ctx.lineCap = 'round';
+        for (const leaf of leaves) {
+            ctx.lineWidth = Math.max(0.8, 2 - leaf.dist / size);
             ctx.beginPath();
             ctx.moveTo(0, 0);
-            // Slight curve in the twig
-            const ctrlX = leafX * 0.5 + (seededRandom(leafSeed * 8) - 0.5) * size * 0.2;
-            const ctrlY = leafY * 0.5 + (seededRandom(leafSeed * 9) - 0.5) * size * 0.2;
-            ctx.quadraticCurveTo(ctrlX, ctrlY, leafX, leafY);
+            const ctrlX = leaf.x * 0.5 + (seededRandom(leaf.seed * 8) - 0.5) * size * 0.15;
+            const ctrlY = leaf.y * 0.5 + (seededRandom(leaf.seed * 9) - 0.5) * size * 0.15;
+            ctx.quadraticCurveTo(ctrlX, ctrlY, leaf.x, leaf.y);
             ctx.stroke();
         }
 
-        // Second pass: draw leaves on top of twigs
-        for (let i = 0; i < leafCount; i++) {
-            const leafSeed = seed * 100 + i;
-            const angle = seededRandom(leafSeed) * Math.PI * 2;
-            const dist = size * 0.3 + seededRandom(leafSeed * 1.5) * size * 0.4;
-            const leafX = Math.cos(angle) * dist;
-            const leafY = Math.sin(angle) * dist;
-            const leafSize = (size * 0.35 + seededRandom(leafSeed * 2) * size * 0.25);
-            // Leaf points outward from center
-            const leafAngle = angle - Math.PI / 2 + (seededRandom(leafSeed * 3) - 0.5) * 0.6;
+        // Second pass: draw leaves
+        for (const leaf of leaves) {
+            // Leaves point upward with slight tilt based on position
+            // Left-side leaves tilt slightly left, right-side slightly right
+            const tiltFromPosition = (leaf.x / size) * 0.3;
+            const randomTilt = (seededRandom(leaf.seed * 3) - 0.5) * 0.4;
+            const leafAngle = tiltFromPosition + randomTilt;
 
-            // Decide if this is a flower or fruit
-            const isFlower = health > 90 && stage >= 8 && seededRandom(leafSeed * 4) > 0.85;
-            const isFruit = !isFlower && health > 70 && age > 3 && stage >= 10 && seededRandom(leafSeed * 5) > 0.9;
+            const isFlower = health > 90 && stage >= 8 && seededRandom(leaf.seed * 4) > 0.85;
+            const isFruit = !isFlower && health > 70 && age > 3 && stage >= 10 && seededRandom(leaf.seed * 5) > 0.9;
 
             ctx.save();
-            ctx.translate(leafX, leafY);
+            ctx.translate(leaf.x, leaf.y);
             ctx.rotate(leafAngle);
 
             if (isFlower) {
-                drawFlower(leafSize * 0.7);
+                drawFlower(leaf.size * 0.8);
             } else if (isFruit) {
-                drawFruit(leafSize * 0.5);
+                drawFruit(leaf.size * 0.6);
             } else {
-                drawNaturalLeaf(leafSize, baseColor, health, leafSeed);
+                drawNaturalLeaf(leaf.size, baseColor, health, leaf.seed);
             }
 
             ctx.restore();
