@@ -353,7 +353,26 @@
     }
 
     function waterPlant() {
-        if (getHealth() <= 0) return; // Can't water a dead plant
+        const health = getHealth();
+        const isWilted = health <= 0;
+
+        // If wilted, this is a revival - penalize by losing growth stages
+        if (isWilted) {
+            // Lose 1-2 growth stages as penalty (but keep at least stage 4)
+            const currentStage = getGrowthStage();
+            const stageLoss = Math.min(2, currentStage - 4);
+            if (stageLoss > 0) {
+                // Adjust birthDate to reduce effective age
+                const daysToLose = stageLoss / (getSeasonalModifier().growthMultiplier || 1);
+                state.birthDate += daysToLose * 24 * 60 * 60 * 1000;
+                showMilestoneMessage(`${state.name} revived! (-${stageLoss} growth)`);
+            } else {
+                showMilestoneMessage(`${state.name} perked up!`);
+            }
+            // Reset streak on revival
+            state.waterStreakDays = 0;
+            setFaceReaction('pleased', 120);
+        }
 
         const today = getLocalDateString();
 
@@ -915,7 +934,7 @@
 
         // Update Mood Message (cuter!)
         let mood = "";
-        if (health <= 0) mood = `${state.name} has gone to plant heaven... 🥀`;
+        if (health <= 0) mood = `${state.name} is wilted... water to revive! 🥀💧`;
         else if (health < 20) mood = `${state.name} is SO thirsty!! 😵`;
         else if (health < 40) mood = `*${state.name} looks at you with big eyes* 🥺💧`;
         else if (health < 60) mood = `${state.name} could use a little drink~ 💭`;
@@ -930,10 +949,12 @@
         else healthDisplay.style.color = '#8a4030'; // Danger
 
         if (health <= 0) {
-            waterBtn.disabled = true;
-            waterBtn.textContent = "💀 Withered";
+            // Wilted but revivable
+            waterBtn.disabled = false;
+            waterBtn.textContent = "💧 Revive";
         } else {
             waterBtn.disabled = false;
+            waterBtn.textContent = "💧 Water";
         }
 
         // Check for milestone celebrations
@@ -1407,6 +1428,7 @@
         const baseColor = getLeafColor(health);
         const age = getAgeInDays();
         const stage = getGrowthStage();
+        const branchColor = getBranchColor(health);
 
         ctx.save();
         ctx.translate(x, y);
@@ -1414,14 +1436,38 @@
         // Number of leaves in cluster
         const leafCount = Math.floor(4 + seededRandom(seed) * 4);
 
+        // First pass: draw all the small twigs connecting to leaves
+        ctx.strokeStyle = branchColor.main;
+        ctx.lineCap = 'round';
+
         for (let i = 0; i < leafCount; i++) {
             const leafSeed = seed * 100 + i;
             const angle = seededRandom(leafSeed) * Math.PI * 2;
-            const dist = seededRandom(leafSeed * 1.5) * size * 0.6;
+            const dist = size * 0.3 + seededRandom(leafSeed * 1.5) * size * 0.4;
             const leafX = Math.cos(angle) * dist;
             const leafY = Math.sin(angle) * dist;
-            const leafSize = (size * 0.4 + seededRandom(leafSeed * 2) * size * 0.3);
-            const leafAngle = angle + (seededRandom(leafSeed * 3) - 0.5) * 0.8;
+
+            // Draw twig from center to leaf position
+            ctx.lineWidth = Math.max(1, size * 0.08 - i * 0.1);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            // Slight curve in the twig
+            const ctrlX = leafX * 0.5 + (seededRandom(leafSeed * 8) - 0.5) * size * 0.2;
+            const ctrlY = leafY * 0.5 + (seededRandom(leafSeed * 9) - 0.5) * size * 0.2;
+            ctx.quadraticCurveTo(ctrlX, ctrlY, leafX, leafY);
+            ctx.stroke();
+        }
+
+        // Second pass: draw leaves on top of twigs
+        for (let i = 0; i < leafCount; i++) {
+            const leafSeed = seed * 100 + i;
+            const angle = seededRandom(leafSeed) * Math.PI * 2;
+            const dist = size * 0.3 + seededRandom(leafSeed * 1.5) * size * 0.4;
+            const leafX = Math.cos(angle) * dist;
+            const leafY = Math.sin(angle) * dist;
+            const leafSize = (size * 0.35 + seededRandom(leafSeed * 2) * size * 0.25);
+            // Leaf points outward from center
+            const leafAngle = angle - Math.PI / 2 + (seededRandom(leafSeed * 3) - 0.5) * 0.6;
 
             // Decide if this is a flower or fruit
             const isFlower = health > 90 && stage >= 8 && seededRandom(leafSeed * 4) > 0.85;
@@ -1636,18 +1682,18 @@
 
         const isBlinking = blinkTimer > 0 && blinkTimer < 8;
         const isSad = health < 40;
-        const isDead = health <= 0;
+        const isWilted = health <= 0;
         const reaction = faceReaction.type;
         const reactionIntensity = faceReaction.intensity;
 
-        // Face background (slightly lighter wood)
-        ctx.fillStyle = isDead ? '#5c524a' : '#4a4038';
+        // Face background (slightly lighter wood, grayer when wilted)
+        ctx.fillStyle = isWilted ? '#5a5550' : '#4a4038';
         ctx.beginPath();
         ctx.ellipse(0, 0, 18, 15, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Blush - intensity varies with health and affection
-        if (!isDead) {
+        // Blush - intensity varies with health and affection (none when wilted)
+        if (!isWilted) {
             const blushBase = health > 70 ? 0.3 : health > 40 ? 0.15 : 0;
             const affectionBonus = Math.min(0.3, (state.affection || 0) * 0.005);
             const reactionBonus = (reaction === 'excited' || reaction === 'pleased') ? 0.2 * reactionIntensity : 0;
@@ -1662,8 +1708,8 @@
             }
         }
 
-        // Sweat drop when health is low
-        if (health < 25 && health > 0) {
+        // Sweat drop when health is low (including wilted)
+        if (health < 25) {
             ctx.fillStyle = 'rgba(100, 180, 255, 0.7)';
             ctx.beginPath();
             ctx.moveTo(14, -8);
@@ -1673,19 +1719,18 @@
         }
 
         // Eyes
-        ctx.fillStyle = isDead ? '#888' : '#fff';
+        ctx.fillStyle = isWilted ? '#aaa' : '#fff';
 
         // Sleepy eyes (half-closed)
-        if (reaction === 'sleepy' && !isDead) {
+        if (reaction === 'sleepy' && !isWilted) {
             ctx.strokeStyle = '#2a2520';
             ctx.lineWidth = 2;
             ctx.beginPath();
-            // Draw curved half-closed lines
             ctx.arc(-6, -1, 4, 0, Math.PI);
             ctx.moveTo(10, -1);
             ctx.arc(6, -1, 4, 0, Math.PI);
             ctx.stroke();
-        } else if (isBlinking && !isDead && reaction !== 'surprised') {
+        } else if (isBlinking && !isWilted && reaction !== 'surprised') {
             // Blinking - draw lines
             ctx.strokeStyle = '#2a2520';
             ctx.lineWidth = 2;
@@ -1695,15 +1740,20 @@
             ctx.moveTo(4, -2);
             ctx.lineTo(8, -2);
             ctx.stroke();
-        } else if (isDead) {
-            // X eyes
-            ctx.strokeStyle = '#666';
-            ctx.lineWidth = 2;
+        } else if (isWilted) {
+            // Wilted - droopy spiral eyes (dizzy/faint)
+            ctx.strokeStyle = '#777';
+            ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(-8, -5); ctx.lineTo(-4, 1);
-            ctx.moveTo(-4, -5); ctx.lineTo(-8, 1);
-            ctx.moveTo(4, -5); ctx.lineTo(8, 1);
-            ctx.moveTo(8, -5); ctx.lineTo(4, 1);
+            // Left spiral
+            ctx.arc(-6, -2, 3, 0, Math.PI * 1.5);
+            ctx.moveTo(-4, -2);
+            ctx.arc(-6, -2, 1.5, 0, Math.PI * 1.5);
+            // Right spiral
+            ctx.moveTo(9, -2);
+            ctx.arc(6, -2, 3, 0, Math.PI * 1.5);
+            ctx.moveTo(8, -2);
+            ctx.arc(6, -2, 1.5, 0, Math.PI * 1.5);
             ctx.stroke();
         } else {
             // Eye size based on reaction
@@ -1765,17 +1815,14 @@
         }
 
         // Mouth
-        ctx.strokeStyle = isDead ? '#666' : '#2a2520';
+        ctx.strokeStyle = isWilted ? '#777' : '#2a2520';
         ctx.lineWidth = 2;
         ctx.lineCap = 'round';
         ctx.beginPath();
 
-        if (isDead) {
-            // Wavy dead mouth
-            ctx.moveTo(-5, 6);
-            ctx.lineTo(-2, 4);
-            ctx.lineTo(2, 6);
-            ctx.lineTo(5, 4);
+        if (isWilted) {
+            // Wobbly frown - wilted but alive
+            ctx.arc(0, 10, 6, Math.PI * 1.15, Math.PI * 1.85);
         } else if (reaction === 'surprised') {
             // Small 'o' mouth
             ctx.arc(0, 5, 3 * reactionIntensity + 2 * (1 - reactionIntensity), 0, Math.PI * 2);
