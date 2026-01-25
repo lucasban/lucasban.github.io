@@ -649,12 +649,13 @@
     function petPlant(mouseX, mouseY, startX, startY, stage) {
         const now = Date.now();
 
-        // Check if click is on the tree trunk/branches area
-        const treeWidth = 50 + stage * 10;
-        const treeHeight = 100 + stage * 20;
+        // Check if click is on the tree trunk/branches area (matches new tree structure)
+        const trunkLength = 50 + stage * 12;
+        const treeWidth = 40 + stage * 15;  // Canopy spreads wider
+        const treeHeight = trunkLength * 2;  // Tree extends above trunk
 
         if (mouseX > startX - treeWidth && mouseX < startX + treeWidth &&
-            mouseY > startY - treeHeight && mouseY < startY) {
+            mouseY > startY - treeHeight && mouseY < startY + 30) {  // +30 to include pot
 
             // Reset idle timer on any tree interaction
             idleTimer = 0;
@@ -1226,298 +1227,405 @@
         ctx.restore();
     }
 
-    // --- Rendering (Fractal Tree) ---
+    // --- Rendering (Natural Tree) ---
+
+    // Seeded random number generator for consistent tree shape
+    function seededRandom(seed) {
+        const x = Math.sin(seed * 9999) * 10000;
+        return x - Math.floor(x);
+    }
 
     function drawTreeShadow(startX, startY, stage) {
         ctx.save();
-
-        // Shadow size grows with plant
-        const shadowWidth = 30 + (stage * 8);
-        const shadowHeight = 8 + (stage * 1.5);
-
-        // Create radial gradient for soft shadow
-        const shadowGrad = ctx.createRadialGradient(
-            startX, startY + 5,
-            0,
-            startX, startY + 5,
-            shadowWidth
-        );
-        shadowGrad.addColorStop(0, 'rgba(0,0,0,0.2)');
+        const shadowWidth = 40 + (stage * 10);
+        const shadowHeight = 10 + (stage * 2);
+        const shadowGrad = ctx.createRadialGradient(startX, startY + 5, 0, startX, startY + 5, shadowWidth);
+        shadowGrad.addColorStop(0, 'rgba(0,0,0,0.25)');
         shadowGrad.addColorStop(0.5, 'rgba(0,0,0,0.1)');
         shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
-
         ctx.fillStyle = shadowGrad;
         ctx.beginPath();
         ctx.ellipse(startX, startY + 5, shadowWidth, shadowHeight, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.restore();
-    }
-
-    function drawTree(startX, startY, len, angle, branchWidth, depth) {
-        ctx.beginPath();
-        ctx.save();
-
-        ctx.translate(startX, startY);
-        ctx.rotate(angle * Math.PI / 180);
-
-        // Use quadratic bezier for natural curves on branches
-        const curveFactor = depth > 1 ? (Math.sin(state.seed * depth * 7) * len * 0.08) : 0;
-        ctx.moveTo(0, 0);
-        ctx.quadraticCurveTo(curveFactor, -len * 0.5, 0, -len);
-
-        // Branch Style (Softer round caps)
-        ctx.lineCap = 'round';
-        const health = getHealth();
-        const age = getAgeInDays();
-
-        if (health <= 0) ctx.strokeStyle = '#5c524a'; // Dead wood
-        else if (health < 30) ctx.strokeStyle = '#8a6a4b'; // Dry wood
-        else ctx.strokeStyle = '#3d3632'; // Healthy wood
-
-        ctx.lineWidth = branchWidth;
-        ctx.stroke();
-
-        // Add bark texture on thicker branches
-        if (branchWidth > 5 && health > 0) {
-            ctx.strokeStyle = 'rgba(0,0,0,0.08)';
-            ctx.lineWidth = 0.5;
-            // Vertical bark lines with slight waviness
-            for (let i = -branchWidth / 3; i < branchWidth / 3; i += 2.5) {
-                ctx.beginPath();
-                ctx.moveTo(i, 0);
-                // Slight sine wave for natural bark texture
-                const waviness = Math.sin(state.seed * i * 5) * 1.5;
-                ctx.lineTo(i + waviness, -len * 0.9);
-                ctx.stroke();
-            }
-        }
-
-        // Draw Ladybug on trunk
-        if (depth === getGrowthStage() && health > 0) {
-            drawLadybug(len);
-        }
-
-        if (!len || depth <= 0) {
-            // Draw Leaf, Flower, or Fruit
-            if (depth <= 0) {
-                // Seeded randomness for decorations
-                const hasFlower = Math.abs(Math.sin(state.seed * depth * 789)) > 0.85;
-                const hasFruit = age > 3 && Math.abs(Math.cos(state.seed * depth * 456)) > 0.9;
-
-                if (health > 90 && hasFlower) {
-                    drawFlower();
-                } else if (health > 70 && hasFruit) {
-                    drawFruit();
-                } else {
-                    // Varied leaf sizes based on seed and depth
-                    const leafSize = 12 + Math.abs(Math.sin(state.seed * depth * 321)) * 10;
-                    drawLeaf(health, leafSize);
-                }
-            }
-            ctx.restore();
-            return;
-        }
-
-        // Randomness seeded by the plant's unique seed + depth
-        const r1 = Math.sin(state.seed * depth * 123);
-        const r2 = Math.cos(state.seed * depth * 456);
-
-        // Wind sway modified by weather
-        const sway = Math.sin(time * 0.003 + depth) * (depth * 0.5) * weather.windSpeed;
-
-        // Droop factor
-        const droop = Math.max(0, (100 - health) * 0.5);
-
-        const subBranch = len * 0.75;
-
-        // Recursive calls
-        drawTree(0, -len, subBranch, -20 + (r1 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
-        drawTree(0, -len, subBranch, 20 + (r2 * 15) + sway + (droop * 0.1), branchWidth * 0.7, depth - 1);
-
-        ctx.restore();
-    }
-
-    function drawLadybug(len) {
-        // Fixed position based on seed - no more constant oscillation
-        const bugY = -len * (0.4 + (state.seed * 0.3));
-        ctx.save();
-        ctx.translate(0, bugY);
-        // Face a fixed direction based on seed (no flip animation)
-        if (state.seed > 0.5) ctx.scale(-1, 1);
-
-        ctx.fillStyle = '#d44';
-        ctx.beginPath();
-        ctx.arc(0, 0, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = '#000';
-        ctx.beginPath();
-        ctx.arc(3, 0, 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.beginPath();
-        ctx.arc(-1, -1, 1, 0, Math.PI * 2);
-        ctx.arc(-1, 1, 1, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     }
 
     function getLeafColor(health) {
-        if (health <= 0) return '#5c524a'; // Dead
-        if (health < 30) return '#d4a012'; // Drying
+        if (health <= 0) return '#5c524a';
+        if (health < 30) return '#d4a012';
         return getSeasonalColors().leafBase;
     }
 
     function lightenColor(hex, percent) {
+        // Handle rgb() format
+        if (hex.startsWith('rgb')) {
+            const match = hex.match(/\d+/g);
+            if (match) {
+                const r = Math.min(255, parseInt(match[0]) + Math.round(255 * percent / 100));
+                const g = Math.min(255, parseInt(match[1]) + Math.round(255 * percent / 100));
+                const b = Math.min(255, parseInt(match[2]) + Math.round(255 * percent / 100));
+                return `rgb(${r},${g},${b})`;
+            }
+        }
         const num = parseInt(hex.slice(1), 16);
-        const r = Math.min(255, (num >> 16) + Math.round(255 * percent / 100));
-        const g = Math.min(255, ((num >> 8) & 0x00FF) + Math.round(255 * percent / 100));
-        const b = Math.min(255, (num & 0x0000FF) + Math.round(255 * percent / 100));
+        const r = Math.min(255, Math.max(0, (num >> 16) + Math.round(255 * percent / 100)));
+        const g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + Math.round(255 * percent / 100)));
+        const b = Math.min(255, Math.max(0, (num & 0x0000FF) + Math.round(255 * percent / 100)));
         return `rgb(${r},${g},${b})`;
     }
 
-    function drawLeaf(health, sizeVariation) {
-        // Varied sizes based on position
-        const size = sizeVariation || (15 + (state.seed * 8));
-        const baseColor = getLeafColor(health);
+    function getBranchColor(health) {
+        if (health <= 0) return { main: '#5c524a', dark: '#4a3e38' };
+        if (health < 30) return { main: '#8a6a4b', dark: '#6a4a2b' };
+        return { main: '#6b5344', dark: '#4a3628' };
+    }
 
+    // Draw a natural curved branch segment
+    function drawBranchSegment(x1, y1, x2, y2, width1, width2, health, seed) {
+        const colors = getBranchColor(health);
+
+        // Calculate control point for curve
+        const midX = (x1 + x2) / 2;
+        const midY = (y1 + y2) / 2;
+        const len = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+        const perpX = -(y2 - y1) / len;
+        const perpY = (x2 - x1) / len;
+        const curve = seededRandom(seed * 7.3) * len * 0.15 - len * 0.075;
+        const ctrlX = midX + perpX * curve;
+        const ctrlY = midY + perpY * curve;
+
+        // Draw branch as filled shape for proper tapering
         ctx.save();
-
-        // Scale for size variation
-        const scale = size / 20;
-        ctx.scale(scale, scale);
-
-        // Gradient fill for depth
-        const grad = ctx.createLinearGradient(0, 0, 0, -20);
-        grad.addColorStop(0, baseColor);
-        grad.addColorStop(0.5, lightenColor(baseColor, 10));
-        grad.addColorStop(1, lightenColor(baseColor, 20));
-
-        // Main leaf shape (heart)
+        ctx.fillStyle = colors.main;
         ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.bezierCurveTo(-6, -6, -12, -16, 0, -22);
-        ctx.bezierCurveTo(12, -16, 6, -6, 0, 0);
-        ctx.fillStyle = grad;
+
+        // Calculate perpendicular offsets for width
+        const angle1 = Math.atan2(ctrlY - y1, ctrlX - x1);
+        const angle2 = Math.atan2(y2 - ctrlY, x2 - ctrlX);
+
+        // Left side of branch
+        ctx.moveTo(x1 + Math.cos(angle1 + Math.PI/2) * width1/2,
+                   y1 + Math.sin(angle1 + Math.PI/2) * width1/2);
+        ctx.quadraticCurveTo(
+            ctrlX + Math.cos((angle1+angle2)/2 + Math.PI/2) * (width1+width2)/4,
+            ctrlY + Math.sin((angle1+angle2)/2 + Math.PI/2) * (width1+width2)/4,
+            x2 + Math.cos(angle2 + Math.PI/2) * width2/2,
+            y2 + Math.sin(angle2 + Math.PI/2) * width2/2
+        );
+
+        // Right side of branch (reverse)
+        ctx.lineTo(x2 + Math.cos(angle2 - Math.PI/2) * width2/2,
+                   y2 + Math.sin(angle2 - Math.PI/2) * width2/2);
+        ctx.quadraticCurveTo(
+            ctrlX + Math.cos((angle1+angle2)/2 - Math.PI/2) * (width1+width2)/4,
+            ctrlY + Math.sin((angle1+angle2)/2 - Math.PI/2) * (width1+width2)/4,
+            x1 + Math.cos(angle1 - Math.PI/2) * width1/2,
+            y1 + Math.sin(angle1 - Math.PI/2) * width1/2
+        );
+        ctx.closePath();
         ctx.fill();
 
-        // Center vein
-        ctx.strokeStyle = health > 30 ? 'rgba(0,0,0,0.15)' : 'rgba(0,0,0,0.1)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, -2);
-        ctx.lineTo(0, -18);
-        ctx.stroke();
-
-        // Side veins
-        ctx.lineWidth = 0.5;
-        ctx.beginPath();
-        ctx.moveTo(0, -6);
-        ctx.lineTo(-4, -10);
-        ctx.moveTo(0, -10);
-        ctx.lineTo(-5, -15);
-        ctx.moveTo(0, -6);
-        ctx.lineTo(4, -10);
-        ctx.moveTo(0, -10);
-        ctx.lineTo(5, -15);
-        ctx.stroke();
-
+        // Add bark texture for thicker branches
+        if (width1 > 6 && health > 0) {
+            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+            ctx.lineWidth = 0.8;
+            const segments = Math.floor(width1 / 3);
+            for (let i = 0; i < segments; i++) {
+                const t = (i + 0.5) / segments;
+                const offsetX = (t - 0.5) * width1 * 0.6;
+                ctx.beginPath();
+                ctx.moveTo(x1 + offsetX + seededRandom(seed + i) * 2, y1);
+                ctx.quadraticCurveTo(ctrlX + offsetX, ctrlY, x2 + offsetX * (width2/width1), y2);
+                ctx.stroke();
+            }
+        }
         ctx.restore();
     }
 
-    function drawFlower() {
+    // Main tree drawing function - organic recursive structure
+    function drawTree(x, y, length, angle, width, depth, seed) {
+        if (depth <= 0 || width < 1 || length < 5) return;
+
+        const health = getHealth();
+        const sway = Math.sin(time * 0.002 + depth * 0.5 + seed) * (depth * 0.3) * weather.windSpeed;
+        const droop = health < 50 ? (50 - health) * 0.01 : 0;
+
+        const actualAngle = angle + sway + droop * Math.sign(angle || 0.1);
+        const rad = (actualAngle - 90) * Math.PI / 180;
+
+        const endX = x + Math.cos(rad) * length;
+        const endY = y + Math.sin(rad) * length;
+
+        // Taper width naturally
+        const endWidth = width * (0.65 + seededRandom(seed * 3.7) * 0.15);
+
+        // Draw this branch segment
+        drawBranchSegment(x, y, endX, endY, width, endWidth, health, seed);
+
+        // Determine branching
+        const stage = getGrowthStage();
+        const branchProb = 0.85 - depth * 0.05;
+
+        if (depth <= 2) {
+            // Terminal - draw foliage
+            drawFoliageCluster(endX, endY, width * 2 + stage, seed, health);
+        } else {
+            // Branch out
+            const numBranches = depth > stage - 2 ? 2 : (seededRandom(seed * 2.1) > 0.6 ? 3 : 2);
+            const angleSpread = 25 + seededRandom(seed * 4.4) * 20;
+
+            for (let i = 0; i < numBranches; i++) {
+                const branchSeed = seed * 1000 + i * 137;
+                const t = numBranches === 1 ? 0 : (i / (numBranches - 1)) - 0.5;
+                const branchAngle = actualAngle + t * angleSpread * 2 + (seededRandom(branchSeed) - 0.5) * 15;
+                const branchLen = length * (0.7 + seededRandom(branchSeed * 1.3) * 0.2);
+                const branchWidth = endWidth * (0.7 + seededRandom(branchSeed * 1.7) * 0.2);
+
+                drawTree(endX, endY, branchLen, branchAngle, branchWidth, depth - 1, branchSeed);
+            }
+
+            // Occasional extra small branch
+            if (seededRandom(seed * 5.5) > 0.7 && depth > 3) {
+                const sideSeed = seed * 2000;
+                const sideAngle = actualAngle + (seededRandom(sideSeed) > 0.5 ? 1 : -1) * (40 + seededRandom(sideSeed) * 30);
+                drawTree(
+                    x + (endX - x) * 0.4,
+                    y + (endY - y) * 0.4,
+                    length * 0.5,
+                    sideAngle,
+                    width * 0.4,
+                    Math.min(depth - 2, 3),
+                    sideSeed
+                );
+            }
+        }
+    }
+
+    // Draw a cluster of leaves/foliage at branch ends
+    function drawFoliageCluster(x, y, size, seed, health) {
         const colors = getSeasonalColors();
+        const baseColor = getLeafColor(health);
+        const age = getAgeInDays();
+        const stage = getGrowthStage();
 
         ctx.save();
+        ctx.translate(x, y);
 
-        // Draw 5 gradient petals
-        for (let i = 0; i < 5; i++) {
+        // Number of leaves in cluster
+        const leafCount = Math.floor(4 + seededRandom(seed) * 4);
+
+        for (let i = 0; i < leafCount; i++) {
+            const leafSeed = seed * 100 + i;
+            const angle = seededRandom(leafSeed) * Math.PI * 2;
+            const dist = seededRandom(leafSeed * 1.5) * size * 0.6;
+            const leafX = Math.cos(angle) * dist;
+            const leafY = Math.sin(angle) * dist;
+            const leafSize = (size * 0.4 + seededRandom(leafSeed * 2) * size * 0.3);
+            const leafAngle = angle + (seededRandom(leafSeed * 3) - 0.5) * 0.8;
+
+            // Decide if this is a flower or fruit
+            const isFlower = health > 90 && stage >= 8 && seededRandom(leafSeed * 4) > 0.85;
+            const isFruit = !isFlower && health > 70 && age > 3 && stage >= 10 && seededRandom(leafSeed * 5) > 0.9;
+
             ctx.save();
-            ctx.rotate((i / 5) * Math.PI * 2);
+            ctx.translate(leafX, leafY);
+            ctx.rotate(leafAngle);
 
-            // Petal gradient (lighter at tip)
-            const petalGrad = ctx.createRadialGradient(0, 6, 0, 0, 6, 8);
-            petalGrad.addColorStop(0, lightenColor(colors.flower, 20));
-            petalGrad.addColorStop(0.6, colors.flower);
-            petalGrad.addColorStop(1, lightenColor(colors.flower, -10));
-
-            ctx.beginPath();
-            ctx.ellipse(0, 6, 3.5, 7, 0, 0, Math.PI * 2);
-            ctx.fillStyle = petalGrad;
-            ctx.fill();
-
-            // Subtle petal edge
-            ctx.strokeStyle = 'rgba(0,0,0,0.1)';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
+            if (isFlower) {
+                drawFlower(leafSize * 0.7);
+            } else if (isFruit) {
+                drawFruit(leafSize * 0.5);
+            } else {
+                drawNaturalLeaf(leafSize, baseColor, health, leafSeed);
+            }
 
             ctx.restore();
         }
 
-        // Center (pistil) with gradient
-        const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, 3);
-        centerGrad.addColorStop(0, '#fff8dc');
-        centerGrad.addColorStop(0.5, '#ffd700');
-        centerGrad.addColorStop(1, '#daa520');
+        ctx.restore();
+    }
 
+    // Draw a natural-looking leaf (oval/elliptical)
+    function drawNaturalLeaf(size, baseColor, health, seed) {
+        ctx.save();
+
+        // Slight random rotation for variety
+        ctx.rotate((seededRandom(seed * 6) - 0.5) * 0.3);
+
+        // Wind sway on leaves
+        const leafSway = Math.sin(time * 0.004 + seed) * 0.1 * weather.windSpeed;
+        ctx.rotate(leafSway);
+
+        const leafWidth = size * (0.35 + seededRandom(seed * 7) * 0.15);
+        const leafLength = size;
+
+        // Leaf gradient
+        const grad = ctx.createLinearGradient(0, 0, 0, -leafLength);
+        grad.addColorStop(0, lightenColor(baseColor, -10));
+        grad.addColorStop(0.5, baseColor);
+        grad.addColorStop(1, lightenColor(baseColor, 15));
+
+        // Draw oval leaf shape
+        ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(0, 0, 3, 0, Math.PI * 2);
-        ctx.fillStyle = centerGrad;
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(
+            -leafWidth, -leafLength * 0.3,
+            -leafWidth * 0.8, -leafLength * 0.8,
+            0, -leafLength
+        );
+        ctx.bezierCurveTo(
+            leafWidth * 0.8, -leafLength * 0.8,
+            leafWidth, -leafLength * 0.3,
+            0, 0
+        );
         ctx.fill();
 
-        // Stamen dots around center
-        ctx.fillStyle = '#b8860b';
-        for (let i = 0; i < 5; i++) {
-            const angle = (i / 5) * Math.PI * 2;
+        // Center vein
+        if (size > 8 && health > 20) {
+            ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+            ctx.lineWidth = 0.8;
             ctx.beginPath();
-            ctx.arc(Math.cos(angle) * 1.5, Math.sin(angle) * 1.5, 0.6, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.moveTo(0, -2);
+            ctx.lineTo(0, -leafLength * 0.85);
+            ctx.stroke();
+
+            // Side veins
+            ctx.lineWidth = 0.4;
+            const veins = Math.floor(size / 6);
+            for (let i = 1; i <= veins; i++) {
+                const vy = -leafLength * (0.2 + i * 0.2);
+                const vw = leafWidth * (0.6 - i * 0.1);
+                ctx.beginPath();
+                ctx.moveTo(0, vy);
+                ctx.lineTo(-vw, vy - leafLength * 0.1);
+                ctx.moveTo(0, vy);
+                ctx.lineTo(vw, vy - leafLength * 0.1);
+                ctx.stroke();
+            }
         }
 
         ctx.restore();
     }
 
-    function drawFruit() {
+    function drawFlower(size) {
         const colors = getSeasonalColors();
+        const petalCount = 5;
+        const petalSize = size || 8;
 
         ctx.save();
 
-        // Soft shadow beneath fruit
+        // Petals
+        for (let i = 0; i < petalCount; i++) {
+            ctx.save();
+            ctx.rotate((i / petalCount) * Math.PI * 2);
+
+            const grad = ctx.createRadialGradient(0, petalSize * 0.6, 0, 0, petalSize * 0.6, petalSize);
+            grad.addColorStop(0, lightenColor(colors.flower, 25));
+            grad.addColorStop(0.6, colors.flower);
+            grad.addColorStop(1, lightenColor(colors.flower, -15));
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.ellipse(0, petalSize * 0.6, petalSize * 0.35, petalSize * 0.7, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        // Center
+        const centerGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, petalSize * 0.3);
+        centerGrad.addColorStop(0, '#fff8dc');
+        centerGrad.addColorStop(0.5, '#ffd700');
+        centerGrad.addColorStop(1, '#daa520');
+        ctx.fillStyle = centerGrad;
+        ctx.beginPath();
+        ctx.arc(0, 0, petalSize * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+    }
+
+    function drawFruit(size) {
+        const colors = getSeasonalColors();
+        const fruitSize = size || 5;
+
+        ctx.save();
+
+        // Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.15)';
         ctx.beginPath();
-        ctx.ellipse(1, 2, 4, 2, 0, 0, Math.PI * 2);
+        ctx.ellipse(1, 2, fruitSize * 0.8, fruitSize * 0.4, 0, 0, Math.PI * 2);
         ctx.fill();
 
-        // Fruit body with radial gradient
-        const fruitGrad = ctx.createRadialGradient(-1.5, -1.5, 0, 0, 0, 5);
-        fruitGrad.addColorStop(0, lightenColor(colors.fruit, 30));
-        fruitGrad.addColorStop(0.4, colors.fruit);
-        fruitGrad.addColorStop(1, lightenColor(colors.fruit, -20));
+        // Fruit body
+        const grad = ctx.createRadialGradient(-fruitSize * 0.3, -fruitSize * 0.3, 0, 0, 0, fruitSize);
+        grad.addColorStop(0, lightenColor(colors.fruit, 35));
+        grad.addColorStop(0.4, colors.fruit);
+        grad.addColorStop(1, lightenColor(colors.fruit, -25));
 
+        ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(0, 0, 5, 0, Math.PI * 2);
-        ctx.fillStyle = fruitGrad;
+        ctx.arc(0, 0, fruitSize, 0, Math.PI * 2);
         ctx.fill();
 
-        // Main highlight
+        // Highlight
         ctx.fillStyle = 'rgba(255,255,255,0.5)';
         ctx.beginPath();
-        ctx.ellipse(-1.5, -1.5, 2, 1.5, Math.PI / 4, 0, Math.PI * 2);
+        ctx.ellipse(-fruitSize * 0.3, -fruitSize * 0.3, fruitSize * 0.35, fruitSize * 0.25, Math.PI / 4, 0, Math.PI * 2);
         ctx.fill();
 
-        // Small secondary highlight
-        ctx.fillStyle = 'rgba(255,255,255,0.3)';
-        ctx.beginPath();
-        ctx.arc(-2.5, 0, 0.8, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Tiny stem at top
+        // Stem
         ctx.strokeStyle = '#5a4a3a';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = fruitSize * 0.2;
         ctx.lineCap = 'round';
         ctx.beginPath();
-        ctx.moveTo(0, -5);
-        ctx.lineTo(1, -7);
+        ctx.moveTo(0, -fruitSize);
+        ctx.lineTo(fruitSize * 0.2, -fruitSize * 1.4);
         ctx.stroke();
+
+        ctx.restore();
+    }
+
+    // Draw pot/planter for the tree
+    function drawPot(x, y, width, height) {
+        ctx.save();
+
+        // Pot body - terracotta style
+        const potGrad = ctx.createLinearGradient(x - width/2, 0, x + width/2, 0);
+        potGrad.addColorStop(0, '#a0522d');
+        potGrad.addColorStop(0.3, '#cd853f');
+        potGrad.addColorStop(0.7, '#cd853f');
+        potGrad.addColorStop(1, '#8b4513');
+
+        ctx.fillStyle = potGrad;
+        ctx.beginPath();
+        // Tapered pot shape
+        const topWidth = width;
+        const bottomWidth = width * 0.75;
+        ctx.moveTo(x - topWidth/2, y);
+        ctx.lineTo(x - bottomWidth/2, y + height);
+        ctx.lineTo(x + bottomWidth/2, y + height);
+        ctx.lineTo(x + topWidth/2, y);
+        ctx.closePath();
+        ctx.fill();
+
+        // Rim
+        ctx.fillStyle = '#b8643a';
+        ctx.beginPath();
+        ctx.ellipse(x, y, topWidth/2, topWidth * 0.12, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Rim highlight
+        ctx.fillStyle = '#d4956a';
+        ctx.beginPath();
+        ctx.ellipse(x, y - 2, topWidth/2 - 2, topWidth * 0.08, 0, Math.PI, Math.PI * 2);
+        ctx.fill();
+
+        // Soil
+        ctx.fillStyle = '#3d2817';
+        ctx.beginPath();
+        ctx.ellipse(x, y + 2, topWidth/2 - 3, topWidth * 0.1, 0, 0, Math.PI);
+        ctx.fill();
 
         ctx.restore();
     }
@@ -1967,9 +2075,11 @@
         // Spawn sparkles occasionally for healthy plants
         if (health > 80 && Math.random() < 0.03) {
             const stage = getGrowthStage();
+            const trunkLength = 50 + stage * 12;
+            const treeHeight = trunkLength * 1.8;
             sparkles.push({
-                x: canvas.width / 2 + (Math.random() - 0.5) * (50 + stage * 15),
-                y: canvas.height - 80 - Math.random() * (stage * 20),
+                x: canvas.width / 2 + (Math.random() - 0.5) * (40 + stage * 18),
+                y: canvas.height - 30 - Math.random() * treeHeight,
                 size: 3 + Math.random() * 4,
                 life: 30 + Math.random() * 20,
                 twinkle: Math.random() * Math.PI * 2
@@ -2150,11 +2260,17 @@
         const health = getHealth();
 
         // Draw soft shadow under tree (not affected by bounce)
-        drawTreeShadow(startX, startY, stage);
+        // Draw pot first (behind tree)
+        const potWidth = 60 + stage * 3;
+        const potHeight = 35 + stage * 1.5;
+        const potY = startY - 5;
+        drawPot(startX, potY, potWidth, potHeight);
+
+        drawTreeShadow(startX, startY - 10, stage);
 
         // Apply bounce/wiggle transform to tree
         ctx.save();
-        ctx.translate(startX, startY);
+        ctx.translate(startX, startY - 10);
 
         // Apply zoom effect if active
         if (zoomEffect) {
@@ -2167,12 +2283,16 @@
         // Apply wiggle rotation
         ctx.rotate(plantBounce.rotation);
 
-        ctx.translate(-startX, -startY);
+        ctx.translate(-startX, -(startY - 10));
 
-        drawTree(startX, startY, baseLen, 0, 12, stage);
+        // Natural tree parameters based on growth stage
+        const trunkWidth = 8 + stage * 1.2;
+        const trunkLength = 50 + stage * 12;
 
-        // Cute face on trunk
-        const faceY = startY - 60 - (stage * 3); // Move up as plant grows
+        drawTree(startX, startY - 10, trunkLength, 0, trunkWidth, stage, state.seed);
+
+        // Cute face on trunk - position based on trunk length
+        const faceY = startY - 10 - trunkLength * 0.35;
         drawPlantFace(startX, faceY, health);
 
         ctx.restore();
@@ -2188,8 +2308,8 @@
         let groundColorTop = '#8a6a4b';
         let groundColorBottom = '#6a4a2b';
         if (season === 'winter') {
-            groundColorTop = '#a0a8b0';
-            groundColorBottom = '#808890';
+            groundColorTop = '#e8eef4';
+            groundColorBottom = '#c8d4dc';
         } else if (season === 'autumn') {
             groundColorTop = '#7a5a3b';
             groundColorBottom = '#5a3a1b';
@@ -2279,18 +2399,20 @@
 
         if (handleCritterClick(mouseX, mouseY)) return;
 
-        // Calculate face position
+        // Calculate positions (must match render calculations)
         const stage = getGrowthStage();
         const startX = canvas.width / 2;
         const startY = canvas.height - 20;
-        const faceY = startY - 60 - (stage * 3);
+        const treeBaseY = startY - 10;
+        const trunkLength = 50 + stage * 12;
+        const faceY = treeBaseY - trunkLength * 0.35;
 
         // Face click for wisdom
         if (handleFaceClick(mouseX, mouseY, startX, faceY)) return;
 
         // Pet mechanic - click anywhere on tree
         if (getHealth() > 0) {
-            petPlant(mouseX, mouseY, startX, startY, stage);
+            petPlant(mouseX, mouseY, startX, treeBaseY, stage);
         }
     });
 
