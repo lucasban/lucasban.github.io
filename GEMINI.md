@@ -102,6 +102,9 @@ Each detector is a standalone mini-app with a unique theme:
 - **Refactoring**:
     - **Shared Navigation**: Migrated `demos/canvas/gravity` and `demos/canvas/plant` to use `shared/nav.js` for consistent header/footer/theme-toggle injection.
     - **Clean Code**: Removed duplicated HTML and legacy inline scripts from demo pages.
+    - **Polish**: Applied shared navigation to `demos/canvas/game-of-life`.
+    - **Accessibility**: Added `<main>` landmarks to key pages.
+    - **Testing**: Added unit tests for navigation logic in `tests/nav.test.js`.
 - **Codebase Fixes**:
     - **Memory leaks**: Fixed Monday detector interval not clearing on visibility change
     - **Null safety**: Added null checks to all 7 detector scripts for DOM elements
