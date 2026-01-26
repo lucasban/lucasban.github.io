@@ -132,13 +132,23 @@
     </div>
     <script src="theme-toggle.js?v=3"></script>
     <style>
+        /* Hide default footer plant when interactive one exists */
+        footer:has(.footer-plant)::after {
+            display: none;
+        }
         /* Footer plant easter egg styles */
         .footer-plant {
             display: block;
             text-align: center;
             font-size: 1.5rem;
             cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
             user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
             position: relative;
             margin-top: 0.5em;
             transition: transform 0.1s ease;
@@ -232,6 +242,11 @@
             plant.appendChild(emoji);
             setTimeout(() => emoji.remove(), 2000);
         }
+
+        // Prevent text selection on rapid clicks
+        plant.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+        });
 
         plant.addEventListener('click', function() {
             // Bounce animation
