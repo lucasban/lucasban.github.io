@@ -127,9 +127,133 @@
 
         <footer>
             <p>Built with plain HTML, CSS, and JS. No frameworks required.</p>
+            <span class="footer-plant" aria-label="A growing plant">🌱</span>
         </footer>
     </div>
     <script src="theme-toggle.js?v=3"></script>
+    <style>
+        /* Footer plant easter egg styles */
+        .footer-plant {
+            display: block;
+            text-align: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            margin-top: 0.5em;
+            transition: transform 0.1s ease;
+        }
+        .footer-plant:hover {
+            transform: scale(1.1);
+        }
+        .footer-plant.bounce {
+            animation: plantBounce 0.4s ease;
+        }
+        @keyframes plantBounce {
+            0%, 100% { transform: scale(1); }
+            30% { transform: scale(1.3) rotate(-5deg); }
+            50% { transform: scale(0.9) rotate(5deg); }
+            70% { transform: scale(1.1); }
+        }
+        .plant-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            padding: 0.4em 0.8em;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            margin-bottom: 0.5em;
+        }
+        .plant-tooltip.show {
+            opacity: 1;
+        }
+        .floating-emoji {
+            position: absolute;
+            font-size: 1rem;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-60px) scale(0.5); }
+        }
+    </style>
+    <script>
+    // Footer Plant Easter Egg
+    (function() {
+        const plant = document.querySelector('.footer-plant');
+        if (!plant) return;
+
+        const PUNS = [
+            "I'm rooting for you!",
+            "You're unbeleafable!",
+            "Aloe you vera much",
+            "Thanks for helping me grow!",
+            "Bloom where you're planted!",
+            "Have a plantastic day!"
+        ];
+        const STAGES = ['🌱', '🌿', '🪴', '🌳', '🌻'];
+        const FLOAT_EMOJIS = ['🌸', '🍃', '✨', '🌺', '🌼', '💚'];
+        const STORAGE_KEY = 'homepage_plant_stage';
+
+        // Load saved stage
+        let stage = parseInt(localStorage.getItem(STORAGE_KEY) || '0', 10);
+        if (stage >= STAGES.length) stage = STAGES.length - 1;
+        plant.textContent = STAGES[stage];
+
+        // Create tooltip
+        const tooltip = document.createElement('span');
+        tooltip.className = 'plant-tooltip';
+        plant.appendChild(tooltip);
+
+        function getRandom(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function showTooltip(text) {
+            tooltip.textContent = text;
+            tooltip.classList.add('show');
+            setTimeout(() => tooltip.classList.remove('show'), 1500);
+        }
+
+        function spawnFloatingEmoji() {
+            const emoji = document.createElement('span');
+            emoji.className = 'floating-emoji';
+            emoji.textContent = getRandom(FLOAT_EMOJIS);
+            emoji.style.left = `${Math.random() * 30 - 15}px`;
+            emoji.style.bottom = '100%';
+            plant.appendChild(emoji);
+            setTimeout(() => emoji.remove(), 2000);
+        }
+
+        plant.addEventListener('click', function() {
+            // Bounce animation
+            plant.classList.remove('bounce');
+            void plant.offsetWidth; // Force reflow
+            plant.classList.add('bounce');
+
+            // Show pun
+            showTooltip(getRandom(PUNS));
+
+            // Evolve if not at max stage
+            if (stage < STAGES.length - 1) {
+                stage++;
+                plant.childNodes[0].textContent = STAGES[stage];
+                localStorage.setItem(STORAGE_KEY, stage.toString());
+            } else {
+                // At max stage: spawn floating emojis
+                spawnFloatingEmoji();
+            }
+        });
+    })();
+    </script>
 </body>
 
 </html>
