@@ -99,6 +99,9 @@ Each detector is a standalone mini-app with a unique theme:
     - **Kawaii features**: Cute face on trunk, happy sun/sleepy moon, floating hearts, seasonal themes.
 - **Feature Expansion**:
     - **Digital Plant (v2)**: Added plant naming, animated ladybugs, healthy blooming flowers, and a real-time day/night background cycle.
+- **Refactoring**:
+    - **Shared Navigation**: Migrated `demos/canvas/gravity` and `demos/canvas/plant` to use `shared/nav.js` for consistent header/footer/theme-toggle injection.
+    - **Clean Code**: Removed duplicated HTML and legacy inline scripts from demo pages.
 - **Codebase Fixes**:
     - **Memory leaks**: Fixed Monday detector interval not clearing on visibility change
     - **Null safety**: Added null checks to all 7 detector scripts for DOM elements

@@ -17,11 +17,6 @@
 </head>
 <body>
     <a href="/" class="home-link">&larr; Home</a>
-    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
-        <button data-theme="light" aria-pressed="false">☀️</button>
-        <button data-theme="dark" aria-pressed="false">🌙</button>
-        <button data-theme="auto" aria-pressed="true">💻</button>
-    </div>
     <div class="container">
         <h1>Is it Tuesday?</h1>
         <div id="otter-image">
@@ -30,8 +25,9 @@
         <div id="answer" role="status" aria-live="polite"></div>
         <span class="decoration" aria-hidden="true">🌿</span>
     </div>
-    <script src="../theme-toggle.js?v=3"></script>
+    
     <script src="../shared/detector-utils.js?v=3"></script>
     <script src="script.js?v=4"></script>
+    <script src="../theme-toggle.js?v=3"></script>
 </body>
 </html>

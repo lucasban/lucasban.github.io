@@ -4,31 +4,10 @@
  */
 
 /* === Light Mode - "Sunlit Den" (Defaults) === */
+@import "variables.css";
+
+/* === Light Mode - "Sunlit Den" (Defaults) === */
 :root {
-    color-scheme: light;
-    --bg-primary: #f0e9df;
-    --bg-secondary: #e8dfd3;
-    --bg-code: #e5dcd0;
-    --text-primary: #3d3632;
-    --text-heading: #2a2420;
-    --text-muted: #5c524a;
-    --text-subtle: #7a6f65;
-    --border-color: #c9bfb3;
-    --link-color: #2d6a4f;
-    --link-visited: #8a4030;
-    --link-hover: #3d8b66;
-    --btn-bg: #ebe2d6;
-    --btn-hover: #e0d5c7;
-    --btn-active: #d4c8b8;
-
-    /* Accent colors - Greenery palette */
-    --leaf-deep: #2d6a4f;
-    --leaf-bright: #3d8b66;
-    --leaf-soft: #b8d4c4;
-    --sage-bg: #e0d9ce;
-    --wood-warm: #b8863a;
-    --wood-rust: #8a4030;
-
     /* Detector-specific accents */
     --accent-positive: #2d6a4f;
     --accent-negative: #8a4030;
@@ -47,29 +26,7 @@
 /* Dark mode - via OS preference */
 @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-        color-scheme: dark;
-        --bg-primary: #1a1f1c;
-        --bg-secondary: #242a26;
-        --bg-code: #242a26;
-        --text-primary: #e8e2db;
-        --text-heading: #f5f0e8;
-        --text-muted: #c5bdb3;
-        --text-subtle: #9a928a;
-        --border-color: #3a4a3e;
-        --link-color: #52b788;
-        --link-visited: #d4856e;
-        --link-hover: #95d5b2;
-        --btn-bg: #242a26;
-        --btn-hover: #2e3a32;
-        --btn-active: #3a4a3e;
-
-        --leaf-deep: #52b788;
-        --leaf-bright: #95d5b2;
-        --leaf-soft: #b7e4c7;
-        --sage-bg: #242a26;
-        --wood-warm: #e0ac3e;
-        --wood-rust: #d4856e;
-
+        /* Detector-specific accents */
         --accent-positive: #52b788;
         --accent-negative: #d4856e;
         --accent-neutral: #9a928a;
@@ -80,29 +37,7 @@
 
 /* Explicit dark mode override */
 :root[data-theme="dark"] {
-    color-scheme: dark;
-    --bg-primary: #1a1f1c;
-    --bg-secondary: #242a26;
-    --bg-code: #242a26;
-    --text-primary: #e8e2db;
-    --text-heading: #f5f0e8;
-    --text-muted: #c5bdb3;
-    --text-subtle: #9a928a;
-    --border-color: #3a4a3e;
-    --link-color: #52b788;
-    --link-visited: #d4856e;
-    --link-hover: #95d5b2;
-    --btn-bg: #242a26;
-    --btn-hover: #2e3a32;
-    --btn-active: #3a4a3e;
-
-    --leaf-deep: #52b788;
-    --leaf-bright: #95d5b2;
-    --leaf-soft: #b7e4c7;
-    --sage-bg: #242a26;
-    --wood-warm: #e0ac3e;
-    --wood-rust: #d4856e;
-
+    /* Detector-specific accents */
     --accent-positive: #52b788;
     --accent-negative: #d4856e;
     --accent-neutral: #9a928a;
@@ -111,7 +46,9 @@
 }
 
 /* === Base Reset === */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     box-sizing: border-box;
 }
 
@@ -184,7 +121,9 @@ h1 {
 }
 
 /* === Subtitle / Vibe Text === */
-#subtitle, #vibe, #existential-dread {
+#subtitle,
+#vibe,
+#existential-dread {
     font-family: 'DM Sans', sans-serif;
     font-size: 1.1rem;
     color: var(--text-muted);
@@ -194,7 +133,8 @@ h1 {
 }
 
 /* === Countdown Timer === */
-#countdown, .countdown {
+#countdown,
+.countdown {
     font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
     font-size: 0.95rem;
     color: var(--text-muted);
@@ -207,7 +147,8 @@ h1 {
 }
 
 /* === Buttons === */
-button, .btn {
+button,
+.btn {
     font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-size: 1rem;
     font-weight: 500;
@@ -222,18 +163,21 @@ button, .btn {
     box-shadow: 0 2px 4px var(--shadow-color);
 }
 
-button:hover, .btn:hover {
+button:hover,
+.btn:hover {
     background: var(--leaf-bright);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px var(--shadow-color);
 }
 
-button:active, .btn:active {
+button:active,
+.btn:active {
     transform: translateY(0);
     box-shadow: 0 1px 2px var(--shadow-color);
 }
 
-button:focus-visible, .btn:focus-visible {
+button:focus-visible,
+.btn:focus-visible {
     outline: 2px solid var(--link-color);
     outline-offset: 2px;
 }
@@ -340,12 +284,28 @@ button:disabled {
     user-select: none;
     z-index: 10;
 }
-.decoration:hover { opacity: 0.8; transform: scale(1.2); }
-.decoration.bounce { animation: decorationBounce 0.4s ease; }
-@keyframes decorationBounce {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.4) rotate(10deg); }
+
+.decoration:hover {
+    opacity: 0.8;
+    transform: scale(1.2);
 }
+
+.decoration.bounce {
+    animation: decorationBounce 0.4s ease;
+}
+
+@keyframes decorationBounce {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.4) rotate(10deg);
+    }
+}
+
 .decoration-tooltip {
     position: absolute;
     bottom: 100%;
@@ -361,16 +321,29 @@ button:disabled {
     transition: all 0.2s ease;
     pointer-events: none;
 }
-.decoration-tooltip.show { opacity: 1; transform: translateY(-5px); }
+
+.decoration-tooltip.show {
+    opacity: 1;
+    transform: translateY(-5px);
+}
+
 .floating-emoji {
     position: absolute;
     font-size: 1rem;
     pointer-events: none;
     animation: floatUpDecoration 2s ease-out forwards;
 }
+
 @keyframes floatUpDecoration {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-60px) scale(0.5); }
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(0.5);
+    }
 }
 
 /* === Confetti === */
@@ -399,6 +372,7 @@ button:disabled {
         transform: translateY(0) rotate(0deg);
         opacity: 1;
     }
+
     100% {
         transform: translateY(100vh) rotate(720deg);
         opacity: 0;
@@ -407,6 +381,7 @@ button:disabled {
 
 /* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {

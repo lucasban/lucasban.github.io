@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,11 +8,14 @@
     <meta name="description" content="Orbital gravity simulator - click and drag to launch bodies.">
     <meta property="og:title" content="Gravity Simulator">
     <meta property="og:description" content="Orbital gravity simulator - click and drag to launch bodies.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <script>(function(){var t=localStorage.getItem('theme');if(t&&t!=='auto')document.documentElement.setAttribute('data-theme',t)})();</script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
+    <script>(function () { var t = localStorage.getItem('theme'); if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t) })();</script>
     <link rel="stylesheet" href="../../../style.css?v=8">
     <style>
         .demo-canvas {
@@ -20,52 +24,62 @@
             max-width: 100%;
             height: auto;
         }
+
         .demo-controls {
             display: flex;
             gap: 1em;
             flex-wrap: wrap;
             align-items: center;
         }
+
         .demo-controls .btn {
             margin: 0;
         }
+
         .mass-indicator {
             display: inline-flex;
             align-items: center;
             gap: 0.5em;
         }
+
         .mass-indicator input[type="range"] {
             vertical-align: middle;
         }
+
         .mass-dot {
             width: 12px;
             height: 12px;
             border-radius: 50%;
             background: var(--link-color);
         }
+
         .body-count {
             font-size: 0.9rem;
             color: var(--text-subtle);
         }
+
         #body-count {
             font-weight: bold;
             color: var(--text-heading);
         }
     </style>
 </head>
+
 <body>
-    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
-        <button data-theme="light" aria-pressed="false">☀️</button>
-        <button data-theme="dark" aria-pressed="false">🌙</button>
-        <button data-theme="auto" aria-pressed="true">💻</button>
-    </div>
+    <script src="../../../shared/nav.js"></script>
+    <script>
+        Layout.init({
+            title: "Gravity",
+            subtitle: "Click and drag to launch orbiting bodies",
+            breadcrumbs: [
+                { label: "Home", url: "/" },
+                { label: "Demos", url: "/demos/" },
+                { label: "Gravity", url: "#" }
+            ]
+        });
+    </script>
+
     <div class="container">
-        <nav>
-            <a href="/">&larr; Home</a>
-        </nav>
-
-        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Gravity</p>
-
         <header>
             <h1>Gravity</h1>
             <p class="subtitle">Click and drag to launch orbiting bodies</p>
@@ -101,12 +115,11 @@
             </ul>
         </section>
 
-        <footer>
-            <p><a href="/demos/">&larr; Back to demos</a></p>
-        </footer>
+        <!-- Footer handled by Layout.init -->
     </div>
 
     <script src="../../../theme-toggle.js?v=3"></script>
     <script src="gravity.js?v=6"></script>
 </body>
+
 </html>

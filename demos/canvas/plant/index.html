@@ -338,19 +338,20 @@
 </head>
 
 <body>
-    <div class="theme-toggle" role="radiogroup" aria-label="Color theme">
-        <button data-theme="light" aria-pressed="false">☀️</button>
-        <button data-theme="dark" aria-pressed="false">🌙</button>
-        <button data-theme="auto" aria-pressed="true">💻</button>
-    </div>
+    <script src="../../../shared/nav.js"></script>
+    <script>
+        Layout.init({
+            title: "Digital Plant",
+            subtitle: "A persistent plant that grows over real-time days",
+            breadcrumbs: [
+                { label: "Home", url: "/" },
+                { label: "Demos", url: "/demos/" },
+                { label: "Digital Plant", url: "#" }
+            ]
+        });
+    </script>
 
     <div class="container">
-        <nav>
-            <a href="/">&larr; Home</a>
-        </nav>
-
-        <p class="breadcrumb">Demos &rarr; Canvas &rarr; Digital Plant</p>
-
         <header>
             <h1>Digital Plant</h1>
             <p class="subtitle">A persistent plant that grows over real-time days</p>
@@ -413,9 +414,7 @@
             </ul>
         </section>
 
-        <footer>
-            <p><a href="/demos/">&larr; Back to demos</a></p>
-        </footer>
+        <!-- Footer handled by Layout.init -->
     </div>
 
     <div id="journal-modal" class="journal-modal">
